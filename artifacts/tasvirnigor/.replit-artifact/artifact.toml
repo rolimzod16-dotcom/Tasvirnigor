@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Tasvirnigor Studio"
+version = "1.0.0"
+id = "artifacts/tasvirnigor"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19998
+
+[services.development]
+run = "pnpm --filter @workspace/tasvirnigor run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/tasvirnigor", "run", "build" ]
+publicDir = "artifacts/tasvirnigor/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19998"
+BASE_PATH = "/"
