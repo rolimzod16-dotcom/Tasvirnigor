@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useGetContacts, useUpdateContacts, getGetContactsQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -9,18 +9,18 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/language-context";
+import { i18n, t } from "@/lib/i18n";
 
-const contactsSchema = z.object({
-  email: z.string().email("Invalid email").optional().or(z.literal("")),
-  phone: z.string().optional(),
-  address: z.string().optional(),
-  telegram: z.string().url("Must be a valid URL").optional().or(z.literal("")),
-  instagram: z.string().url("Must be a valid URL").optional().or(z.literal("")),
-  youtube: z.string().url("Must be a valid URL").optional().or(z.literal("")),
-  facebook: z.string().url("Must be a valid URL").optional().or(z.literal("")),
-});
-
-type ContactsFormValues = z.infer<typeof contactsSchema>;
+type ContactsFormValues = {
+  email: string;
+  phone: string;
+  address: string;
+  telegram: string;
+  instagram: string;
+  youtube: string;
+  facebook: string;
+};
 
 export function AdminContacts() {
   const { data: contacts, isLoading } = useGetContacts();
@@ -28,18 +28,29 @@ export function AdminContacts() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const initialized = useRef(false);
+  const { lang } = useLanguage();
+
+  const urlMsg = t(i18n.validation.urlInvalid, lang);
+  const emailMsg = t(i18n.validation.emailInvalid, lang);
+
+  const contactsSchema = useMemo(
+    () =>
+      z.object({
+        email: z.string().email(emailMsg).optional().or(z.literal("")),
+        phone: z.string().optional(),
+        address: z.string().optional(),
+        telegram: z.string().url(urlMsg).optional().or(z.literal("")),
+        instagram: z.string().url(urlMsg).optional().or(z.literal("")),
+        youtube: z.string().url(urlMsg).optional().or(z.literal("")),
+        facebook: z.string().url(urlMsg).optional().or(z.literal("")),
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [lang]
+  );
 
   const form = useForm<ContactsFormValues>({
     resolver: zodResolver(contactsSchema),
-    defaultValues: {
-      email: "",
-      phone: "",
-      address: "",
-      telegram: "",
-      instagram: "",
-      youtube: "",
-      facebook: "",
-    },
+    defaultValues: { email: "", phone: "", address: "", telegram: "", instagram: "", youtube: "", facebook: "" },
   });
 
   useEffect(() => {
@@ -58,130 +69,85 @@ export function AdminContacts() {
   }, [contacts, form]);
 
   const onSubmit = (values: ContactsFormValues) => {
-    updateMutation.mutate(
-      { data: values },
-      {
-        onSuccess: (data) => {
-          queryClient.setQueryData(getGetContactsQueryKey(), data);
-          toast({ title: "Contacts updated successfully" });
-        },
-      }
-    );
+    updateMutation.mutate({ data: values }, {
+      onSuccess: (data) => {
+        queryClient.setQueryData(getGetContactsQueryKey(), data);
+        toast({ title: t(i18n.form.contactsUpdated, lang) });
+      },
+    });
   };
 
-  if (isLoading) return <div>Loading contacts...</div>;
+  if (isLoading) return <div className="text-muted-foreground">{t(i18n.form.loadingContacts, lang)}</div>;
 
   return (
     <Card className="border-border/50 bg-card/50 backdrop-blur max-w-3xl">
       <CardHeader>
-        <CardTitle className="font-display">Contact Information</CardTitle>
+        <CardTitle className="font-display">{t(i18n.form.contactInfo, lang)}</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
-                <h3 className="font-bold text-lg">General</h3>
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input type="email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Address</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <h3 className="font-bold text-lg">{t(i18n.form.general, lang)}</h3>
+                <FormField control={form.control} name="email" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t(i18n.contacts.email, lang)}</FormLabel>
+                    <FormControl><Input type="email" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="phone" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t(i18n.contacts.phone, lang)}</FormLabel>
+                    <FormControl><Input {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="address" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t(i18n.form.address, lang)}</FormLabel>
+                    <FormControl><Input {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
               </div>
 
               <div className="space-y-4">
-                <h3 className="font-bold text-lg">Social Links</h3>
-                <FormField
-                  control={form.control}
-                  name="telegram"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Telegram URL</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="instagram"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Instagram URL</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="youtube"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>YouTube URL</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="facebook"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Facebook URL</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <h3 className="font-bold text-lg">{t(i18n.form.socialLinks, lang)}</h3>
+                <FormField control={form.control} name="telegram" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t(i18n.form.telegramUrl, lang)}</FormLabel>
+                    <FormControl><Input {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="instagram" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t(i18n.form.instagramUrl, lang)}</FormLabel>
+                    <FormControl><Input {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="youtube" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t(i18n.form.youtubeUrlLabel, lang)}</FormLabel>
+                    <FormControl><Input {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="facebook" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t(i18n.form.facebookUrl, lang)}</FormLabel>
+                    <FormControl><Input {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
               </div>
             </div>
-            
+
             <Button type="submit" disabled={updateMutation.isPending}>
-              {updateMutation.isPending ? "Saving..." : "Save Changes"}
+              {updateMutation.isPending ? t(i18n.form.saving, lang) : t(i18n.form.saveChanges, lang)}
             </Button>
           </form>
         </Form>

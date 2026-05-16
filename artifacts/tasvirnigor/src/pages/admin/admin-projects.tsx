@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useListProjects, useCreateProject, useUpdateProject, useDeleteProject, getListProjectsQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -18,19 +18,11 @@ import { useLanguage } from "@/contexts/language-context";
 import { i18n, t } from "@/lib/i18n";
 import type { Project } from "@workspace/api-client-react";
 
-const projectSchema = z.object({
-  title: z.string().min(1, "Title (EN) is required"),
-  titleRu: z.string().optional().nullable(),
-  titleTj: z.string().optional().nullable(),
-  description: z.string().optional().nullable(),
-  descriptionRu: z.string().optional().nullable(),
-  descriptionTj: z.string().optional().nullable(),
-  youtubeUrl: z.string().url("Must be a valid URL"),
-  bannerUrl: z.string().min(1, "Banner image is required"),
-  sortOrder: z.coerce.number().default(0),
-});
-
-type ProjectFormValues = z.infer<typeof projectSchema>;
+type ProjectFormValues = {
+  title: string; titleRu: string | null; titleTj: string | null;
+  description: string | null; descriptionRu: string | null; descriptionTj: string | null;
+  youtubeUrl: string; bannerUrl: string; sortOrder: number;
+};
 
 const EMPTY: ProjectFormValues = {
   title: "", titleRu: "", titleTj: "",
@@ -50,28 +42,36 @@ export function AdminProjects() {
   const updateMutation = useUpdateProject();
   const deleteMutation = useDeleteProject();
 
+  const projectSchema = useMemo(
+    () =>
+      z.object({
+        title: z.string().min(1, t(i18n.validation.titleRequired, lang)),
+        titleRu: z.string().optional().nullable(),
+        titleTj: z.string().optional().nullable(),
+        description: z.string().optional().nullable(),
+        descriptionRu: z.string().optional().nullable(),
+        descriptionTj: z.string().optional().nullable(),
+        youtubeUrl: z.string().url(t(i18n.validation.urlInvalid, lang)),
+        bannerUrl: z.string().min(1, t(i18n.validation.bannerRequired, lang)),
+        sortOrder: z.coerce.number().default(0),
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [lang]
+  );
+
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
     defaultValues: EMPTY,
   });
 
-  const resetForm = () => {
-    form.reset(EMPTY);
-    setEditingProject(null);
-  };
+  const resetForm = () => { form.reset(EMPTY); setEditingProject(null); };
 
   const handleEdit = (project: Project) => {
     setEditingProject(project);
     form.reset({
-      title: project.title,
-      titleRu: project.titleRu ?? "",
-      titleTj: project.titleTj ?? "",
-      description: project.description ?? "",
-      descriptionRu: project.descriptionRu ?? "",
-      descriptionTj: project.descriptionTj ?? "",
-      youtubeUrl: project.youtubeUrl,
-      bannerUrl: project.bannerUrl,
-      sortOrder: project.sortOrder,
+      title: project.title, titleRu: project.titleRu ?? "", titleTj: project.titleTj ?? "",
+      description: project.description ?? "", descriptionRu: project.descriptionRu ?? "", descriptionTj: project.descriptionTj ?? "",
+      youtubeUrl: project.youtubeUrl, bannerUrl: project.bannerUrl, sortOrder: project.sortOrder,
     });
     setIsDialogOpen(true);
   };
@@ -79,45 +79,41 @@ export function AdminProjects() {
   const onSubmit = (values: ProjectFormValues) => {
     const data = {
       ...values,
-      titleRu: values.titleRu || null,
-      titleTj: values.titleTj || null,
+      titleRu: values.titleRu || null, titleTj: values.titleTj || null,
       description: values.description || null,
-      descriptionRu: values.descriptionRu || null,
-      descriptionTj: values.descriptionTj || null,
+      descriptionRu: values.descriptionRu || null, descriptionTj: values.descriptionTj || null,
     };
     if (editingProject) {
       updateMutation.mutate({ id: editingProject.id, data }, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getListProjectsQueryKey() });
-          toast({ title: "Project updated successfully" });
-          setIsDialogOpen(false);
-          resetForm();
+          toast({ title: t(i18n.form.projectUpdated, lang) });
+          setIsDialogOpen(false); resetForm();
         },
       });
     } else {
       createMutation.mutate({ data }, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getListProjectsQueryKey() });
-          toast({ title: "Project created successfully" });
-          setIsDialogOpen(false);
-          resetForm();
+          toast({ title: t(i18n.form.projectCreated, lang) });
+          setIsDialogOpen(false); resetForm();
         },
       });
     }
   };
 
   const handleDelete = (id: number) => {
-    if (confirm("Are you sure you want to delete this project?")) {
+    if (confirm(t(i18n.form.deleteProjectConfirm, lang))) {
       deleteMutation.mutate({ id }, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getListProjectsQueryKey() });
-          toast({ title: "Project deleted" });
+          toast({ title: t(i18n.form.projectDeleted, lang) });
         },
       });
     }
   };
 
-  if (isLoading) return <div className="text-muted-foreground">Loading projects...</div>;
+  if (isLoading) return <div className="text-muted-foreground">{t(i18n.form.loadingProjects, lang)}</div>;
 
   return (
     <Card className="border-border/50 bg-card/50 backdrop-blur">
@@ -125,29 +121,26 @@ export function AdminProjects() {
         <CardTitle className="font-display">{t(i18n.admin.projects, lang)}</CardTitle>
         <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>
-            <Button className="gap-2"><Plus className="w-4 h-4" /> Add Project</Button>
+            <Button className="gap-2"><Plus className="w-4 h-4" /> {t(i18n.form.addProject, lang)}</Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl bg-card border-border max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="font-display">{editingProject ? "Edit Project" : "Add Project"}</DialogTitle>
+              <DialogTitle className="font-display">
+                {editingProject ? t(i18n.form.editProject, lang) : t(i18n.form.addProject, lang)}
+              </DialogTitle>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="bannerUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Banner Image</FormLabel>
-                      <FormControl>
-                        <FileUpload value={field.value} onChange={field.onChange} endpoint="/api/upload/project-banner" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <FormField control={form.control} name="bannerUrl" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t(i18n.form.bannerImage, lang)}</FormLabel>
+                    <FormControl>
+                      <FileUpload value={field.value} onChange={field.onChange} endpoint="/api/upload/project-banner" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
 
-                {/* Multilingual content tabs */}
                 <div className="border border-border/50 rounded-lg overflow-hidden">
                   <Tabs defaultValue="en">
                     <TabsList className="w-full rounded-none border-b border-border/50 bg-card/60 h-auto p-1 gap-1">
@@ -165,14 +158,14 @@ export function AdminProjects() {
                       <TabsContent value="en" className="mt-0 space-y-4">
                         <FormField control={form.control} name="title" render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Title <span className="text-primary text-xs">(EN)</span></FormLabel>
+                            <FormLabel>{t(i18n.form.title, lang)} <span className="text-primary text-xs">(EN)</span></FormLabel>
                             <FormControl><Input {...field} /></FormControl>
                             <FormMessage />
                           </FormItem>
                         )} />
                         <FormField control={form.control} name="description" render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Description <span className="text-primary text-xs">(EN)</span></FormLabel>
+                            <FormLabel>{t(i18n.form.description, lang)} <span className="text-primary text-xs">(EN)</span></FormLabel>
                             <FormControl><Textarea {...field} value={field.value ?? ""} className="min-h-[80px]" /></FormControl>
                             <FormMessage />
                           </FormItem>
@@ -181,14 +174,14 @@ export function AdminProjects() {
                       <TabsContent value="ru" className="mt-0 space-y-4">
                         <FormField control={form.control} name="titleRu" render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Title <span className="text-primary text-xs">(RU)</span></FormLabel>
+                            <FormLabel>{t(i18n.form.title, lang)} <span className="text-primary text-xs">(RU)</span></FormLabel>
                             <FormControl><Input {...field} value={field.value ?? ""} /></FormControl>
                             <FormMessage />
                           </FormItem>
                         )} />
                         <FormField control={form.control} name="descriptionRu" render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Description <span className="text-primary text-xs">(RU)</span></FormLabel>
+                            <FormLabel>{t(i18n.form.description, lang)} <span className="text-primary text-xs">(RU)</span></FormLabel>
                             <FormControl><Textarea {...field} value={field.value ?? ""} className="min-h-[80px]" /></FormControl>
                             <FormMessage />
                           </FormItem>
@@ -197,14 +190,14 @@ export function AdminProjects() {
                       <TabsContent value="tj" className="mt-0 space-y-4">
                         <FormField control={form.control} name="titleTj" render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Title <span className="text-primary text-xs">(TJ)</span></FormLabel>
+                            <FormLabel>{t(i18n.form.title, lang)} <span className="text-primary text-xs">(TJ)</span></FormLabel>
                             <FormControl><Input {...field} value={field.value ?? ""} /></FormControl>
                             <FormMessage />
                           </FormItem>
                         )} />
                         <FormField control={form.control} name="descriptionTj" render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Description <span className="text-primary text-xs">(TJ)</span></FormLabel>
+                            <FormLabel>{t(i18n.form.description, lang)} <span className="text-primary text-xs">(TJ)</span></FormLabel>
                             <FormControl><Textarea {...field} value={field.value ?? ""} className="min-h-[80px]" /></FormControl>
                             <FormMessage />
                           </FormItem>
@@ -216,20 +209,20 @@ export function AdminProjects() {
 
                 <FormField control={form.control} name="youtubeUrl" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>YouTube URL</FormLabel>
-                    <FormControl><Input {...field} placeholder="https://youtube.com/watch?v=..." /></FormControl>
+                    <FormLabel>{t(i18n.form.youtubeUrl, lang)}</FormLabel>
+                    <FormControl><Input {...field} placeholder={t(i18n.form.youtubePlaceholder, lang)} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="sortOrder" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sort Order</FormLabel>
+                    <FormLabel>{t(i18n.form.sortOrder, lang)}</FormLabel>
                     <FormControl><Input type="number" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <Button type="submit" className="w-full" disabled={createMutation.isPending || updateMutation.isPending}>
-                  {editingProject ? "Update Project" : "Create Project"}
+                  {editingProject ? t(i18n.form.updateProject, lang) : t(i18n.form.createProject, lang)}
                 </Button>
               </form>
             </Form>

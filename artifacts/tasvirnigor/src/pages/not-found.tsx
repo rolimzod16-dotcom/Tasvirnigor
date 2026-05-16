@@ -1,21 +1,25 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle } from "lucide-react";
+import { Link } from "wouter";
+import { useLanguage } from "@/contexts/language-context";
+import { i18n, t } from "@/lib/i18n";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 export default function NotFound() {
-  return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md mx-4">
-        <CardContent className="pt-6">
-          <div className="flex mb-4 gap-2">
-            <AlertCircle className="h-8 w-8 text-red-500" />
-            <h1 className="text-2xl font-bold text-gray-900">404 Page Not Found</h1>
-          </div>
+  const { lang } = useLanguage();
 
-          <p className="mt-4 text-sm text-gray-600">
-            Did you forget to add the page to the router?
-          </p>
-        </CardContent>
-      </Card>
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground p-4">
+      <div className="absolute top-6 right-6">
+        <LanguageSwitcher />
+      </div>
+      <div className="text-center max-w-md">
+        <p className="text-primary font-medium tracking-widest uppercase text-sm mb-4">Tasvirnigor</p>
+        <h1 className="font-display font-bold text-6xl text-foreground mb-4">404</h1>
+        <div className="w-16 h-px bg-primary mx-auto mb-6" />
+        <p className="text-xl font-light text-muted-foreground mb-8">{t(i18n.notFound.description, lang)}</p>
+        <Link href="/" className="inline-flex items-center gap-2 text-primary hover:underline text-sm font-medium tracking-wide uppercase">
+          {lang === "ru" ? "← На главную" : lang === "tj" ? "← Ба асосӣ" : "← Back to Home"}
+        </Link>
+      </div>
     </div>
   );
 }

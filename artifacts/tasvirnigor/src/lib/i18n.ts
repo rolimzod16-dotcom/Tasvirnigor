@@ -127,6 +127,38 @@ export const i18n = {
     rights: { en: "All rights reserved.", ru: "Все права защищены.", tj: "Ҳамаи ҳуқуқҳо ҳифз шудаанд." } as T,
     adminLogin: { en: "Admin Login", ru: "Вход в панель", tj: "Вуруди маъмур" } as T,
   },
+
+  // --- Login page ---
+  login: {
+    title: { en: "Tasvirnigor Admin", ru: "Панель администратора", tj: "Панели маъмур" } as T,
+    description: {
+      en: "Enter the master password to access the CMS",
+      ru: "Введите мастер-пароль для доступа к системе",
+      tj: "Барои дастрасӣ рамзро ворид кунед",
+    } as T,
+    passwordLabel: { en: "Password", ru: "Пароль", tj: "Рамз" } as T,
+    loginBtn: { en: "Login", ru: "Войти", tj: "Воридан" } as T,
+    authenticating: { en: "Authenticating...", ru: "Вход...", tj: "Тасдиқ..." } as T,
+    successTitle: { en: "Logged in successfully", ru: "Вход выполнен", tj: "Бомуваффақият ворид шудед" } as T,
+    failedTitle: { en: "Login failed", ru: "Ошибка входа", tj: "Хатои вуруд" } as T,
+    invalidPassword: { en: "Invalid password", ru: "Неверный пароль", tj: "Рамз нодуруст аст" } as T,
+  },
+
+  // --- Validation messages ---
+  validation: {
+    passwordRequired: { en: "Password is required", ru: "Введите пароль", tj: "Рамзро ворид кунед" } as T,
+    titleRequired: { en: "Title (EN) is required", ru: "Заголовок (EN) обязателен", tj: "Унвон (EN) лозим аст" } as T,
+    nameRequired: { en: "Name is required", ru: "Введите имя", tj: "Номро ворид кунед" } as T,
+    positionRequired: { en: "Position (EN) is required", ru: "Должность (EN) обязательна", tj: "Вазифа (EN) лозим аст" } as T,
+    headlineRequired: { en: "Headline (EN) is required", ru: "Заголовок (EN) обязателен", tj: "Унвон (EN) лозим аст" } as T,
+    bodyRequired: { en: "Body (EN) is required", ru: "Текст (EN) обязателен", tj: "Матн (EN) лозим аст" } as T,
+    urlInvalid: { en: "Must be a valid URL", ru: "Введите корректный URL", tj: "URL дуруст ворид кунед" } as T,
+    bannerRequired: { en: "Banner image is required", ru: "Загрузите изображение баннера", tj: "Расми баннерро бор кунед" } as T,
+    photoRequired: { en: "Photo is required", ru: "Загрузите фото", tj: "Аксро бор кунед" } as T,
+    emailInvalid: { en: "Invalid email address", ru: "Неверный адрес электронной почты", tj: "Почтаи электронӣ нодуруст аст" } as T,
+  },
+
+  // --- Admin panel common ---
   admin: {
     title: { en: "Content Management", ru: "Управление контентом", tj: "Идоракунии мазмун" } as T,
     subtitle: {
@@ -140,7 +172,80 @@ export const i18n = {
     contacts: { en: "Contacts", ru: "Контакты", tj: "Тамос" } as T,
     logout: { en: "Logout", ru: "Выйти", tj: "Баромадан" } as T,
     administrator: { en: "Administrator", ru: "Администратор", tj: "Маъмур" } as T,
+    loading: { en: "Loading Dashboard", ru: "Загрузка панели...", tj: "Бор кардани панел..." } as T,
   },
+
+  // --- Admin form strings ---
+  form: {
+    // Common
+    saveChanges: { en: "Save Changes", ru: "Сохранить", tj: "Нигоҳ доштан" } as T,
+    saving: { en: "Saving...", ru: "Сохранение...", tj: "Нигоҳ доштан..." } as T,
+    sortOrder: { en: "Sort Order", ru: "Порядок сортировки", tj: "Тартиби сортировка" } as T,
+    bannerImage: { en: "Banner Image", ru: "Изображение баннера", tj: "Расми баннер" } as T,
+    photo: { en: "Photo", ru: "Фото", tj: "Акс" } as T,
+    title: { en: "Title", ru: "Заголовок", tj: "Унвон" } as T,
+    description: { en: "Description", ru: "Описание", tj: "Тавсиф" } as T,
+    youtubeUrl: { en: "YouTube URL", ru: "Ссылка YouTube", tj: "Пайванди YouTube" } as T,
+    youtubePlaceholder: { en: "https://youtube.com/watch?v=...", ru: "https://youtube.com/watch?v=...", tj: "https://youtube.com/watch?v=..." } as T,
+    fullName: { en: "Full Name", ru: "Полное имя", tj: "Номи пурра" } as T,
+    nameLangNote: { en: "Name is the same in all languages", ru: "Имя одинаково на всех языках", tj: "Ном дар ҳама забонҳо якон аст" } as T,
+    position: { en: "Position", ru: "Должность", tj: "Вазифа" } as T,
+    bio: { en: "Bio", ru: "Биография", tj: "Тарҷумаи ҳол" } as T,
+    headline: { en: "Headline", ru: "Заголовок", tj: "Унвон" } as T,
+    bodyText: { en: "Body Text", ru: "Основной текст", tj: "Матни асосӣ" } as T,
+    missionStatement: { en: "Mission Statement", ru: "Миссия", tj: "Изҳорияи рисолат" } as T,
+    foundedYear: { en: "Founded Year", ru: "Год основания", tj: "Соли таъсис" } as T,
+    foundedPlaceholder: { en: "e.g. 2015", ru: "напр. 2015", tj: "м. 2015" } as T,
+    address: { en: "Address", ru: "Адрес", tj: "Суроға" } as T,
+    general: { en: "General", ru: "Общее", tj: "Умумӣ" } as T,
+    socialLinks: { en: "Social Links", ru: "Социальные сети", tj: "Шабакаҳои иҷтимоӣ" } as T,
+    telegramUrl: { en: "Telegram URL", ru: "Ссылка Telegram", tj: "Пайванди Telegram" } as T,
+    instagramUrl: { en: "Instagram URL", ru: "Ссылка Instagram", tj: "Пайванди Instagram" } as T,
+    youtubeUrlLabel: { en: "YouTube URL", ru: "Ссылка YouTube", tj: "Пайванди YouTube" } as T,
+    facebookUrl: { en: "Facebook URL", ru: "Ссылка Facebook", tj: "Пайванди Facebook" } as T,
+
+    // Projects
+    addProject: { en: "Add Project", ru: "Добавить проект", tj: "Илова кардани лоиҳа" } as T,
+    editProject: { en: "Edit Project", ru: "Редактировать проект", tj: "Таҳрири лоиҳа" } as T,
+    createProject: { en: "Create Project", ru: "Создать проект", tj: "Сохтани лоиҳа" } as T,
+    updateProject: { en: "Update Project", ru: "Обновить проект", tj: "Нав кардани лоиҳа" } as T,
+    projectCreated: { en: "Project created successfully", ru: "Проект создан", tj: "Лоиҳа сохта шуд" } as T,
+    projectUpdated: { en: "Project updated successfully", ru: "Проект обновлён", tj: "Лоиҳа нав шуд" } as T,
+    projectDeleted: { en: "Project deleted", ru: "Проект удалён", tj: "Лоиҳа ҳазф шуд" } as T,
+    deleteProjectConfirm: {
+      en: "Are you sure you want to delete this project?",
+      ru: "Вы уверены, что хотите удалить этот проект?",
+      tj: "Оё мехоҳед ин лоиҳаро ҳазф кунед?",
+    } as T,
+    loadingProjects: { en: "Loading projects...", ru: "Загрузка проектов...", tj: "Бор кардани лоиҳаҳо..." } as T,
+
+    // Team
+    addMember: { en: "Add Member", ru: "Добавить сотрудника", tj: "Илова кардани узв" } as T,
+    editMember: { en: "Edit Team Member", ru: "Редактировать сотрудника", tj: "Таҳрири узв" } as T,
+    createMember: { en: "Create Member", ru: "Создать сотрудника", tj: "Сохтани узв" } as T,
+    updateMember: { en: "Update Member", ru: "Обновить сотрудника", tj: "Нав кардани узв" } as T,
+    memberCreated: { en: "Team member created successfully", ru: "Сотрудник добавлен", tj: "Узви гурӯҳ илова шуд" } as T,
+    memberUpdated: { en: "Team member updated successfully", ru: "Сотрудник обновлён", tj: "Узви гурӯҳ нав шуд" } as T,
+    memberDeleted: { en: "Team member deleted", ru: "Сотрудник удалён", tj: "Узви гурӯҳ ҳазф шуд" } as T,
+    deleteMemberConfirm: {
+      en: "Are you sure you want to delete this team member?",
+      ru: "Вы уверены, что хотите удалить этого сотрудника?",
+      tj: "Оё мехоҳед ин узвро ҳазф кунед?",
+    } as T,
+    loadingTeam: { en: "Loading team members...", ru: "Загрузка команды...", tj: "Бор кардани гурӯҳ..." } as T,
+
+    // About
+    aboutSection: { en: "About Section", ru: "Раздел «О нас»", tj: "Бахши «Дар бораи мо»" } as T,
+    aboutUpdated: { en: "About section updated successfully", ru: "Раздел «О нас» обновлён", tj: "Бахш нав шуд" } as T,
+    loadingAbout: { en: "Loading about section...", ru: "Загрузка раздела...", tj: "Бор кардани бахш..." } as T,
+
+    // Contacts
+    contactInfo: { en: "Contact Information", ru: "Контактная информация", tj: "Маълумоти тамос" } as T,
+    contactsUpdated: { en: "Contacts updated successfully", ru: "Контакты обновлены", tj: "Тамос нав шуд" } as T,
+    loadingContacts: { en: "Loading contacts...", ru: "Загрузка контактов...", tj: "Бор кардани тамос..." } as T,
+  },
+
+  // --- Lang label tabs ---
   langLabels: {
     en: { en: "EN", ru: "EN", tj: "EN" } as T,
     ru: { en: "RU", ru: "RU", tj: "RU" } as T,
@@ -148,5 +253,15 @@ export const i18n = {
     english: { en: "English", ru: "Английский", tj: "Англисӣ" } as T,
     russian: { en: "Russian", ru: "Русский", tj: "Русӣ" } as T,
     tajik: { en: "Tajik", ru: "Таджикский", tj: "Тоҷикӣ" } as T,
+  },
+
+  // --- Not found page ---
+  notFound: {
+    title: { en: "404 — Page Not Found", ru: "404 — Страница не найдена", tj: "404 — Саҳифа ёфт нашуд" } as T,
+    description: {
+      en: "The page you are looking for doesn't exist.",
+      ru: "Страница, которую вы ищете, не существует.",
+      tj: "Саҳифае, ки шумо меҷӯед, вуҷуд надорад.",
+    } as T,
   },
 };
