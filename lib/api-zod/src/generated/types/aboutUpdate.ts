@@ -3,14 +3,26 @@
  * Do not edit manually.
  * Api
  * Tasvirnigor Film & Animation Studio API
- * OpenAPI spec version: 0.1.0
+ * OpenAPI spec version: 0.2.0
  */
 
 export interface AboutUpdate {
   headline?: string;
+  /** @nullable */
+  headlineRu?: string | null;
+  /** @nullable */
+  headlineTj?: string | null;
   body?: string;
   /** @nullable */
+  bodyRu?: string | null;
+  /** @nullable */
+  bodyTj?: string | null;
+  /** @nullable */
   mission?: string | null;
+  /** @nullable */
+  missionRu?: string | null;
+  /** @nullable */
+  missionTj?: string | null;
   /** @nullable */
   founded?: string | null;
 }

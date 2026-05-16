@@ -1,6 +1,9 @@
 import { useListProjects } from "@workspace/api-client-react";
 import { motion } from "framer-motion";
 import { Play, ExternalLink } from "lucide-react";
+import { useLanguage } from "@/contexts/language-context";
+import { i18n, t } from "@/lib/i18n";
+import { localize } from "@/lib/localize";
 
 const container = {
   hidden: { opacity: 0 },
@@ -12,11 +15,12 @@ const container = {
 
 const item = {
   hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } }
 };
 
 export function Portfolio() {
   const { data: projects, isLoading } = useListProjects();
+  const { lang } = useLanguage();
 
   if (isLoading) {
     return (
@@ -47,13 +51,15 @@ export function Portfolio() {
           className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6"
         >
           <div>
-            <p className="text-primary font-medium tracking-widest uppercase text-sm mb-4">Selected Work</p>
+            <p className="text-primary font-medium tracking-widest uppercase text-sm mb-4">
+              {t(i18n.portfolio.label, lang)}
+            </p>
             <h3 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-foreground">
-              Portfolio
+              {t(i18n.portfolio.heading, lang)}
             </h3>
           </div>
           <p className="text-muted-foreground font-light max-w-sm md:text-right text-sm leading-relaxed">
-            Click any project to watch it on YouTube
+            {t(i18n.portfolio.clickHint, lang)}
           </p>
         </motion.div>
 
@@ -90,13 +96,15 @@ export function Portfolio() {
                 <div className="absolute bottom-0 left-0 right-0 p-8 md:p-10">
                   <div className="flex items-end justify-between gap-4">
                     <div>
-                      <p className="text-primary text-xs font-medium tracking-widest uppercase mb-2">Featured</p>
+                      <p className="text-primary text-xs font-medium tracking-widest uppercase mb-2">
+                        {t(i18n.portfolio.featured, lang)}
+                      </p>
                       <h4 className="font-display font-bold text-2xl md:text-4xl text-foreground group-hover:text-primary transition-colors">
-                        {featured.title}
+                        {localize(featured as unknown as Record<string, unknown>, "title", lang)}
                       </h4>
-                      {featured.description && (
+                      {(localize(featured as unknown as Record<string, unknown>, "description", lang)) && (
                         <p className="text-muted-foreground font-light mt-2 max-w-xl line-clamp-2 text-sm md:text-base">
-                          {featured.description}
+                          {localize(featured as unknown as Record<string, unknown>, "description", lang)}
                         </p>
                       )}
                     </div>
@@ -136,11 +144,11 @@ export function Portfolio() {
                   </div>
                   <div className="p-5">
                     <h4 className="font-display font-bold text-lg mb-1.5 group-hover:text-primary transition-colors line-clamp-1">
-                      {project.title}
+                      {localize(project as unknown as Record<string, unknown>, "title", lang)}
                     </h4>
-                    {project.description && (
+                    {localize(project as unknown as Record<string, unknown>, "description", lang) && (
                       <p className="text-muted-foreground font-light text-sm line-clamp-2 leading-relaxed">
-                        {project.description}
+                        {localize(project as unknown as Record<string, unknown>, "description", lang)}
                       </p>
                     )}
                   </div>

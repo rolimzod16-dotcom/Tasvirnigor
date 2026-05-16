@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Api
  * Tasvirnigor Film & Animation Studio API
- * OpenAPI spec version: 0.1.0
+ * OpenAPI spec version: 0.2.0
  */
 
 export interface TeamMember {
@@ -11,7 +11,15 @@ export interface TeamMember {
   name: string;
   position: string;
   /** @nullable */
+  positionRu?: string | null;
+  /** @nullable */
+  positionTj?: string | null;
+  /** @nullable */
   bio?: string | null;
+  /** @nullable */
+  bioRu?: string | null;
+  /** @nullable */
+  bioTj?: string | null;
   photoUrl: string;
   sortOrder: number;
   createdAt: string;

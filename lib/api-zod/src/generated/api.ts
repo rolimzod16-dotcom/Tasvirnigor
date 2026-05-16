@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Api
  * Tasvirnigor Film & Animation Studio API
- * OpenAPI spec version: 0.1.0
+ * OpenAPI spec version: 0.2.0
  */
 import * as zod from 'zod';
 
@@ -22,7 +22,11 @@ export const HealthCheckResponse = zod.object({
 export const ListProjectsResponseItem = zod.object({
   "id": zod.number(),
   "title": zod.string(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
   "description": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionTj": zod.string().nullish(),
   "youtubeUrl": zod.string(),
   "bannerUrl": zod.string(),
   "sortOrder": zod.number(),
@@ -39,7 +43,11 @@ export const ListProjectsResponse = zod.array(ListProjectsResponseItem)
 
 export const CreateProjectBody = zod.object({
   "title": zod.string().min(1),
-  "description": zod.string().optional(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionTj": zod.string().nullish(),
   "youtubeUrl": zod.string(),
   "bannerUrl": zod.string(),
   "sortOrder": zod.number().optional()
@@ -58,7 +66,11 @@ export const UpdateProjectParams = zod.object({
 
 export const UpdateProjectBody = zod.object({
   "title": zod.string().min(1).optional(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
   "description": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionTj": zod.string().nullish(),
   "youtubeUrl": zod.string().optional(),
   "bannerUrl": zod.string().optional(),
   "sortOrder": zod.number().optional()
@@ -67,7 +79,11 @@ export const UpdateProjectBody = zod.object({
 export const UpdateProjectResponse = zod.object({
   "id": zod.number(),
   "title": zod.string(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
   "description": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionTj": zod.string().nullish(),
   "youtubeUrl": zod.string(),
   "bannerUrl": zod.string(),
   "sortOrder": zod.number(),
@@ -90,7 +106,11 @@ export const ListTeamMembersResponseItem = zod.object({
   "id": zod.number(),
   "name": zod.string(),
   "position": zod.string(),
+  "positionRu": zod.string().nullish(),
+  "positionTj": zod.string().nullish(),
   "bio": zod.string().nullish(),
+  "bioRu": zod.string().nullish(),
+  "bioTj": zod.string().nullish(),
   "photoUrl": zod.string(),
   "sortOrder": zod.number(),
   "createdAt": zod.string()
@@ -108,7 +128,11 @@ export const ListTeamMembersResponse = zod.array(ListTeamMembersResponseItem)
 export const CreateTeamMemberBody = zod.object({
   "name": zod.string().min(1),
   "position": zod.string().min(1),
-  "bio": zod.string().optional(),
+  "positionRu": zod.string().nullish(),
+  "positionTj": zod.string().nullish(),
+  "bio": zod.string().nullish(),
+  "bioRu": zod.string().nullish(),
+  "bioTj": zod.string().nullish(),
   "photoUrl": zod.string(),
   "sortOrder": zod.number().optional()
 })
@@ -128,7 +152,11 @@ export const UpdateTeamMemberParams = zod.object({
 export const UpdateTeamMemberBody = zod.object({
   "name": zod.string().min(1).optional(),
   "position": zod.string().min(1).optional(),
+  "positionRu": zod.string().nullish(),
+  "positionTj": zod.string().nullish(),
   "bio": zod.string().nullish(),
+  "bioRu": zod.string().nullish(),
+  "bioTj": zod.string().nullish(),
   "photoUrl": zod.string().optional(),
   "sortOrder": zod.number().optional()
 })
@@ -137,7 +165,11 @@ export const UpdateTeamMemberResponse = zod.object({
   "id": zod.number(),
   "name": zod.string(),
   "position": zod.string(),
+  "positionRu": zod.string().nullish(),
+  "positionTj": zod.string().nullish(),
   "bio": zod.string().nullish(),
+  "bioRu": zod.string().nullish(),
+  "bioTj": zod.string().nullish(),
   "photoUrl": zod.string(),
   "sortOrder": zod.number(),
   "createdAt": zod.string()
@@ -158,8 +190,14 @@ export const DeleteTeamMemberParams = zod.object({
 export const GetAboutResponse = zod.object({
   "id": zod.number(),
   "headline": zod.string(),
+  "headlineRu": zod.string().nullish(),
+  "headlineTj": zod.string().nullish(),
   "body": zod.string(),
+  "bodyRu": zod.string().nullish(),
+  "bodyTj": zod.string().nullish(),
   "mission": zod.string().nullish(),
+  "missionRu": zod.string().nullish(),
+  "missionTj": zod.string().nullish(),
   "founded": zod.string().nullish()
 })
 
@@ -169,16 +207,28 @@ export const GetAboutResponse = zod.object({
  */
 export const UpdateAboutBody = zod.object({
   "headline": zod.string().optional(),
+  "headlineRu": zod.string().nullish(),
+  "headlineTj": zod.string().nullish(),
   "body": zod.string().optional(),
+  "bodyRu": zod.string().nullish(),
+  "bodyTj": zod.string().nullish(),
   "mission": zod.string().nullish(),
+  "missionRu": zod.string().nullish(),
+  "missionTj": zod.string().nullish(),
   "founded": zod.string().nullish()
 })
 
 export const UpdateAboutResponse = zod.object({
   "id": zod.number(),
   "headline": zod.string(),
+  "headlineRu": zod.string().nullish(),
+  "headlineTj": zod.string().nullish(),
   "body": zod.string(),
+  "bodyRu": zod.string().nullish(),
+  "bodyTj": zod.string().nullish(),
   "mission": zod.string().nullish(),
+  "missionRu": zod.string().nullish(),
+  "missionTj": zod.string().nullish(),
   "founded": zod.string().nullish()
 })
 

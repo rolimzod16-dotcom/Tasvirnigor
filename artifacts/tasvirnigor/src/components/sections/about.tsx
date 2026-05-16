@@ -1,15 +1,12 @@
 import { useGetAbout } from "@workspace/api-client-react";
 import { motion } from "framer-motion";
-
-const STATS = [
-  { value: "10+", label: "Years of craft" },
-  { value: "40+", label: "Productions" },
-  { value: "15+", label: "Awards" },
-  { value: "20+", label: "Countries screened" },
-];
+import { useLanguage } from "@/contexts/language-context";
+import { i18n, t } from "@/lib/i18n";
+import { localize } from "@/lib/localize";
 
 export function About() {
   const { data: about, isLoading } = useGetAbout();
+  const { lang } = useLanguage();
 
   if (isLoading) {
     return (
@@ -20,6 +17,10 @@ export function About() {
   }
 
   if (!about) return null;
+
+  const headline = localize(about as unknown as Record<string, unknown>, "headline", lang);
+  const body = localize(about as unknown as Record<string, unknown>, "body", lang);
+  const mission = localize(about as unknown as Record<string, unknown>, "mission", lang);
 
   return (
     <section id="about" className="py-32 bg-background relative border-t border-border/30">
@@ -34,15 +35,17 @@ export function About() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8 }}
           >
-            <p className="text-primary font-medium tracking-widest uppercase text-sm mb-4">About the Studio</p>
+            <p className="text-primary font-medium tracking-widest uppercase text-sm mb-4">
+              {t(i18n.about.label, lang)}
+            </p>
             <h3 className="text-4xl md:text-5xl font-display font-bold tracking-tight leading-tight text-foreground">
-              {about.headline}
+              {headline}
             </h3>
             {about.founded && (
               <div className="mt-8 flex items-center gap-3">
                 <div className="w-8 h-px bg-primary" />
                 <p className="text-sm text-muted-foreground uppercase tracking-wider font-medium">
-                  Est. {about.founded} · Dushanbe, Tajikistan
+                  {t(i18n.about.estLabel, lang)} {about.founded} · {t(i18n.about.location, lang)}
                 </p>
               </div>
             )}
@@ -56,14 +59,14 @@ export function About() {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <p className="text-lg text-muted-foreground font-light leading-relaxed whitespace-pre-wrap">
-              {about.body}
+              {body}
             </p>
 
-            {about.mission && (
+            {mission && (
               <div className="relative pl-6 mt-8">
                 <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary" />
                 <p className="text-foreground/80 font-light text-base italic leading-relaxed">
-                  &ldquo;{about.mission}&rdquo;
+                  &ldquo;{mission}&rdquo;
                 </p>
               </div>
             )}
@@ -78,10 +81,12 @@ export function About() {
           transition={{ duration: 0.8, delay: 0.3 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border/30 rounded-2xl overflow-hidden border border-border/30"
         >
-          {STATS.map((stat) => (
-            <div key={stat.label} className="bg-card/60 px-8 py-10 text-center">
+          {i18n.about.stats.map((stat) => (
+            <div key={stat.value} className="bg-card/60 px-8 py-10 text-center">
               <p className="text-4xl md:text-5xl font-display font-bold text-primary mb-2">{stat.value}</p>
-              <p className="text-muted-foreground text-sm uppercase tracking-wider font-medium">{stat.label}</p>
+              <p className="text-muted-foreground text-sm uppercase tracking-wider font-medium">
+                {t(stat.label, lang)}
+              </p>
             </div>
           ))}
         </motion.div>

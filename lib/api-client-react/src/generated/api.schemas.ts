@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Api
  * Tasvirnigor Film & Animation Studio API
- * OpenAPI spec version: 0.1.0
+ * OpenAPI spec version: 0.2.0
  */
 export interface HealthStatus {
   status: string;
@@ -13,7 +13,15 @@ export interface Project {
   id: number;
   title: string;
   /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleTj?: string | null;
+  /** @nullable */
   description?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionTj?: string | null;
   youtubeUrl: string;
   bannerUrl: string;
   sortOrder: number;
@@ -23,7 +31,16 @@ export interface Project {
 export interface ProjectInput {
   /** @minLength 1 */
   title: string;
-  description?: string;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleTj?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionTj?: string | null;
   youtubeUrl: string;
   bannerUrl: string;
   sortOrder?: number;
@@ -33,7 +50,15 @@ export interface ProjectUpdate {
   /** @minLength 1 */
   title?: string;
   /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleTj?: string | null;
+  /** @nullable */
   description?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionTj?: string | null;
   youtubeUrl?: string;
   bannerUrl?: string;
   sortOrder?: number;
@@ -44,7 +69,15 @@ export interface TeamMember {
   name: string;
   position: string;
   /** @nullable */
+  positionRu?: string | null;
+  /** @nullable */
+  positionTj?: string | null;
+  /** @nullable */
   bio?: string | null;
+  /** @nullable */
+  bioRu?: string | null;
+  /** @nullable */
+  bioTj?: string | null;
   photoUrl: string;
   sortOrder: number;
   createdAt: string;
@@ -55,7 +88,16 @@ export interface TeamMemberInput {
   name: string;
   /** @minLength 1 */
   position: string;
-  bio?: string;
+  /** @nullable */
+  positionRu?: string | null;
+  /** @nullable */
+  positionTj?: string | null;
+  /** @nullable */
+  bio?: string | null;
+  /** @nullable */
+  bioRu?: string | null;
+  /** @nullable */
+  bioTj?: string | null;
   photoUrl: string;
   sortOrder?: number;
 }
@@ -66,7 +108,15 @@ export interface TeamMemberUpdate {
   /** @minLength 1 */
   position?: string;
   /** @nullable */
+  positionRu?: string | null;
+  /** @nullable */
+  positionTj?: string | null;
+  /** @nullable */
   bio?: string | null;
+  /** @nullable */
+  bioRu?: string | null;
+  /** @nullable */
+  bioTj?: string | null;
   photoUrl?: string;
   sortOrder?: number;
 }
@@ -74,18 +124,42 @@ export interface TeamMemberUpdate {
 export interface About {
   id: number;
   headline: string;
+  /** @nullable */
+  headlineRu?: string | null;
+  /** @nullable */
+  headlineTj?: string | null;
   body: string;
   /** @nullable */
+  bodyRu?: string | null;
+  /** @nullable */
+  bodyTj?: string | null;
+  /** @nullable */
   mission?: string | null;
+  /** @nullable */
+  missionRu?: string | null;
+  /** @nullable */
+  missionTj?: string | null;
   /** @nullable */
   founded?: string | null;
 }
 
 export interface AboutUpdate {
   headline?: string;
+  /** @nullable */
+  headlineRu?: string | null;
+  /** @nullable */
+  headlineTj?: string | null;
   body?: string;
   /** @nullable */
+  bodyRu?: string | null;
+  /** @nullable */
+  bodyTj?: string | null;
+  /** @nullable */
   mission?: string | null;
+  /** @nullable */
+  missionRu?: string | null;
+  /** @nullable */
+  missionTj?: string | null;
   /** @nullable */
   founded?: string | null;
 }

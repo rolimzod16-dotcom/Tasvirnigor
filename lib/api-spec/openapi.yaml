@@ -2,22 +2,17 @@ openapi: 3.1.0
 info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
-  version: 0.1.0
+  version: 0.2.0
   description: Tasvirnigor Film & Animation Studio API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
   - name: projects
-    description: Portfolio project operations
   - name: team
-    description: Team member operations
   - name: content
-    description: About and contacts content
   - name: admin
-    description: Admin authentication
 paths:
   /healthz:
     get:
@@ -308,8 +303,7 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
     Project:
       type: object
@@ -319,7 +313,15 @@ components:
           type: integer
         title:
           type: string
+        titleRu:
+          type: ["string", "null"]
+        titleTj:
+          type: ["string", "null"]
         description:
+          type: ["string", "null"]
+        descriptionRu:
+          type: ["string", "null"]
+        descriptionTj:
           type: ["string", "null"]
         youtubeUrl:
           type: string
@@ -337,8 +339,16 @@ components:
         title:
           type: string
           minLength: 1
+        titleRu:
+          type: ["string", "null"]
+        titleTj:
+          type: ["string", "null"]
         description:
-          type: string
+          type: ["string", "null"]
+        descriptionRu:
+          type: ["string", "null"]
+        descriptionTj:
+          type: ["string", "null"]
         youtubeUrl:
           type: string
         bannerUrl:
@@ -352,7 +362,15 @@ components:
         title:
           type: string
           minLength: 1
+        titleRu:
+          type: ["string", "null"]
+        titleTj:
+          type: ["string", "null"]
         description:
+          type: ["string", "null"]
+        descriptionRu:
+          type: ["string", "null"]
+        descriptionTj:
           type: ["string", "null"]
         youtubeUrl:
           type: string
@@ -371,7 +389,15 @@ components:
           type: string
         position:
           type: string
+        positionRu:
+          type: ["string", "null"]
+        positionTj:
+          type: ["string", "null"]
         bio:
+          type: ["string", "null"]
+        bioRu:
+          type: ["string", "null"]
+        bioTj:
           type: ["string", "null"]
         photoUrl:
           type: string
@@ -390,8 +416,16 @@ components:
         position:
           type: string
           minLength: 1
+        positionRu:
+          type: ["string", "null"]
+        positionTj:
+          type: ["string", "null"]
         bio:
-          type: string
+          type: ["string", "null"]
+        bioRu:
+          type: ["string", "null"]
+        bioTj:
+          type: ["string", "null"]
         photoUrl:
           type: string
         sortOrder:
@@ -406,7 +440,15 @@ components:
         position:
           type: string
           minLength: 1
+        positionRu:
+          type: ["string", "null"]
+        positionTj:
+          type: ["string", "null"]
         bio:
+          type: ["string", "null"]
+        bioRu:
+          type: ["string", "null"]
+        bioTj:
           type: ["string", "null"]
         photoUrl:
           type: string
@@ -421,9 +463,21 @@ components:
           type: integer
         headline:
           type: string
+        headlineRu:
+          type: ["string", "null"]
+        headlineTj:
+          type: ["string", "null"]
         body:
           type: string
+        bodyRu:
+          type: ["string", "null"]
+        bodyTj:
+          type: ["string", "null"]
         mission:
+          type: ["string", "null"]
+        missionRu:
+          type: ["string", "null"]
+        missionTj:
           type: ["string", "null"]
         founded:
           type: ["string", "null"]
@@ -433,9 +487,21 @@ components:
       properties:
         headline:
           type: string
+        headlineRu:
+          type: ["string", "null"]
+        headlineTj:
+          type: ["string", "null"]
         body:
           type: string
+        bodyRu:
+          type: ["string", "null"]
+        bodyTj:
+          type: ["string", "null"]
         mission:
+          type: ["string", "null"]
+        missionRu:
+          type: ["string", "null"]
+        missionTj:
           type: ["string", "null"]
         founded:
           type: ["string", "null"]

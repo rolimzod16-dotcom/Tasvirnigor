@@ -2,20 +2,24 @@ import { Link } from "wouter";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
-
-const NAV_LINKS = [
-  { href: "#hero", label: "Home" },
-  { href: "#about", label: "About" },
-  { href: "#services", label: "Services" },
-  { href: "#portfolio", label: "Portfolio" },
-  { href: "#team", label: "Team" },
-  { href: "#contacts", label: "Contacts" },
-];
+import { Menu, X, Lock } from "lucide-react";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useLanguage } from "@/contexts/language-context";
+import { i18n, t } from "@/lib/i18n";
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { lang } = useLanguage();
+
+  const NAV_LINKS = [
+    { href: "#hero", label: t(i18n.nav.home, lang) },
+    { href: "#about", label: t(i18n.nav.about, lang) },
+    { href: "#services", label: t(i18n.nav.services, lang) },
+    { href: "#portfolio", label: t(i18n.nav.portfolio, lang) },
+    { href: "#team", label: t(i18n.nav.team, lang) },
+    { href: "#contacts", label: t(i18n.nav.contacts, lang) },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,7 +32,6 @@ export function Navigation() {
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     setIsMobileOpen(false);
-    
     if (href.startsWith("#")) {
       const element = document.querySelector(href);
       if (element) {
@@ -47,13 +50,13 @@ export function Navigation() {
       )}
     >
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="flex items-center justify-between">
-          <Link href="/" className="font-display font-bold text-2xl tracking-tighter text-primary">
+        <div className="flex items-center justify-between gap-4">
+          <Link href="/" className="font-display font-bold text-2xl tracking-tighter text-primary shrink-0">
             TASVIRNIGOR
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.href}
@@ -64,6 +67,21 @@ export function Navigation() {
                 {link.label}
               </a>
             ))}
+          </div>
+
+          {/* Desktop right side */}
+          <div className="hidden md:flex items-center gap-3 shrink-0">
+            <LanguageSwitcher />
+            <Link href="/admin">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 border-border/60 text-muted-foreground hover:text-primary hover:border-primary/60 text-xs"
+              >
+                <Lock className="w-3 h-3" />
+                {t(i18n.nav.adminLogin, lang)}
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -90,6 +108,15 @@ export function Navigation() {
                 {link.label}
               </a>
             ))}
+            <div className="flex items-center justify-between pt-2 border-t border-border/40">
+              <LanguageSwitcher />
+              <Link href="/admin" onClick={() => setIsMobileOpen(false)}>
+                <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+                  <Lock className="w-3 h-3" />
+                  {t(i18n.nav.adminLogin, lang)}
+                </Button>
+              </Link>
+            </div>
           </div>
         )}
       </div>

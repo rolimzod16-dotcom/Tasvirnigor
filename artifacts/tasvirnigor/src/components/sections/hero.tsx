@@ -1,10 +1,14 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
+import { useLanguage } from "@/contexts/language-context";
+import { i18n, t } from "@/lib/i18n";
 
 const HERO_BG = "https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=1920&q=80";
 
 export function Hero() {
+  const { lang } = useLanguage();
+
   const handleScroll = () => {
     document.querySelector("#about")?.scrollIntoView({ behavior: "smooth" });
   };
@@ -35,7 +39,7 @@ export function Hero() {
             transition={{ duration: 1.2, delay: 0.2 }}
             className="text-primary font-medium tracking-[0.25em] uppercase text-xs md:text-sm mb-8"
           >
-            Tajikistan · Est. 2015
+            {t(i18n.hero.tagline, lang)}
           </motion.p>
           <h1 className="text-7xl md:text-9xl lg:text-[10rem] font-display font-bold tracking-tighter leading-none mb-8 text-foreground drop-shadow-2xl">
             TASVIRNIGOR
@@ -47,7 +51,7 @@ export function Hero() {
             className="w-24 h-px bg-primary mx-auto mb-8"
           />
           <p className="text-lg md:text-xl text-muted-foreground font-light max-w-2xl mx-auto mb-12 leading-relaxed">
-            A prestigious Central Asian film and animation studio. We craft cinematic narratives that transcend borders.
+            {t(i18n.hero.subtitle, lang)}
           </p>
           <Button
             size="lg"
@@ -55,7 +59,7 @@ export function Hero() {
             onClick={handleScroll}
             data-testid="button-explore"
           >
-            Explore Our World
+            {t(i18n.hero.cta, lang)}
           </Button>
         </motion.div>
       </div>
@@ -66,7 +70,7 @@ export function Hero() {
         transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
         onClick={handleScroll}
       >
-        <span className="text-xs tracking-widest uppercase opacity-50">Scroll</span>
+        <span className="text-xs tracking-widest uppercase opacity-50">{t(i18n.hero.scroll, lang)}</span>
         <ChevronDown className="w-5 h-5 opacity-40" />
       </motion.div>
     </section>

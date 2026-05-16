@@ -3,13 +3,22 @@
  * Do not edit manually.
  * Api
  * Tasvirnigor Film & Animation Studio API
- * OpenAPI spec version: 0.1.0
+ * OpenAPI spec version: 0.2.0
  */
 
 export interface ProjectInput {
   /** @minLength 1 */
   title: string;
-  description?: string;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleTj?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionTj?: string | null;
   youtubeUrl: string;
   bannerUrl: string;
   sortOrder?: number;
