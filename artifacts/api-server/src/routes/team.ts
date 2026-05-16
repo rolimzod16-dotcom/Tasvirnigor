@@ -10,6 +10,7 @@ import {
   UpdateTeamMemberResponse,
 } from "@workspace/api-zod";
 import { requireAdmin } from "../middlewares/auth";
+import { serialize } from "../lib/serialize";
 
 const router: IRouter = Router();
 
@@ -18,7 +19,7 @@ router.get("/team", async (req, res): Promise<void> => {
     .select()
     .from(teamMembersTable)
     .orderBy(asc(teamMembersTable.sortOrder), asc(teamMembersTable.createdAt));
-  res.json(ListTeamMembersResponse.parse(members));
+  res.json(ListTeamMembersResponse.parse(serialize(members)));
 });
 
 router.post("/team", requireAdmin, async (req, res): Promise<void> => {
@@ -29,7 +30,7 @@ router.post("/team", requireAdmin, async (req, res): Promise<void> => {
     return;
   }
   const [member] = await db.insert(teamMembersTable).values(parsed.data).returning();
-  res.status(201).json(UpdateTeamMemberResponse.parse(member));
+  res.status(201).json(UpdateTeamMemberResponse.parse(serialize(member)));
 });
 
 router.patch("/team/:id", requireAdmin, async (req, res): Promise<void> => {
@@ -52,7 +53,7 @@ router.patch("/team/:id", requireAdmin, async (req, res): Promise<void> => {
     res.status(404).json({ error: "Team member not found" });
     return;
   }
-  res.json(UpdateTeamMemberResponse.parse(member));
+  res.json(UpdateTeamMemberResponse.parse(serialize(member)));
 });
 
 router.delete("/team/:id", requireAdmin, async (req, res): Promise<void> => {

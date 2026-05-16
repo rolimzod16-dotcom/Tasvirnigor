@@ -10,6 +10,7 @@ import {
   UpdateProjectResponse,
 } from "@workspace/api-zod";
 import { requireAdmin } from "../middlewares/auth";
+import { serialize } from "../lib/serialize";
 
 const router: IRouter = Router();
 
@@ -18,7 +19,7 @@ router.get("/projects", async (req, res): Promise<void> => {
     .select()
     .from(projectsTable)
     .orderBy(asc(projectsTable.sortOrder), asc(projectsTable.createdAt));
-  res.json(ListProjectsResponse.parse(projects));
+  res.json(ListProjectsResponse.parse(serialize(projects)));
 });
 
 router.post("/projects", requireAdmin, async (req, res): Promise<void> => {
@@ -29,7 +30,7 @@ router.post("/projects", requireAdmin, async (req, res): Promise<void> => {
     return;
   }
   const [project] = await db.insert(projectsTable).values(parsed.data).returning();
-  res.status(201).json(UpdateProjectResponse.parse(project));
+  res.status(201).json(UpdateProjectResponse.parse(serialize(project)));
 });
 
 router.patch("/projects/:id", requireAdmin, async (req, res): Promise<void> => {
@@ -52,7 +53,7 @@ router.patch("/projects/:id", requireAdmin, async (req, res): Promise<void> => {
     res.status(404).json({ error: "Project not found" });
     return;
   }
-  res.json(UpdateProjectResponse.parse(project));
+  res.json(UpdateProjectResponse.parse(serialize(project)));
 });
 
 router.delete("/projects/:id", requireAdmin, async (req, res): Promise<void> => {

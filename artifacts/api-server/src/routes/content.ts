@@ -10,6 +10,7 @@ import {
   GetContactsResponse,
 } from "@workspace/api-zod";
 import { requireAdmin } from "../middlewares/auth";
+import { serialize } from "../lib/serialize";
 
 const router: IRouter = Router();
 
@@ -22,10 +23,10 @@ router.get("/about", async (req, res): Promise<void> => {
       mission: "To tell authentic Central Asian stories through the art of cinema and animation.",
       founded: "2015",
     }).returning();
-    res.json(GetAboutResponse.parse(created));
+    res.json(GetAboutResponse.parse(serialize(created)));
     return;
   }
-  res.json(GetAboutResponse.parse(about));
+  res.json(GetAboutResponse.parse(serialize(about)));
 });
 
 router.patch("/about", requireAdmin, async (req, res): Promise<void> => {
@@ -42,7 +43,7 @@ router.patch("/about", requireAdmin, async (req, res): Promise<void> => {
       mission: parsed.data.mission ?? null,
       founded: parsed.data.founded ?? null,
     }).returning();
-    res.json(UpdateAboutResponse.parse(created));
+    res.json(UpdateAboutResponse.parse(serialize(created)));
     return;
   }
   const [updated] = await db
@@ -50,7 +51,7 @@ router.patch("/about", requireAdmin, async (req, res): Promise<void> => {
     .set(parsed.data)
     .where(sql`${aboutTable.id} = ${existing.id}`)
     .returning();
-  res.json(UpdateAboutResponse.parse(updated ?? existing));
+  res.json(UpdateAboutResponse.parse(serialize(updated ?? existing)));
 });
 
 router.get("/contacts", async (req, res): Promise<void> => {
@@ -65,10 +66,10 @@ router.get("/contacts", async (req, res): Promise<void> => {
       youtube: null,
       facebook: null,
     }).returning();
-    res.json(GetContactsResponse.parse(created));
+    res.json(GetContactsResponse.parse(serialize(created)));
     return;
   }
-  res.json(GetContactsResponse.parse(contacts));
+  res.json(GetContactsResponse.parse(serialize(contacts)));
 });
 
 router.patch("/contacts", requireAdmin, async (req, res): Promise<void> => {
@@ -82,7 +83,7 @@ router.patch("/contacts", requireAdmin, async (req, res): Promise<void> => {
     const values: Record<string, unknown> = { ...parsed.data };
     if (!values.email) values.email = "info@tasvirnigor.tj";
     const [created] = await db.insert(contactsTable).values(values as any).returning();
-    res.json(UpdateContactsResponse.parse(created));
+    res.json(UpdateContactsResponse.parse(serialize(created)));
     return;
   }
   const [updated] = await db
@@ -90,7 +91,7 @@ router.patch("/contacts", requireAdmin, async (req, res): Promise<void> => {
     .set(parsed.data)
     .where(sql`${contactsTable.id} = ${existing.id}`)
     .returning();
-  res.json(UpdateContactsResponse.parse(updated ?? existing));
+  res.json(UpdateContactsResponse.parse(serialize(updated ?? existing)));
 });
 
 export default router;
