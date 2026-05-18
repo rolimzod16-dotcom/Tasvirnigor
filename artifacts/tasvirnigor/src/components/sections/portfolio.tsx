@@ -4,6 +4,7 @@ import { Play, ExternalLink } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
 import { i18n, t } from "@/lib/i18n";
 import { localize } from "@/lib/localize";
+import { ensureProtocol } from "@/lib/utils";
 
 const container = {
   hidden: { opacity: 0 },
@@ -74,7 +75,7 @@ export function Portfolio() {
           {featured && (
             <motion.a
               variants={item}
-              href={featured.youtubeUrl}
+              href={ensureProtocol(featured.youtubeUrl) ?? "#"}
               target="_blank"
               rel="noopener noreferrer"
               data-testid={`card-project-${featured.id}`}
@@ -122,7 +123,7 @@ export function Portfolio() {
                 <motion.a
                   key={project.id}
                   variants={item}
-                  href={project.youtubeUrl}
+                  href={ensureProtocol(project.youtubeUrl) ?? "#"}
                   target="_blank"
                   rel="noopener noreferrer"
                   data-testid={`card-project-${project.id}`}

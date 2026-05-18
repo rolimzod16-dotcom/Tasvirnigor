@@ -72,15 +72,25 @@ router.get("/contacts", async (req, res): Promise<void> => {
   res.json(GetContactsResponse.parse(serialize(contacts)));
 });
 
+/** Coerce empty strings to null so the DB never stores blank social links. */
+function nullifyEmpty<T extends Record<string, unknown>>(obj: T): T {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(obj)) {
+    result[key] = typeof value === "string" && value.trim() === "" ? null : value;
+  }
+  return result as T;
+}
+
 router.patch("/contacts", requireAdmin, async (req, res): Promise<void> => {
   const parsed = UpdateContactsBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
+  const clean = nullifyEmpty(parsed.data as Record<string, unknown>);
   const [existing] = await db.select().from(contactsTable).limit(1);
   if (!existing) {
-    const values: Record<string, unknown> = { ...parsed.data };
+    const values: Record<string, unknown> = { ...clean };
     if (!values.email) values.email = "info@tasvirnigor.tj";
     const [created] = await db.insert(contactsTable).values(values as any).returning();
     res.json(UpdateContactsResponse.parse(serialize(created)));
@@ -88,7 +98,7 @@ router.patch("/contacts", requireAdmin, async (req, res): Promise<void> => {
   }
   const [updated] = await db
     .update(contactsTable)
-    .set(parsed.data)
+    .set(clean as any)
     .where(sql`${contactsTable.id} = ${existing.id}`)
     .returning();
   res.json(UpdateContactsResponse.parse(serialize(updated ?? existing)));

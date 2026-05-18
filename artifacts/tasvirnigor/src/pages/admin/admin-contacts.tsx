@@ -69,7 +69,18 @@ export function AdminContacts() {
   }, [contacts, form]);
 
   const onSubmit = (values: ContactsFormValues) => {
-    updateMutation.mutate({ data: values }, {
+    // Convert empty strings to null so the DB stores proper nulls
+    // instead of empty strings, which avoids ambiguous falsy behaviour.
+    const data = {
+      email: values.email || null,
+      phone: values.phone || null,
+      address: values.address || null,
+      telegram: values.telegram || null,
+      instagram: values.instagram || null,
+      youtube: values.youtube || null,
+      facebook: values.facebook || null,
+    };
+    updateMutation.mutate({ data }, {
       onSuccess: (data) => {
         queryClient.setQueryData(getGetContactsQueryKey(), data);
         toast({ title: t(i18n.form.contactsUpdated, lang) });
@@ -118,28 +129,28 @@ export function AdminContacts() {
                 <FormField control={form.control} name="telegram" render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t(i18n.form.telegramUrl, lang)}</FormLabel>
-                    <FormControl><Input {...field} /></FormControl>
+                    <FormControl><Input placeholder="https://t.me/yourchannel" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="instagram" render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t(i18n.form.instagramUrl, lang)}</FormLabel>
-                    <FormControl><Input {...field} /></FormControl>
+                    <FormControl><Input placeholder="https://instagram.com/yourprofile" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="youtube" render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t(i18n.form.youtubeUrlLabel, lang)}</FormLabel>
-                    <FormControl><Input {...field} /></FormControl>
+                    <FormControl><Input placeholder="https://youtube.com/@yourchannel" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="facebook" render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t(i18n.form.facebookUrl, lang)}</FormLabel>
-                    <FormControl><Input {...field} /></FormControl>
+                    <FormControl><Input placeholder="https://facebook.com/yourpage" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />

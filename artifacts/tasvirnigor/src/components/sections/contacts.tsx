@@ -4,6 +4,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/language-context";
 import { i18n, t } from "@/lib/i18n";
+import { ensureProtocol } from "@/lib/utils";
 
 export function Contacts() {
   const { data: contacts, isLoading } = useGetContacts();
@@ -35,23 +36,23 @@ export function Contacts() {
             </p>
 
             <div className="flex gap-4">
-              {contacts.telegram && (
-                <a href={contacts.telegram} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:border-primary hover:text-primary transition-colors">
+              {ensureProtocol(contacts.telegram) && (
+                <a href={ensureProtocol(contacts.telegram)!} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:border-primary hover:text-primary transition-colors">
                   <SiTelegram className="w-5 h-5" />
                 </a>
               )}
-              {contacts.instagram && (
-                <a href={contacts.instagram} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:border-primary hover:text-primary transition-colors">
+              {ensureProtocol(contacts.instagram) && (
+                <a href={ensureProtocol(contacts.instagram)!} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:border-primary hover:text-primary transition-colors">
                   <SiInstagram className="w-5 h-5" />
                 </a>
               )}
-              {contacts.youtube && (
-                <a href={contacts.youtube} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:border-primary hover:text-primary transition-colors">
+              {ensureProtocol(contacts.youtube) && (
+                <a href={ensureProtocol(contacts.youtube)!} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:border-primary hover:text-primary transition-colors">
                   <SiYoutube className="w-5 h-5" />
                 </a>
               )}
-              {contacts.facebook && (
-                <a href={contacts.facebook} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:border-primary hover:text-primary transition-colors">
+              {ensureProtocol(contacts.facebook) && (
+                <a href={ensureProtocol(contacts.facebook)!} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:border-primary hover:text-primary transition-colors">
                   <SiFacebook className="w-5 h-5" />
                 </a>
               )}
