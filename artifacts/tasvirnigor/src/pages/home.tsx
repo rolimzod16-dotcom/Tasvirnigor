@@ -1,5 +1,4 @@
 import { Link } from "wouter";
-import { Lock } from "lucide-react";
 import { Navigation } from "@/components/navigation";
 import { Hero } from "@/components/sections/hero";
 import { About } from "@/components/sections/about";
@@ -14,7 +13,7 @@ export default function Home() {
   const { lang } = useLanguage();
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground">
+    <div className="min-h-screen bg-white text-foreground">
       <Navigation />
       <main>
         <Hero />
@@ -24,18 +23,31 @@ export default function Home() {
         <Team />
         <Contacts />
       </main>
-      <footer className="py-8 bg-card border-t border-border/50">
-        <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-muted-foreground text-sm font-light">
-            © {new Date().getFullYear()} Tasvirnigor Film &amp; Animation Studio. {t(i18n.footer.rights, lang)}
-          </p>
-          <Link
-            href="/admin"
-            className="flex items-center gap-1.5 text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
-          >
-            <Lock className="w-3 h-3" />
-            {t(i18n.footer.adminLogin, lang)}
-          </Link>
+
+      <footer className="bg-[#0f0f0f] text-white">
+        <div className="max-w-7xl mx-auto px-5 lg:px-10 py-14">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+            <div>
+              <p className="font-display font-extrabold text-xl tracking-tight text-white mb-2">
+                TASVIRNIGOR<span className="text-primary">.</span>
+              </p>
+              <p className="text-white/40 text-sm font-light">
+                Film &amp; Animation Studio — Dushanbe, Tajikistan
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-10">
+              <p className="text-white/35 text-sm">
+                © {new Date().getFullYear()} Tasvirnigor. {t(i18n.footer.rights, lang)}
+              </p>
+              <Link
+                href="/admin"
+                className="text-white/30 hover:text-white/60 text-xs transition-colors tracking-wide font-medium uppercase"
+              >
+                {t(i18n.footer.adminLogin, lang)}
+              </Link>
+            </div>
+          </div>
         </div>
       </footer>
     </div>

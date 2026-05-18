@@ -14,94 +14,123 @@ export function Contacts() {
   if (!contacts) return null;
 
   return (
-    <section id="contacts" className="py-32 bg-background border-t border-border/50 relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-primary/5 via-background to-background" />
-
-      <div className="container mx-auto px-4 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+    <section id="contacts" className="py-24 md:py-32 bg-white border-t border-[#ebebeb]">
+      <div className="max-w-7xl mx-auto px-5 lg:px-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.75 }}
+            className="lg:col-span-5"
           >
-            <h2 className="text-primary font-medium tracking-widest uppercase text-sm mb-4">
-              {t(i18n.contacts.label, lang)}
-            </h2>
-            <h3 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-foreground mb-8">
+            <p className="section-label">{t(i18n.contacts.label, lang)}</p>
+            <h2 className="section-heading text-[#141414] mb-6">
               {t(i18n.contacts.heading, lang)}
-            </h3>
-            <p className="text-muted-foreground font-light text-lg mb-12 max-w-md">
+            </h2>
+            <p className="text-[#666] font-light text-base leading-relaxed mb-10 max-w-sm">
               {t(i18n.contacts.subtext, lang)}
             </p>
 
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-3">
               {ensureProtocol(contacts.telegram) && (
-                <a href={ensureProtocol(contacts.telegram)!} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:border-primary hover:text-primary transition-colors">
-                  <SiTelegram className="w-5 h-5" />
+                <a
+                  href={ensureProtocol(contacts.telegram)!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-11 h-11 rounded-full border border-[#e0e0e0] flex items-center justify-center text-[#555] hover:border-primary hover:text-primary hover:bg-[#fdf5e4] transition-all duration-200"
+                >
+                  <SiTelegram className="w-4.5 h-4.5" />
                 </a>
               )}
               {ensureProtocol(contacts.instagram) && (
-                <a href={ensureProtocol(contacts.instagram)!} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:border-primary hover:text-primary transition-colors">
-                  <SiInstagram className="w-5 h-5" />
+                <a
+                  href={ensureProtocol(contacts.instagram)!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-11 h-11 rounded-full border border-[#e0e0e0] flex items-center justify-center text-[#555] hover:border-primary hover:text-primary hover:bg-[#fdf5e4] transition-all duration-200"
+                >
+                  <SiInstagram className="w-4.5 h-4.5" />
                 </a>
               )}
               {ensureProtocol(contacts.youtube) && (
-                <a href={ensureProtocol(contacts.youtube)!} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:border-primary hover:text-primary transition-colors">
-                  <SiYoutube className="w-5 h-5" />
+                <a
+                  href={ensureProtocol(contacts.youtube)!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-11 h-11 rounded-full border border-[#e0e0e0] flex items-center justify-center text-[#555] hover:border-primary hover:text-primary hover:bg-[#fdf5e4] transition-all duration-200"
+                >
+                  <SiYoutube className="w-4.5 h-4.5" />
                 </a>
               )}
               {ensureProtocol(contacts.facebook) && (
-                <a href={ensureProtocol(contacts.facebook)!} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:border-primary hover:text-primary transition-colors">
-                  <SiFacebook className="w-5 h-5" />
+                <a
+                  href={ensureProtocol(contacts.facebook)!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-11 h-11 rounded-full border border-[#e0e0e0] flex items-center justify-center text-[#555] hover:border-primary hover:text-primary hover:bg-[#fdf5e4] transition-all duration-200"
+                >
+                  <SiFacebook className="w-4.5 h-4.5" />
                 </a>
               )}
             </div>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="flex flex-col justify-center space-y-8"
+            transition={{ duration: 0.75, delay: 0.15 }}
+            className="lg:col-span-7 flex flex-col justify-center space-y-6"
           >
             {contacts.email && (
-              <div className="flex items-start gap-4 group">
-                <div className="w-12 h-12 bg-card border border-border/50 rounded-lg flex items-center justify-center group-hover:border-primary transition-colors shrink-0">
-                  <Mail className="w-5 h-5 text-primary" />
+              <a
+                href={`mailto:${contacts.email}`}
+                className="group flex items-center gap-5 p-5 rounded-2xl border border-[#ebebeb] hover:border-primary/30 hover:bg-[#fdf9f2] hover:shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)] transition-all duration-300"
+              >
+                <div className="w-11 h-11 bg-[#fdf5e4] rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 shrink-0">
+                  <Mail className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-lg mb-1">{t(i18n.contacts.email, lang)}</h4>
-                  <a href={`mailto:${contacts.email}`} className="text-muted-foreground hover:text-foreground transition-colors">
+                  <p className="text-[#888] text-xs font-semibold uppercase tracking-wider mb-0.5">
+                    {t(i18n.contacts.email, lang)}
+                  </p>
+                  <p className="font-semibold text-[#141414] group-hover:text-primary transition-colors text-base">
                     {contacts.email}
-                  </a>
+                  </p>
                 </div>
-              </div>
+              </a>
             )}
 
             {contacts.phone && (
-              <div className="flex items-start gap-4 group">
-                <div className="w-12 h-12 bg-card border border-border/50 rounded-lg flex items-center justify-center group-hover:border-primary transition-colors shrink-0">
-                  <Phone className="w-5 h-5 text-primary" />
+              <a
+                href={`tel:${contacts.phone}`}
+                className="group flex items-center gap-5 p-5 rounded-2xl border border-[#ebebeb] hover:border-primary/30 hover:bg-[#fdf9f2] hover:shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)] transition-all duration-300"
+              >
+                <div className="w-11 h-11 bg-[#fdf5e4] rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 shrink-0">
+                  <Phone className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-lg mb-1">{t(i18n.contacts.phone, lang)}</h4>
-                  <a href={`tel:${contacts.phone}`} className="text-muted-foreground hover:text-foreground transition-colors">
+                  <p className="text-[#888] text-xs font-semibold uppercase tracking-wider mb-0.5">
+                    {t(i18n.contacts.phone, lang)}
+                  </p>
+                  <p className="font-semibold text-[#141414] group-hover:text-primary transition-colors text-base">
                     {contacts.phone}
-                  </a>
+                  </p>
                 </div>
-              </div>
+              </a>
             )}
 
             {contacts.address && (
-              <div className="flex items-start gap-4 group">
-                <div className="w-12 h-12 bg-card border border-border/50 rounded-lg flex items-center justify-center group-hover:border-primary transition-colors shrink-0">
-                  <MapPin className="w-5 h-5 text-primary" />
+              <div className="group flex items-start gap-5 p-5 rounded-2xl border border-[#ebebeb] hover:border-primary/30 hover:bg-[#fdf9f2] transition-all duration-300">
+                <div className="w-11 h-11 bg-[#fdf5e4] rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 shrink-0 mt-0.5">
+                  <MapPin className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-lg mb-1">{t(i18n.contacts.studio, lang)}</h4>
-                  <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                  <p className="text-[#888] text-xs font-semibold uppercase tracking-wider mb-0.5">
+                    {t(i18n.contacts.studio, lang)}
+                  </p>
+                  <p className="font-semibold text-[#141414] text-base whitespace-pre-wrap leading-snug">
                     {contacts.address}
                   </p>
                 </div>

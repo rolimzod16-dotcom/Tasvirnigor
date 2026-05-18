@@ -49,7 +49,9 @@ A professional one-page website with full CMS admin panel for Tasvirnigor film a
 
 ## User preferences
 
-- Dark cinematic design with amber/gold accent (#D4A017 range)
+- Clean white/light layout with premium amber/gold accent (#C4910A range, hsl 38 82% 42%)
+- Dark cinematic hero section and dark footer for contrast
+- AnimationSchool.ru-inspired structure: bold typography, generous spacing, clean cards
 - No emojis in the UI
 - Supabase Storage for file uploads (not object storage or local disk)
 

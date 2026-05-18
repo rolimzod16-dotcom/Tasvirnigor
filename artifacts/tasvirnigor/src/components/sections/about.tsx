@@ -10,8 +10,12 @@ export function About() {
 
   if (isLoading) {
     return (
-      <section id="about" className="py-32 bg-background min-h-[50vh] flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      <section id="about" className="py-28 bg-white">
+        <div className="max-w-7xl mx-auto px-5 lg:px-10">
+          <div className="h-64 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          </div>
+        </div>
       </section>
     );
   }
@@ -23,28 +27,24 @@ export function About() {
   const mission = localize(about as unknown as Record<string, unknown>, "mission", lang);
 
   return (
-    <section id="about" className="py-32 bg-background relative border-t border-border/30">
-      <div className="container mx-auto px-4 lg:px-8">
-
-        {/* Main content */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start mb-24">
+    <section id="about" className="py-24 md:py-32 bg-white">
+      <div className="max-w-7xl mx-auto px-5 lg:px-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start mb-20">
           <motion.div
             className="lg:col-span-5"
-            initial={{ opacity: 0, x: -30 }}
+            initial={{ opacity: 0, x: -24 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.75 }}
           >
-            <p className="text-primary font-medium tracking-widest uppercase text-sm mb-4">
-              {t(i18n.about.label, lang)}
-            </p>
-            <h3 className="text-4xl md:text-5xl font-display font-bold tracking-tight leading-tight text-foreground">
+            <p className="section-label">{t(i18n.about.label, lang)}</p>
+            <h2 className="section-heading text-[#141414] mb-6">
               {headline}
-            </h3>
+            </h2>
             {about.founded && (
-              <div className="mt-8 flex items-center gap-3">
-                <div className="w-8 h-px bg-primary" />
-                <p className="text-sm text-muted-foreground uppercase tracking-wider font-medium">
+              <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#f5f3ef] border border-[#e8e4dc] mt-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <p className="text-sm text-[#666] font-medium">
                   {t(i18n.about.estLabel, lang)} {about.founded} · {t(i18n.about.location, lang)}
                 </p>
               </div>
@@ -52,20 +52,19 @@ export function About() {
           </motion.div>
 
           <motion.div
-            className="lg:col-span-7 space-y-8"
-            initial={{ opacity: 0, x: 30 }}
+            className="lg:col-span-7 space-y-6"
+            initial={{ opacity: 0, x: 24 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.75, delay: 0.15 }}
           >
-            <p className="text-lg text-muted-foreground font-light leading-relaxed whitespace-pre-wrap">
+            <p className="text-[#555] text-base md:text-lg font-light leading-relaxed whitespace-pre-wrap">
               {body}
             </p>
 
             {mission && (
-              <div className="relative pl-6 mt-8">
-                <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary" />
-                <p className="text-foreground/80 font-light text-base italic leading-relaxed">
+              <div className="relative pl-5 border-l-2 border-primary mt-6">
+                <p className="text-[#333] font-medium text-base italic leading-relaxed">
                   &ldquo;{mission}&rdquo;
                 </p>
               </div>
@@ -73,18 +72,22 @@ export function About() {
           </motion.div>
         </div>
 
-        {/* Stats row */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border/30 rounded-2xl overflow-hidden border border-border/30"
+          transition={{ duration: 0.7, delay: 0.2 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4"
         >
           {i18n.about.stats.map((stat) => (
-            <div key={stat.value} className="bg-card/60 px-8 py-10 text-center">
-              <p className="text-4xl md:text-5xl font-display font-bold text-primary mb-2">{stat.value}</p>
-              <p className="text-muted-foreground text-sm uppercase tracking-wider font-medium">
+            <div
+              key={stat.value}
+              className="bg-[#f8f7f5] border border-[#ebebeb] rounded-2xl px-6 py-8 text-center hover:border-primary/30 hover:bg-[#fdf9f2] transition-all duration-300"
+            >
+              <p className="text-4xl md:text-5xl font-display font-extrabold text-primary mb-2 leading-none">
+                {stat.value}
+              </p>
+              <p className="text-[#888] text-xs uppercase tracking-wider font-semibold mt-1">
                 {t(stat.label, lang)}
               </p>
             </div>

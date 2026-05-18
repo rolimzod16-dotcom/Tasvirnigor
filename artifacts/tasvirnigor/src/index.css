@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
@@ -45,37 +45,37 @@
 }
 
 :root {
-  --background: 0 0% 4%; /* #0a0a0a */
-  --foreground: 0 0% 98%;
+  --background: 0 0% 99%;
+  --foreground: 0 0% 8%;
 
-  --border: 0 0% 15%;
-  --input: 0 0% 15%;
-  --ring: 43 74% 49%; /* Amber/Gold */
+  --border: 0 0% 88%;
+  --input: 0 0% 88%;
+  --ring: 38 82% 42%;
 
-  --card: 0 0% 6%;
-  --card-foreground: 0 0% 98%;
-  --card-border: 0 0% 12%;
+  --card: 0 0% 97%;
+  --card-foreground: 0 0% 8%;
+  --card-border: 0 0% 88%;
 
-  --popover: 0 0% 6%;
-  --popover-foreground: 0 0% 98%;
-  --popover-border: 0 0% 12%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 8%;
+  --popover-border: 0 0% 88%;
 
-  --primary: 43 74% 49%;
-  --primary-foreground: 0 0% 4%;
+  --primary: 38 82% 42%;
+  --primary-foreground: 0 0% 100%;
 
-  --secondary: 0 0% 12%;
-  --secondary-foreground: 0 0% 98%;
+  --secondary: 0 0% 93%;
+  --secondary-foreground: 0 0% 8%;
 
-  --muted: 0 0% 15%;
-  --muted-foreground: 0 0% 60%;
+  --muted: 0 0% 93%;
+  --muted-foreground: 0 0% 42%;
 
-  --accent: 43 74% 49%;
-  --accent-foreground: 0 0% 4%;
+  --accent: 38 82% 42%;
+  --accent-foreground: 0 0% 100%;
 
-  --destructive: 0 62% 30%;
-  --destructive-foreground: 0 0% 98%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
 
-  --radius: 0.25rem;
+  --radius: 0.625rem;
 }
 
 .dark {
@@ -84,7 +84,7 @@
 
   --border: 0 0% 15%;
   --input: 0 0% 15%;
-  --ring: 43 74% 49%;
+  --ring: 38 82% 42%;
 
   --card: 0 0% 6%;
   --card-foreground: 0 0% 98%;
@@ -94,8 +94,8 @@
   --popover-foreground: 0 0% 98%;
   --popover-border: 0 0% 12%;
 
-  --primary: 43 74% 49%;
-  --primary-foreground: 0 0% 4%;
+  --primary: 38 82% 42%;
+  --primary-foreground: 0 0% 100%;
 
   --secondary: 0 0% 12%;
   --secondary-foreground: 0 0% 98%;
@@ -103,8 +103,8 @@
   --muted: 0 0% 15%;
   --muted-foreground: 0 0% 60%;
 
-  --accent: 43 74% 49%;
-  --accent-foreground: 0 0% 4%;
+  --accent: 38 82% 42%;
+  --accent-foreground: 0 0% 100%;
 
   --destructive: 0 62% 30%;
   --destructive-foreground: 0 0% 98%;
@@ -119,5 +119,14 @@
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-display tracking-tight;
+  }
+}
+
+@layer utilities {
+  .section-label {
+    @apply text-primary font-semibold tracking-[0.18em] uppercase text-xs mb-3;
+  }
+  .section-heading {
+    @apply text-3xl md:text-4xl lg:text-5xl font-display font-bold tracking-tight text-foreground;
   }
 }

@@ -1,8 +1,7 @@
 import { Link } from "wouter";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Menu, X, Lock } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useLanguage } from "@/contexts/language-context";
 import { i18n, t } from "@/lib/i18n";
@@ -13,7 +12,6 @@ export function Navigation() {
   const { lang } = useLanguage();
 
   const NAV_LINKS = [
-    { href: "#hero", label: t(i18n.nav.home, lang) },
     { href: "#about", label: t(i18n.nav.about, lang) },
     { href: "#services", label: t(i18n.nav.services, lang) },
     { href: "#portfolio", label: t(i18n.nav.portfolio, lang) },
@@ -22,10 +20,8 @@ export function Navigation() {
   ];
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
+    const handleScroll = () => setIsScrolled(window.scrollY > 60);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -33,88 +29,94 @@ export function Navigation() {
     e.preventDefault();
     setIsMobileOpen(false);
     if (href.startsWith("#")) {
-      const element = document.querySelector(href);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-      }
+      document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
     }
   };
 
   return (
     <nav
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-400 ease-in-out",
         isScrolled
-          ? "bg-background/90 backdrop-blur-md border-b border-border/50 py-4"
-          : "bg-transparent py-6"
+          ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-[#ececec] py-3"
+          : "bg-transparent py-5"
       )}
     >
-      <div className="container mx-auto px-4 lg:px-8">
+      <div className="max-w-7xl mx-auto px-5 lg:px-10">
         <div className="flex items-center justify-between gap-4">
-          <Link href="/" className="font-display font-bold text-2xl tracking-tighter text-primary shrink-0">
+          <Link
+            href="/"
+            className={cn(
+              "font-display font-extrabold text-xl tracking-tight shrink-0 transition-colors duration-300",
+              isScrolled ? "text-[#141414]" : "text-white"
+            )}
+          >
             TASVIRNIGOR
+            <span className="text-primary">.</span>
           </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-7">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleScrollTo(e, link.href)}
-                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors tracking-wide"
+                className={cn(
+                  "text-sm font-medium transition-colors duration-200 hover:text-primary",
+                  isScrolled ? "text-[#444]" : "text-white/85"
+                )}
               >
                 {link.label}
               </a>
             ))}
           </div>
 
-          {/* Desktop right side */}
           <div className="hidden md:flex items-center gap-3 shrink-0">
             <LanguageSwitcher />
             <Link href="/admin">
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5 border-border/60 text-muted-foreground hover:text-primary hover:border-primary/60 text-xs"
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold border transition-all duration-200 cursor-pointer",
+                  isScrolled
+                    ? "border-primary text-primary hover:bg-primary hover:text-white"
+                    : "border-white/50 text-white/80 hover:border-white hover:text-white"
+                )}
               >
-                <Lock className="w-3 h-3" />
                 {t(i18n.nav.adminLogin, lang)}
-              </Button>
+              </span>
             </Link>
           </div>
 
-          {/* Mobile Menu Toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden text-primary hover:bg-primary/20"
+          <button
+            className={cn(
+              "md:hidden p-2 rounded-lg transition-colors",
+              isScrolled ? "text-[#141414] hover:bg-gray-100" : "text-white hover:bg-white/10"
+            )}
             onClick={() => setIsMobileOpen(!isMobileOpen)}
+            aria-label="Toggle menu"
           >
-            {isMobileOpen ? <X /> : <Menu />}
-          </Button>
+            {isMobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
 
-        {/* Mobile Nav */}
         {isMobileOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-background border-b border-border/50 py-4 px-4 flex flex-col gap-4 shadow-xl">
+          <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-[#ececec] shadow-lg py-5 px-5 flex flex-col gap-1">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleScrollTo(e, link.href)}
-                className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
+                className="text-base font-medium text-[#333] hover:text-primary transition-colors py-2.5 border-b border-[#f0f0f0] last:border-0"
               >
                 {link.label}
               </a>
             ))}
-            <div className="flex items-center justify-between pt-2 border-t border-border/40">
+            <div className="flex items-center justify-between pt-4 mt-1">
               <LanguageSwitcher />
               <Link href="/admin" onClick={() => setIsMobileOpen(false)}>
-                <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-                  <Lock className="w-3 h-3" />
+                <span className="inline-flex items-center px-4 py-2 rounded-full text-xs font-semibold border border-primary text-primary hover:bg-primary hover:text-white transition-all cursor-pointer">
                   {t(i18n.nav.adminLogin, lang)}
-                </Button>
+                </span>
               </Link>
             </div>
           </div>
