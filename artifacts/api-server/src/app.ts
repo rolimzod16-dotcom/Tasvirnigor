@@ -7,6 +7,10 @@ import { logger } from "./lib/logger";
 
 const app: Express = express();
 
+// Trust the reverse proxy (Replit's shared proxy / custom domain CDN) so that
+// req.secure, req.ip, and Set-Cookie Secure flag all behave correctly over HTTPS.
+app.set("trust proxy", 1);
+
 app.use(
   pinoHttp({
     logger,
@@ -44,6 +48,7 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     },
   })
