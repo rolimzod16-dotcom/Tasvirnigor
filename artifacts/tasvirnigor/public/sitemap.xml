@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Home page — all three languages via hash anchors are part of the SPA -->
+  <url>
+    <loc>https://89239f2a-d2ea-46b2-905a-b0b5e4b6793e-00-3seymtus5xiyu.sisko.replit.dev/</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://89239f2a-d2ea-46b2-905a-b0b5e4b6793e-00-3seymtus5xiyu.sisko.replit.dev/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://89239f2a-d2ea-46b2-905a-b0b5e4b6793e-00-3seymtus5xiyu.sisko.replit.dev/" />
+    <xhtml:link rel="alternate" hreflang="tg" href="https://89239f2a-d2ea-46b2-905a-b0b5e4b6793e-00-3seymtus5xiyu.sisko.replit.dev/" />
+  </url>
+
+</urlset>
