@@ -709,7 +709,7 @@ components:
 
     Service:
       type: object
-      required: [id, title, mediaUrl, mediaType, sortOrder, createdAt]
+      required: [id, title, mediaUrl, mediaType, isActive, sortOrder, createdAt]
       properties:
         id:
           type: integer
@@ -718,6 +718,12 @@ components:
         titleRu:
           type: ["string", "null"]
         titleTj:
+          type: ["string", "null"]
+        subtitle:
+          type: ["string", "null"]
+        subtitleRu:
+          type: ["string", "null"]
+        subtitleTj:
           type: ["string", "null"]
         description:
           type: ["string", "null"]
@@ -737,6 +743,8 @@ components:
           type: ["string", "null"]
         linkLabelTj:
           type: ["string", "null"]
+        isActive:
+          type: boolean
         sortOrder:
           type: integer
         createdAt:
@@ -753,6 +761,12 @@ components:
           type: ["string", "null"]
         titleTj:
           type: ["string", "null"]
+        subtitle:
+          type: ["string", "null"]
+        subtitleRu:
+          type: ["string", "null"]
+        subtitleTj:
+          type: ["string", "null"]
         description:
           type: ["string", "null"]
         descriptionRu:
@@ -771,6 +785,8 @@ components:
           type: ["string", "null"]
         linkLabelTj:
           type: ["string", "null"]
+        isActive:
+          type: boolean
         sortOrder:
           type: integer
 
@@ -784,6 +800,12 @@ components:
           type: ["string", "null"]
         titleTj:
           type: ["string", "null"]
+        subtitle:
+          type: ["string", "null"]
+        subtitleRu:
+          type: ["string", "null"]
+        subtitleTj:
+          type: ["string", "null"]
         description:
           type: ["string", "null"]
         descriptionRu:
@@ -802,6 +824,8 @@ components:
           type: ["string", "null"]
         linkLabelTj:
           type: ["string", "null"]
+        isActive:
+          type: boolean
         sortOrder:
           type: integer
 

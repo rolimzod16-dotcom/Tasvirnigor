@@ -281,6 +281,9 @@ export const ListServicesResponseItem = zod.object({
   "title": zod.string(),
   "titleRu": zod.string().nullish(),
   "titleTj": zod.string().nullish(),
+  "subtitle": zod.string().nullish(),
+  "subtitleRu": zod.string().nullish(),
+  "subtitleTj": zod.string().nullish(),
   "description": zod.string().nullish(),
   "descriptionRu": zod.string().nullish(),
   "descriptionTj": zod.string().nullish(),
@@ -290,6 +293,7 @@ export const ListServicesResponseItem = zod.object({
   "linkLabel": zod.string().nullish(),
   "linkLabelRu": zod.string().nullish(),
   "linkLabelTj": zod.string().nullish(),
+  "isActive": zod.boolean(),
   "sortOrder": zod.number(),
   "createdAt": zod.string()
 })
@@ -306,6 +310,9 @@ export const CreateServiceBody = zod.object({
   "title": zod.string().min(1),
   "titleRu": zod.string().nullish(),
   "titleTj": zod.string().nullish(),
+  "subtitle": zod.string().nullish(),
+  "subtitleRu": zod.string().nullish(),
+  "subtitleTj": zod.string().nullish(),
   "description": zod.string().nullish(),
   "descriptionRu": zod.string().nullish(),
   "descriptionTj": zod.string().nullish(),
@@ -315,6 +322,7 @@ export const CreateServiceBody = zod.object({
   "linkLabel": zod.string().nullish(),
   "linkLabelRu": zod.string().nullish(),
   "linkLabelTj": zod.string().nullish(),
+  "isActive": zod.boolean().optional(),
   "sortOrder": zod.number().optional()
 })
 
@@ -333,6 +341,9 @@ export const UpdateServiceBody = zod.object({
   "title": zod.string().min(1).optional(),
   "titleRu": zod.string().nullish(),
   "titleTj": zod.string().nullish(),
+  "subtitle": zod.string().nullish(),
+  "subtitleRu": zod.string().nullish(),
+  "subtitleTj": zod.string().nullish(),
   "description": zod.string().nullish(),
   "descriptionRu": zod.string().nullish(),
   "descriptionTj": zod.string().nullish(),
@@ -342,6 +353,7 @@ export const UpdateServiceBody = zod.object({
   "linkLabel": zod.string().nullish(),
   "linkLabelRu": zod.string().nullish(),
   "linkLabelTj": zod.string().nullish(),
+  "isActive": zod.boolean().optional(),
   "sortOrder": zod.number().optional()
 })
 
@@ -350,6 +362,9 @@ export const UpdateServiceResponse = zod.object({
   "title": zod.string(),
   "titleRu": zod.string().nullish(),
   "titleTj": zod.string().nullish(),
+  "subtitle": zod.string().nullish(),
+  "subtitleRu": zod.string().nullish(),
+  "subtitleTj": zod.string().nullish(),
   "description": zod.string().nullish(),
   "descriptionRu": zod.string().nullish(),
   "descriptionTj": zod.string().nullish(),
@@ -359,6 +374,7 @@ export const UpdateServiceResponse = zod.object({
   "linkLabel": zod.string().nullish(),
   "linkLabelRu": zod.string().nullish(),
   "linkLabelTj": zod.string().nullish(),
+  "isActive": zod.boolean(),
   "sortOrder": zod.number(),
   "createdAt": zod.string()
 })

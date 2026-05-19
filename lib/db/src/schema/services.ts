@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, integer, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -7,6 +7,9 @@ export const servicesTable = pgTable("services", {
   title: text("title").notNull(),
   titleRu: text("title_ru"),
   titleTj: text("title_tj"),
+  subtitle: text("subtitle"),
+  subtitleRu: text("subtitle_ru"),
+  subtitleTj: text("subtitle_tj"),
   description: text("description"),
   descriptionRu: text("description_ru"),
   descriptionTj: text("description_tj"),
@@ -16,6 +19,7 @@ export const servicesTable = pgTable("services", {
   linkLabel: text("link_label"),
   linkLabelRu: text("link_label_ru"),
   linkLabelTj: text("link_label_tj"),
+  isActive: boolean("is_active").notNull().default(true),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),

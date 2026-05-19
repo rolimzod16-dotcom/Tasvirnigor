@@ -14,6 +14,12 @@ export interface ServiceUpdate {
   /** @nullable */
   titleTj?: string | null;
   /** @nullable */
+  subtitle?: string | null;
+  /** @nullable */
+  subtitleRu?: string | null;
+  /** @nullable */
+  subtitleTj?: string | null;
+  /** @nullable */
   description?: string | null;
   /** @nullable */
   descriptionRu?: string | null;
@@ -29,5 +35,6 @@ export interface ServiceUpdate {
   linkLabelRu?: string | null;
   /** @nullable */
   linkLabelTj?: string | null;
+  isActive?: boolean;
   sortOrder?: number;
 }

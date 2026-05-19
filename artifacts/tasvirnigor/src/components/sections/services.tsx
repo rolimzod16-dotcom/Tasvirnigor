@@ -1,26 +1,22 @@
 import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowUpRight, Film, Palette, MonitorPlay, MonitorSmartphone, Video, Clapperboard, Layers, Sparkles } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { useLanguage, type Lang } from "@/contexts/language-context";
 import { i18n, t } from "@/lib/i18n";
 import { useListServices } from "@workspace/api-client-react";
 import type { Service } from "@workspace/api-client-react";
 
-// Fallback icons cycling per service index
-const ICON_CYCLE = [Film, Palette, MonitorPlay, MonitorSmartphone, Video, Clapperboard, Layers, Sparkles];
-
-// ── Media renderer ─────────────────────────────────────────────────────────────
+// ── Lottie player ──────────────────────────────────────────────────────────────
 
 function LottiePlayer({ src, className }: { src: string; className?: string }) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!ref.current) return;
     let anim: { destroy: () => void } | null = null;
     import("lottie-web").then((mod) => {
-      const Lottie = mod.default;
-      if (!containerRef.current) return;
-      anim = Lottie.loadAnimation({
-        container: containerRef.current,
+      if (!ref.current) return;
+      anim = mod.default.loadAnimation({
+        container: ref.current,
         path: src,
         renderer: "svg",
         loop: true,
@@ -29,8 +25,10 @@ function LottiePlayer({ src, className }: { src: string; className?: string }) {
     });
     return () => { anim?.destroy(); };
   }, [src]);
-  return <div ref={containerRef} className={className} />;
+  return <div ref={ref} className={className} />;
 }
+
+// ── Media renderer ─────────────────────────────────────────────────────────────
 
 function ServiceMedia({
   mediaUrl,
@@ -58,180 +56,171 @@ function ServiceMedia({
   if (mediaType === "lottie") {
     return <LottiePlayer src={mediaUrl} className={className} />;
   }
-  // image or gif — both render as <img>; GIFs animate natively
   return (
     <img
       src={mediaUrl}
       alt={alt}
       className={className}
       loading="lazy"
+      decoding="async"
     />
   );
+}
+
+// ── Localisation helpers ───────────────────────────────────────────────────────
+
+function getTitle(s: Service, lang: Lang): string {
+  if (lang === "ru" && s.titleRu) return s.titleRu;
+  if (lang === "tj" && s.titleTj) return s.titleTj;
+  return s.title;
+}
+
+function getSubtitle(s: Service, lang: Lang): string {
+  if (lang === "ru" && s.subtitleRu) return s.subtitleRu;
+  if (lang === "tj" && s.subtitleTj) return s.subtitleTj;
+  return s.subtitle ?? "";
+}
+
+function getDescription(s: Service, lang: Lang): string {
+  if (lang === "ru" && s.descriptionRu) return s.descriptionRu;
+  if (lang === "tj" && s.descriptionTj) return s.descriptionTj;
+  return s.description ?? "";
+}
+
+function getLinkLabel(s: Service, lang: Lang): string {
+  if (lang === "ru" && s.linkLabelRu) return s.linkLabelRu;
+  if (lang === "tj" && s.linkLabelTj) return s.linkLabelTj;
+  return s.linkLabel ?? (lang === "ru" ? "Подробнее" : lang === "tj" ? "Бештар" : "Learn more");
 }
 
 // ── Animation variants ─────────────────────────────────────────────────────────
 
 const container = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.09 } },
+  show: { opacity: 1, transition: { staggerChildren: 0.07 } },
 };
 
 const cardVariant = {
-  hidden: { opacity: 0, y: 22 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
+  hidden: { opacity: 0, y: 28 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
+// ── Single service card ────────────────────────────────────────────────────────
 
-function getTitle(s: Service, lang: Lang) {
-  if (lang === "ru" && s.titleRu) return s.titleRu;
-  if (lang === "tj" && s.titleTj) return s.titleTj;
-  return s.title;
-}
+function ServiceCard({ service, index, lang }: { service: Service; index: number; lang: Lang }) {
+  const num = String(index + 1).padStart(2, "0");
+  const title = getTitle(service, lang);
+  const subtitle = getSubtitle(service, lang);
+  const description = getDescription(service, lang);
+  const hasLink = Boolean(service.linkUrl);
 
-function getDescription(s: Service, lang: Lang) {
-  if (lang === "ru" && s.descriptionRu) return s.descriptionRu;
-  if (lang === "tj" && s.descriptionTj) return s.descriptionTj;
-  return s.description ?? "";
-}
-
-function getLinkLabel(s: Service, lang: Lang) {
-  if (lang === "ru" && s.linkLabelRu) return s.linkLabelRu;
-  if (lang === "tj" && s.linkLabelTj) return s.linkLabelTj;
-  return s.linkLabel ?? (lang === "ru" ? "Узнать больше" : lang === "tj" ? "Бештар донед" : "Learn more");
-}
-
-// ── Card components ────────────────────────────────────────────────────────────
-
-function FeaturedCard({ service, Icon, lang, num }: { service: Service; Icon: React.ElementType; lang: Lang; num: string }) {
   return (
-    <motion.div
+    <motion.article
       variants={cardVariant}
-      className="group lg:col-span-2 bg-white rounded-2xl overflow-hidden border border-[#e8e8e8] hover:border-primary/20 hover:shadow-[0_16px_56px_-12px_rgba(0,0,0,0.13)] transition-all duration-400 cursor-default"
+      className="group relative bg-white rounded-2xl border border-[#e8e8e8] overflow-hidden
+                 hover:border-primary/25 hover:shadow-[0_24px_64px_-16px_rgba(0,0,0,0.13)]
+                 transition-all duration-500"
     >
-      <div className="relative overflow-hidden aspect-[16/9] lg:aspect-[2.4/1] bg-[#111]">
-        <ServiceMedia
-          mediaUrl={service.mediaUrl}
-          mediaType={service.mediaType}
-          alt={getTitle(service, lang)}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04] opacity-90"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-400" />
-        <span className="absolute top-5 right-5 text-white/50 font-display font-bold text-3xl select-none leading-none group-hover:text-primary transition-colors duration-300">
-          {num}
-        </span>
-      </div>
-      <div className="p-6 md:p-7 flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <div className="flex items-center gap-2.5 mb-3">
-            <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-[#fdf5e4] text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-              <Icon className="w-4 h-4" />
+      <div className="flex flex-col lg:flex-row lg:items-stretch">
+
+        {/* ── Content column ── */}
+        <div className="flex-1 flex flex-col justify-between gap-6 p-7 md:p-9 lg:p-10 lg:py-11">
+          {/* Number + optional subtitle badge */}
+          <div className="flex items-start justify-between">
+            <span
+              className="font-display font-black text-[56px] lg:text-[72px] leading-none
+                         text-[#f0ede8] select-none transition-colors duration-500
+                         group-hover:text-primary/15"
+            >
+              {num}
             </span>
-            <h3 className="font-display font-bold text-[#141414] text-lg">
-              {getTitle(service, lang)}
-            </h3>
+            {subtitle && (
+              <span
+                className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary
+                           bg-[#fdf5e4] px-2.5 py-1 rounded-full mt-1"
+              >
+                {subtitle}
+              </span>
+            )}
           </div>
-          <p className="text-[#666] text-sm font-light leading-relaxed max-w-lg">
-            {getDescription(service, lang)}
-          </p>
-        </div>
-        <ArrowUpRight className="w-5 h-5 text-[#ccc] group-hover:text-primary transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 mt-1" />
-      </div>
-    </motion.div>
-  );
-}
 
-function StandardCard({ service, Icon, lang, num, aspectClass }: { service: Service; Icon: React.ElementType; lang: Lang; num: string; aspectClass: string }) {
-  return (
-    <motion.div
-      variants={cardVariant}
-      className="group bg-white rounded-2xl overflow-hidden border border-[#e8e8e8] hover:border-primary/20 hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.12)] transition-all duration-400 cursor-default"
-    >
-      <div className={`relative overflow-hidden ${aspectClass} bg-[#111]`}>
-        <ServiceMedia
-          mediaUrl={service.mediaUrl}
-          mediaType={service.mediaType}
-          alt={getTitle(service, lang)}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05] opacity-90"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent" />
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-400" />
-        <span className="absolute top-4 right-4 text-white/45 font-display font-bold text-2xl select-none leading-none group-hover:text-primary transition-colors duration-300">
-          {num}
-        </span>
-      </div>
-      <div className="p-5 md:p-6 flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2.5 mb-2.5">
-            <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#fdf5e4] text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 shrink-0">
-              <Icon className="w-3.5 h-3.5" />
-            </span>
-            <h3 className="font-display font-bold text-[#141414] text-base leading-tight">
-              {getTitle(service, lang)}
+          {/* Title + description */}
+          <div className="flex-1 flex flex-col gap-3">
+            <h3
+              className="font-display font-bold text-[#141414]
+                         text-xl md:text-2xl lg:text-[1.65rem] leading-tight"
+            >
+              {title}
             </h3>
+            {description && (
+              <p className="text-[#777] text-sm font-light leading-relaxed max-w-sm">
+                {description}
+              </p>
+            )}
           </div>
-          <p className="text-[#777] text-sm font-light leading-relaxed line-clamp-3">
-            {getDescription(service, lang)}
-          </p>
-        </div>
-        <ArrowUpRight className="w-4 h-4 text-[#ddd] group-hover:text-primary transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 mt-0.5" />
-      </div>
-    </motion.div>
-  );
-}
 
-function FullWidthCard({ service, Icon, lang, num }: { service: Service; Icon: React.ElementType; lang: Lang; num: string }) {
-  return (
-    <motion.div
-      variants={cardVariant}
-      className="group lg:col-span-3 bg-white rounded-2xl overflow-hidden border border-[#e8e8e8] hover:border-primary/20 hover:shadow-[0_16px_56px_-12px_rgba(0,0,0,0.13)] transition-all duration-400 cursor-default"
-    >
-      <div className="lg:flex lg:items-stretch">
-        <div className="relative overflow-hidden aspect-[16/9] lg:aspect-auto lg:w-[55%] bg-[#111] shrink-0">
+          {/* CTA */}
+          {hasLink && (
+            <a
+              href={service.linkUrl!}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 self-start
+                         text-sm font-semibold text-[#141414]
+                         border border-[#e0e0e0] rounded-full px-4 py-2
+                         hover:bg-primary hover:border-primary hover:text-white
+                         transition-all duration-300 group/btn"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span>{getLinkLabel(service, lang)}</span>
+              <ArrowUpRight
+                className="w-3.5 h-3.5 transition-transform duration-300
+                           group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5"
+              />
+            </a>
+          )}
+        </div>
+
+        {/* ── Media column ── */}
+        <div
+          className="relative overflow-hidden bg-[#0e0e0e]
+                     aspect-[4/3]
+                     lg:aspect-auto lg:w-[46%] lg:shrink-0"
+        >
           <ServiceMedia
             mediaUrl={service.mediaUrl}
             mediaType={service.mediaType}
-            alt={getTitle(service, lang)}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04] opacity-90"
+            alt={title}
+            className="w-full h-full object-cover
+                       transition-transform duration-700 ease-out
+                       group-hover:scale-[1.04] opacity-90"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/30 lg:bg-gradient-to-r lg:from-transparent lg:to-black/40" />
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors duration-400" />
-          <span className="absolute top-5 right-5 text-white/50 font-display font-bold text-3xl select-none leading-none group-hover:text-primary transition-colors duration-300">
-            {num}
-          </span>
-        </div>
-        <div className="p-6 md:p-8 lg:p-10 flex flex-col justify-center flex-1">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-[#fdf5e4] text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-              <Icon className="w-4.5 h-4.5" />
-            </span>
-            <h3 className="font-display font-bold text-[#141414] text-xl">
-              {getTitle(service, lang)}
-            </h3>
-          </div>
-          <p className="text-[#666] text-sm md:text-base font-light leading-relaxed max-w-md mb-5">
-            {getDescription(service, lang)}
-          </p>
-          {service.linkUrl ? (
-            <a
-              href={service.linkUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-primary text-sm font-semibold hover:underline"
-            >
-              <span>{getLinkLabel(service, lang)}</span>
-              <ArrowUpRight className="w-4 h-4" />
-            </a>
-          ) : (
-            <div className="flex items-center gap-2 text-primary text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <span>{getLinkLabel(service, lang)}</span>
-              <ArrowUpRight className="w-4 h-4" />
-            </div>
-          )}
+          {/* Subtle left-edge vignette for seamless text → image transition */}
+          <div className="absolute inset-0 pointer-events-none
+                          bg-gradient-to-r from-white/8 via-transparent to-transparent
+                          lg:bg-gradient-to-r lg:from-white/6 lg:via-transparent lg:to-transparent" />
         </div>
       </div>
-    </motion.div>
+    </motion.article>
+  );
+}
+
+// ── Skeleton loader ────────────────────────────────────────────────────────────
+
+function SkeletonCard() {
+  return (
+    <div className="bg-white rounded-2xl border border-[#e8e8e8] overflow-hidden animate-pulse">
+      <div className="flex flex-col lg:flex-row lg:min-h-[280px]">
+        <div className="flex-1 p-9 space-y-4">
+          <div className="h-14 w-16 bg-[#f0ede8] rounded-lg" />
+          <div className="h-6 bg-[#eee] rounded w-2/3" />
+          <div className="h-4 bg-[#eee] rounded w-full" />
+          <div className="h-4 bg-[#eee] rounded w-4/5" />
+          <div className="h-9 bg-[#eee] rounded-full w-28 mt-2" />
+        </div>
+        <div className="aspect-[4/3] lg:aspect-auto lg:w-[46%] bg-[#e8e8e8]" />
+      </div>
+    </div>
   );
 }
 
@@ -241,18 +230,21 @@ export function Services() {
   const { lang } = useLanguage();
   const { data: dbServices, isLoading } = useListServices();
 
-  const sorted = [...(dbServices ?? [])].sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id);
-  const count = sorted.length;
+  const visible = [...(dbServices ?? [])]
+    .filter((s) => s.isActive !== false)
+    .sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id);
 
   return (
     <section id="services" className="py-24 md:py-32 bg-[#f8f7f5]">
       <div className="max-w-7xl mx-auto px-5 lg:px-10">
+
+        {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="flex flex-col md:flex-row md:items-end justify-between gap-5 mb-14"
+          className="flex flex-col md:flex-row md:items-end justify-between gap-5 mb-12"
         >
           <div>
             <p className="section-label">{t(i18n.services.label, lang)}</p>
@@ -260,71 +252,50 @@ export function Services() {
               {t(i18n.services.heading, lang)}
             </h2>
           </div>
-          <p className="text-[#888] text-sm max-w-xs leading-relaxed font-light md:text-right">
+          <p className="text-[#999] text-sm max-w-xs leading-relaxed font-light md:text-right">
             {lang === "ru"
-              ? "Полный цикл производства — от идеи до финального экрана"
+              ? "Полный цикл — от идеи до финального экрана"
               : lang === "tj"
-              ? "Давраи пурраи истеҳсол — аз идея то экрани ниҳоӣ"
-              : "Full production cycle — from concept to final screen"}
+              ? "Давраи пурра — аз идея то экрани ниҳоӣ"
+              : "Full cycle — from concept to final screen"}
           </p>
         </motion.div>
 
+        {/* Loading skeletons */}
         {isLoading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-white rounded-2xl border border-[#e8e8e8] overflow-hidden animate-pulse">
-                <div className="aspect-[4/3] bg-[#eee]" />
-                <div className="p-5 space-y-2">
-                  <div className="h-4 bg-[#eee] rounded w-2/3" />
-                  <div className="h-3 bg-[#eee] rounded w-full" />
-                  <div className="h-3 bg-[#eee] rounded w-4/5" />
-                </div>
-              </div>
-            ))}
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => <SkeletonCard key={i} />)}
           </div>
         )}
 
-        {!isLoading && count === 0 && (
-          <div className="text-center py-16 text-[#aaa] text-sm">
+        {/* Empty state */}
+        {!isLoading && visible.length === 0 && (
+          <div className="text-center py-20 text-[#bbb] text-sm">
             {lang === "ru"
-              ? "Услуги будут добавлены в ближайшее время."
+              ? "Услуги появятся в ближайшее время."
               : lang === "tj"
               ? "Хидматҳо ба зудӣ илова мешаванд."
               : "Services coming soon."}
           </div>
         )}
 
-        {!isLoading && count > 0 && (
+        {/* Cards */}
+        {!isLoading && visible.length > 0 && (
           <motion.div
             variants={container}
             initial="hidden"
             whileInView="show"
-            viewport={{ once: true, margin: "-60px" }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+            viewport={{ once: true, margin: "-40px" }}
+            className="space-y-4"
           >
-            {sorted.map((service, idx) => {
-              const Icon = ICON_CYCLE[idx % ICON_CYCLE.length];
-              const num = String(idx + 1).padStart(2, "0");
-
-              // First card: featured (col-span-2) when more than 1 service
-              if (idx === 0 && count > 1) {
-                return (
-                  <FeaturedCard key={service.id} service={service} Icon={Icon} lang={lang} num={num} />
-                );
-              }
-
-              // Last card: full-width (col-span-3) when more than 2 services
-              if (idx === count - 1 && count > 2) {
-                return (
-                  <FullWidthCard key={service.id} service={service} Icon={Icon} lang={lang} num={num} />
-                );
-              }
-
-              // Standard card
-              return (
-                <StandardCard key={service.id} service={service} Icon={Icon} lang={lang} num={num} aspectClass="aspect-[4/3]" />
-              );
-            })}
+            {visible.map((service, idx) => (
+              <ServiceCard
+                key={service.id}
+                service={service}
+                index={idx}
+                lang={lang}
+              />
+            ))}
           </motion.div>
         )}
       </div>

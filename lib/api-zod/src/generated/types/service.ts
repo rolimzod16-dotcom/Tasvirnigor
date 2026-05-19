@@ -14,6 +14,12 @@ export interface Service {
   /** @nullable */
   titleTj?: string | null;
   /** @nullable */
+  subtitle?: string | null;
+  /** @nullable */
+  subtitleRu?: string | null;
+  /** @nullable */
+  subtitleTj?: string | null;
+  /** @nullable */
   description?: string | null;
   /** @nullable */
   descriptionRu?: string | null;
@@ -29,6 +35,7 @@ export interface Service {
   linkLabelRu?: string | null;
   /** @nullable */
   linkLabelTj?: string | null;
+  isActive: boolean;
   sortOrder: number;
   createdAt: string;
 }

@@ -289,10 +289,12 @@ export const i18n = {
     } as T,
     serviceTitleRequired: { en: "Title is required", ru: "Введите заголовок", tj: "Унвонро ворид кунед" } as T,
     serviceMediaRequired: { en: "Media file is required", ru: "Загрузите медиафайл", tj: "Медиафайлро бор кунед" } as T,
+    subtitle: { en: "Subtitle (optional)", ru: "Подзаголовок (необязательно)", tj: "Зерунвон (ихтиёрӣ)" } as T,
     linkUrl: { en: "Link URL (optional)", ru: "Ссылка (необязательно)", tj: "Пайванд (ихтиёрӣ)" } as T,
     linkLabel: { en: "Button Label (optional)", ru: "Текст кнопки (необязательно)", tj: "Матни тугма (ихтиёрӣ)" } as T,
     moveUp: { en: "Move Up", ru: "Вверх", tj: "Боло" } as T,
     moveDown: { en: "Move Down", ru: "Вниз", tj: "Поён" } as T,
+    activeLabel: { en: "Visible on website", ru: "Отображается на сайте", tj: "Дар сайт намоён аст" } as T,
 
     // About
     aboutSection: { en: "About Section", ru: "Раздел «О нас»", tj: "Бахши «Дар бораи мо»" } as T,
