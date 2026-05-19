@@ -56,4 +56,18 @@ router.post(
   }
 );
 
+router.post(
+  "/upload/partner-logo",
+  requireAdmin,
+  upload.single("file"),
+  async (req, res): Promise<void> => {
+    if (!req.file) {
+      res.status(400).json({ error: "No file provided" });
+      return;
+    }
+    const url = await uploadToSupabase("partner-logos", req.file);
+    res.json({ url });
+  }
+);
+
 export default router;

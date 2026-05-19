@@ -27,6 +27,9 @@ import type {
   Contacts,
   ContactsUpdate,
   HealthStatus,
+  Partner,
+  PartnerInput,
+  PartnerUpdate,
   Project,
   ProjectInput,
   ProjectUpdate,
@@ -998,6 +1001,296 @@ export const useUpdateContacts = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getUpdateContactsMutationOptions(options));
+    }
+
+export const getListPartnersUrl = () => {
+
+
+
+
+  return `/api/partners`
+}
+
+/**
+ * @summary List all partners
+ */
+export const listPartners = async ( options?: RequestInit): Promise<Partner[]> => {
+
+  return customFetch<Partner[]>(getListPartnersUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListPartnersQueryKey = () => {
+    return [
+    `/api/partners`
+    ] as const;
+    }
+
+
+export const getListPartnersQueryOptions = <TData = Awaited<ReturnType<typeof listPartners>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPartners>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListPartnersQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPartners>>> = ({ signal }) => listPartners({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listPartners>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListPartnersQueryResult = NonNullable<Awaited<ReturnType<typeof listPartners>>>
+export type ListPartnersQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List all partners
+ */
+
+export function useListPartners<TData = Awaited<ReturnType<typeof listPartners>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPartners>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListPartnersQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreatePartnerUrl = () => {
+
+
+
+
+  return `/api/partners`
+}
+
+/**
+ * @summary Create a partner (admin only)
+ */
+export const createPartner = async (partnerInput: PartnerInput, options?: RequestInit): Promise<Partner> => {
+
+  return customFetch<Partner>(getCreatePartnerUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      partnerInput,)
+  }
+);}
+
+
+
+
+export const getCreatePartnerMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPartner>>, TError,{data: BodyType<PartnerInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPartner>>, TError,{data: BodyType<PartnerInput>}, TContext> => {
+
+const mutationKey = ['createPartner'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPartner>>, {data: BodyType<PartnerInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createPartner(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreatePartnerMutationResult = NonNullable<Awaited<ReturnType<typeof createPartner>>>
+    export type CreatePartnerMutationBody = BodyType<PartnerInput>
+    export type CreatePartnerMutationError = ErrorType<void>
+
+    /**
+ * @summary Create a partner (admin only)
+ */
+export const useCreatePartner = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPartner>>, TError,{data: BodyType<PartnerInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createPartner>>,
+        TError,
+        {data: BodyType<PartnerInput>},
+        TContext
+      > => {
+      return useMutation(getCreatePartnerMutationOptions(options));
+    }
+
+export const getUpdatePartnerUrl = (id: number,) => {
+
+
+
+
+  return `/api/partners/${id}`
+}
+
+/**
+ * @summary Update a partner (admin only)
+ */
+export const updatePartner = async (id: number,
+    partnerUpdate: PartnerUpdate, options?: RequestInit): Promise<Partner> => {
+
+  return customFetch<Partner>(getUpdatePartnerUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      partnerUpdate,)
+  }
+);}
+
+
+
+
+export const getUpdatePartnerMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePartner>>, TError,{id: number;data: BodyType<PartnerUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePartner>>, TError,{id: number;data: BodyType<PartnerUpdate>}, TContext> => {
+
+const mutationKey = ['updatePartner'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePartner>>, {id: number;data: BodyType<PartnerUpdate>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updatePartner(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdatePartnerMutationResult = NonNullable<Awaited<ReturnType<typeof updatePartner>>>
+    export type UpdatePartnerMutationBody = BodyType<PartnerUpdate>
+    export type UpdatePartnerMutationError = ErrorType<void>
+
+    /**
+ * @summary Update a partner (admin only)
+ */
+export const useUpdatePartner = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePartner>>, TError,{id: number;data: BodyType<PartnerUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updatePartner>>,
+        TError,
+        {id: number;data: BodyType<PartnerUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdatePartnerMutationOptions(options));
+    }
+
+export const getDeletePartnerUrl = (id: number,) => {
+
+
+
+
+  return `/api/partners/${id}`
+}
+
+/**
+ * @summary Delete a partner (admin only)
+ */
+export const deletePartner = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeletePartnerUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getDeletePartnerMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePartner>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deletePartner>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deletePartner'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deletePartner>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deletePartner(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeletePartnerMutationResult = NonNullable<Awaited<ReturnType<typeof deletePartner>>>
+
+    export type DeletePartnerMutationError = ErrorType<void>
+
+    /**
+ * @summary Delete a partner (admin only)
+ */
+export const useDeletePartner = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePartner>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deletePartner>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeletePartnerMutationOptions(options));
     }
 
 export const getAdminLoginUrl = () => {

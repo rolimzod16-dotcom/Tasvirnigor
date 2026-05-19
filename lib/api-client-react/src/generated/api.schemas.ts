@@ -199,6 +199,52 @@ export interface ContactsUpdate {
   facebook?: string | null;
 }
 
+export interface Partner {
+  id: number;
+  name: string;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionTj?: string | null;
+  /** @nullable */
+  websiteUrl?: string | null;
+  logoUrl: string;
+  sortOrder: number;
+  createdAt: string;
+}
+
+export interface PartnerInput {
+  /** @minLength 1 */
+  name: string;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionTj?: string | null;
+  /** @nullable */
+  websiteUrl?: string | null;
+  logoUrl: string;
+  sortOrder?: number;
+}
+
+export interface PartnerUpdate {
+  /** @minLength 1 */
+  name?: string;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionTj?: string | null;
+  /** @nullable */
+  websiteUrl?: string | null;
+  logoUrl?: string;
+  sortOrder?: number;
+}
+
 export interface AdminCredentials {
   password: string;
 }

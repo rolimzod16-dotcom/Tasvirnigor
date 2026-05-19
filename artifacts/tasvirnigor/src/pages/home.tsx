@@ -5,6 +5,7 @@ import { About } from "@/components/sections/about";
 import { Services } from "@/components/sections/services";
 import { Portfolio } from "@/components/sections/portfolio";
 import { Team } from "@/components/sections/team";
+import { Partners } from "@/components/sections/partners";
 import { Contacts } from "@/components/sections/contacts";
 import { useLanguage } from "@/contexts/language-context";
 import { i18n, t } from "@/lib/i18n";
@@ -21,6 +22,7 @@ export default function Home() {
         <Services />
         <Portfolio />
         <Team />
+        <Partners />
         <Contacts />
       </main>
 

@@ -107,6 +107,16 @@ export const i18n = {
     label: { en: "The Creators", ru: "Создатели", tj: "Офаринандагон" } as T,
     heading: { en: "Our Team", ru: "Наша команда", tj: "Гурӯҳи мо" } as T,
   },
+  partners: {
+    label: { en: "Trusted By", ru: "Нам доверяют", tj: "Боварманд" } as T,
+    heading: { en: "Our Partners", ru: "Наши партнёры", tj: "Шарикони мо" } as T,
+    nav: { en: "Partners", ru: "Партнёры", tj: "Шарикон" } as T,
+    empty: {
+      en: "No partners yet.",
+      ru: "Партнёры ещё не добавлены.",
+      tj: "Ҳанӯз шарик илова нашудааст.",
+    } as T,
+  },
   contacts: {
     label: { en: "Get in Touch", ru: "Связаться с нами", tj: "Бо мо тамос гиред" } as T,
     heading: {
@@ -170,6 +180,7 @@ export const i18n = {
     team: { en: "Team", ru: "Команда", tj: "Гурӯҳ" } as T,
     about: { en: "About", ru: "О нас", tj: "Дар бораи мо" } as T,
     contacts: { en: "Contacts", ru: "Контакты", tj: "Тамос" } as T,
+    partners: { en: "Partners", ru: "Партнёры", tj: "Шарикон" } as T,
     logout: { en: "Logout", ru: "Выйти", tj: "Баромадан" } as T,
     administrator: { en: "Administrator", ru: "Администратор", tj: "Маъмур" } as T,
     loading: { en: "Loading Dashboard", ru: "Загрузка панели...", tj: "Бор кардани панел..." } as T,
@@ -233,6 +244,27 @@ export const i18n = {
       tj: "Оё мехоҳед ин узвро ҳазф кунед?",
     } as T,
     loadingTeam: { en: "Loading team members...", ru: "Загрузка команды...", tj: "Бор кардани гурӯҳ..." } as T,
+
+    // Partners
+    addPartner: { en: "Add Partner", ru: "Добавить партнёра", tj: "Илова кардани шарик" } as T,
+    editPartner: { en: "Edit Partner", ru: "Редактировать партнёра", tj: "Таҳрири шарик" } as T,
+    createPartner: { en: "Create Partner", ru: "Создать партнёра", tj: "Сохтани шарик" } as T,
+    updatePartner: { en: "Update Partner", ru: "Обновить партнёра", tj: "Нав кардани шарик" } as T,
+    partnerCreated: { en: "Partner created successfully", ru: "Партнёр добавлен", tj: "Шарик илова шуд" } as T,
+    partnerUpdated: { en: "Partner updated successfully", ru: "Партнёр обновлён", tj: "Шарик нав шуд" } as T,
+    partnerDeleted: { en: "Partner deleted", ru: "Партнёр удалён", tj: "Шарик ҳазф шуд" } as T,
+    deletePartnerConfirm: {
+      en: "Are you sure you want to delete this partner?",
+      ru: "Вы уверены, что хотите удалить этого партнёра?",
+      tj: "Оё мехоҳед ин шарикро ҳазф кунед?",
+    } as T,
+    loadingPartners: { en: "Loading partners...", ru: "Загрузка партнёров...", tj: "Бор кардани шарикон..." } as T,
+    partnerName: { en: "Partner Name", ru: "Название партнёра", tj: "Номи шарик" } as T,
+    websiteUrl: { en: "Website URL", ru: "Ссылка на сайт", tj: "Пайванди сайт" } as T,
+    websitePlaceholder: { en: "https://example.com", ru: "https://example.com", tj: "https://example.com" } as T,
+    partnerLogo: { en: "Partner Logo", ru: "Логотип партнёра", tj: "Логотипи шарик" } as T,
+    logoRequired: { en: "Logo is required", ru: "Загрузите логотип", tj: "Логотипро бор кунед" } as T,
+    partnerNameRequired: { en: "Partner name is required", ru: "Введите название партнёра", tj: "Номи шарикро ворид кунед" } as T,
 
     // About
     aboutSection: { en: "About Section", ru: "Раздел «О нас»", tj: "Бахши «Дар бораи мо»" } as T,

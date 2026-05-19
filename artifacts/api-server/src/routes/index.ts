@@ -3,6 +3,7 @@ import healthRouter from "./health";
 import projectsRouter from "./projects";
 import teamRouter from "./team";
 import contentRouter from "./content";
+import partnersRouter from "./partners";
 import adminRouter from "./admin";
 import uploadRouter from "./upload";
 
@@ -12,6 +13,7 @@ router.use(healthRouter);
 router.use(projectsRouter);
 router.use(teamRouter);
 router.use(contentRouter);
+router.use(partnersRouter);
 router.use(adminRouter);
 router.use(uploadRouter);
 

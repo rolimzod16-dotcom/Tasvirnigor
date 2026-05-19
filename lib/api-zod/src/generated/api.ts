@@ -274,6 +274,81 @@ export const UpdateContactsResponse = zod.object({
 
 
 /**
+ * @summary List all partners
+ */
+export const ListPartnersResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "description": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionTj": zod.string().nullish(),
+  "websiteUrl": zod.string().nullish(),
+  "logoUrl": zod.string(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.string()
+})
+export const ListPartnersResponse = zod.array(ListPartnersResponseItem)
+
+
+/**
+ * @summary Create a partner (admin only)
+ */
+
+
+
+export const CreatePartnerBody = zod.object({
+  "name": zod.string().min(1),
+  "description": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionTj": zod.string().nullish(),
+  "websiteUrl": zod.string().nullish(),
+  "logoUrl": zod.string(),
+  "sortOrder": zod.number().optional()
+})
+
+
+/**
+ * @summary Update a partner (admin only)
+ */
+export const UpdatePartnerParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+export const UpdatePartnerBody = zod.object({
+  "name": zod.string().min(1).optional(),
+  "description": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionTj": zod.string().nullish(),
+  "websiteUrl": zod.string().nullish(),
+  "logoUrl": zod.string().optional(),
+  "sortOrder": zod.number().optional()
+})
+
+export const UpdatePartnerResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "description": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionTj": zod.string().nullish(),
+  "websiteUrl": zod.string().nullish(),
+  "logoUrl": zod.string(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Delete a partner (admin only)
+ */
+export const DeletePartnerParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
  * @summary Admin login
  */
 export const AdminLoginBody = zod.object({
