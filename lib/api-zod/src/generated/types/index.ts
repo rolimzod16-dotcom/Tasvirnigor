@@ -21,6 +21,7 @@ export * from './partnerInput';
 export * from './partnerUpdate';
 export * from './project';
 export * from './projectInput';
+export * from './projectMediaItem';
 export * from './projectUpdate';
 export * from './service';
 export * from './serviceInput';

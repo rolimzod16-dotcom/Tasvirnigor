@@ -221,6 +221,39 @@ router.post("/upload/project-banner", requireAdmin, upload.single("file"), async
   await handleImageUpload(req, res, "project-banners");
 });
 
+router.post("/upload/project-media", requireAdmin, uploadLarge.single("file"), async (req, res): Promise<void> => {
+  const bucket = "project-media";
+  if (!req.file) {
+    res.status(400).json({ error: "No file provided. Please select a file." });
+    return;
+  }
+  const validationError = validateFile(
+    req.file,
+    SERVICE_MEDIA_MIME_TYPES,
+    SERVICE_MEDIA_EXTENSIONS,
+    "JPG, PNG, WebP, GIF, SVG, AVIF, MP4, WebM, MOV"
+  );
+  if (validationError) {
+    res.status(400).json({ error: validationError });
+    return;
+  }
+  const mime = req.file.mimetype.toLowerCase().split(";")[0].trim();
+  const ext = (req.file.originalname.split(".").pop() ?? "").toLowerCase();
+  let mediaType: "image" | "gif" | "video" = "image";
+  if (mime.startsWith("video/") || ["mp4", "webm", "mov", "avi", "mkv"].includes(ext)) mediaType = "video";
+  else if (mime === "image/gif" || ext === "gif") mediaType = "gif";
+  const resolvedMime = resolveContentType(req.file, SERVICE_MEDIA_EXT_TO_MIME, SERVICE_MEDIA_MIME_TYPES, "application/octet-stream");
+  try {
+    await ensureBucket(bucket);
+    const url = await uploadToSupabase(bucket, req.file, SERVICE_MEDIA_EXT_TO_MIME, SERVICE_MEDIA_MIME_TYPES, "application/octet-stream");
+    res.json({ url, mediaType, mimeType: resolvedMime });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Upload failed. Please try again.";
+    req.log.error({ err, bucket }, "Project media upload error");
+    res.status(500).json({ error: message });
+  }
+});
+
 router.post("/upload/team-photo", requireAdmin, upload.single("file"), async (req, res): Promise<void> => {
   await handleImageUpload(req, res, "team-photos");
 });

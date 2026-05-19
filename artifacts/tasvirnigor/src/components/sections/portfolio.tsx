@@ -1,14 +1,38 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, ExternalLink } from "lucide-react";
+import { Play, ExternalLink, Film } from "lucide-react";
 import { useLanguage, type Lang } from "@/contexts/language-context";
 import { i18n, t } from "@/lib/i18n";
 import { localize } from "@/lib/localize";
 import { ensureProtocol } from "@/lib/utils";
 import { useListProjects, useListCategories } from "@workspace/api-client-react";
-import type { Project, Category } from "@workspace/api-client-react";
+import type { Project, Category, ProjectMediaItem } from "@workspace/api-client-react";
 
-// ── Localisation helper ───────────────────────────────────────────────────────
+// ── Media helpers ─────────────────────────────────────────────────────────────
+
+function getThumbnail(project: Project): string {
+  if (project.bannerUrl) return project.bannerUrl;
+  const items = (project.mediaItems ?? []) as ProjectMediaItem[];
+  const still = items.find((m) => m.mimeType.startsWith("image/") && m.mimeType !== "image/gif");
+  return still?.url ?? items[0]?.url ?? "";
+}
+
+type AnimPreview = { url: string; isVideo: boolean };
+
+function getAnimPreview(project: Project): AnimPreview | null {
+  const items = (project.mediaItems ?? []) as ProjectMediaItem[];
+  const gif = items.find((m) => m.mimeType === "image/gif");
+  if (gif) return { url: gif.url, isVideo: false };
+  const vid = items.find((m) => m.mimeType.startsWith("video/"));
+  if (vid) return { url: vid.url, isVideo: true };
+  return null;
+}
+
+function hasAnimatedMedia(project: Project): boolean {
+  return getAnimPreview(project) !== null;
+}
+
+// ── Localisation helpers ──────────────────────────────────────────────────────
 
 function getCategoryName(cat: Category, lang: Lang): string {
   if (lang === "ru" && cat.nameRu) return cat.nameRu;
@@ -23,16 +47,19 @@ function FilterTabs({
   active,
   onChange,
   lang,
+  counts,
 }: {
   categories: Category[];
   active: string | null;
   onChange: (slug: string | null) => void;
   lang: Lang;
+  counts: Map<number, number>;
 }) {
   return (
     <div className="flex items-center gap-2 flex-wrap">
       <FilterPill
         label={t(i18n.form.filterAll, lang)}
+        count={null}
         active={active === null}
         onClick={() => onChange(null)}
       />
@@ -40,6 +67,7 @@ function FilterTabs({
         <FilterPill
           key={cat.slug}
           label={getCategoryName(cat, lang)}
+          count={counts.get(cat.id) ?? 0}
           active={active === cat.slug}
           onClick={() => onChange(cat.slug)}
         />
@@ -50,10 +78,12 @@ function FilterTabs({
 
 function FilterPill({
   label,
+  count,
   active,
   onClick,
 }: {
   label: string;
+  count: number | null;
   active: boolean;
   onClick: () => void;
 }) {
@@ -61,29 +91,39 @@ function FilterPill({
     <motion.button
       layout
       onClick={onClick}
-      className={`relative px-4 py-1.5 rounded-full text-sm font-semibold transition-colors duration-200
+      className={`relative inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold
+                  transition-colors duration-200 select-none
         ${active
-          ? "bg-primary text-white shadow-sm"
+          ? "bg-primary text-white shadow-md shadow-primary/20"
           : "bg-white text-[#555] border border-[#e0e0e0] hover:border-primary/40 hover:text-primary"
         }`}
       whileTap={{ scale: 0.97 }}
     >
       {label}
+      {count !== null && count > 0 && (
+        <span className={`text-[10px] font-bold rounded-full px-1.5 py-0.5
+          ${active ? "bg-white/25 text-white" : "bg-primary/10 text-primary"}`}>
+          {count}
+        </span>
+      )}
     </motion.button>
   );
 }
 
-// ── Category chips on a card ──────────────────────────────────────────────────
+// ── Category chips ────────────────────────────────────────────────────────────
 
-function CategoryChips({ categories, lang }: { categories: Category[]; lang: Lang }) {
+function CategoryChips({ categories, lang, dark = false }: { categories: Category[]; lang: Lang; dark?: boolean }) {
   if (!categories.length) return null;
   return (
     <div className="flex flex-wrap gap-1.5">
       {categories.map((cat) => (
         <span
           key={cat.id}
-          className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5
-                     rounded-full bg-primary/10 text-primary border border-primary/20"
+          className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full
+            ${dark
+              ? "bg-white/15 text-white border border-white/25 backdrop-blur-sm"
+              : "bg-primary/10 text-primary border border-primary/20"
+            }`}
         >
           {getCategoryName(cat, lang)}
         </span>
@@ -92,128 +132,220 @@ function CategoryChips({ categories, lang }: { categories: Category[]; lang: Lan
   );
 }
 
+// ── Animated media preview ────────────────────────────────────────────────────
+
+function AnimatedPreview({ preview, className }: { preview: AnimPreview; className?: string }) {
+  if (preview.isVideo) {
+    return (
+      <video
+        src={preview.url}
+        className={className}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+      />
+    );
+  }
+  return <img src={preview.url} alt="" className={className} />;
+}
+
 // ── Featured project card ─────────────────────────────────────────────────────
 
 function FeaturedCard({ project, lang }: { project: Project; lang: Lang }) {
+  const [hovered, setHovered] = useState(false);
+  const preview = getAnimPreview(project);
+  const thumb = getThumbnail(project);
+  const title = localize(project as unknown as Record<string, unknown>, "title", lang) as string;
+  const desc = localize(project as unknown as Record<string, unknown>, "description", lang) as string | null;
+  const isLink = !!project.youtubeUrl;
+  const Wrapper = isLink ? motion.a : motion.div;
+  const linkProps = isLink
+    ? { href: ensureProtocol(project.youtubeUrl!) ?? "#", target: "_blank" as const, rel: "noopener noreferrer" }
+    : {};
+
   return (
-    <motion.a
+    <Wrapper
       layout
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.97 }}
-      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      href={ensureProtocol(project.youtubeUrl) ?? "#"}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group block relative rounded-2xl overflow-hidden border border-[#e8e8e8]
-                 hover:border-primary/30 hover:shadow-[0_16px_64px_-16px_rgba(0,0,0,0.16)]
-                 transition-all duration-400"
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      {...linkProps}
+      className={`group block relative rounded-2xl overflow-hidden border border-[#e8e8e8]
+                  hover:border-primary/30 hover:shadow-[0_20px_80px_-16px_rgba(0,0,0,0.18)]
+                  transition-all duration-400 bg-[#0c0c0c]
+                  ${isLink ? "cursor-pointer" : "cursor-default"}`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      <div className="aspect-[21/9] md:aspect-[3/1] relative overflow-hidden bg-[#0c0c0c]">
-        <img
-          src={project.bannerUrl}
-          alt={localize(project as unknown as Record<string, unknown>, "title", lang) as string}
-          className="w-full h-full object-cover transition-transform duration-700
-                     group-hover:scale-[1.03] opacity-90"
-          loading="eager"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+      <div className="aspect-[21/9] md:aspect-[3/1] relative overflow-hidden">
+        {/* Static thumbnail */}
+        {thumb && (
+          <img
+            src={thumb}
+            alt={title}
+            className={`absolute inset-0 w-full h-full object-cover transition-all duration-700
+                        ${hovered && preview ? "opacity-0 scale-[1.03]" : "opacity-90 group-hover:scale-[1.02]"}`}
+            loading="eager"
+          />
+        )}
 
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center
-                          opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100
-                          transition-all duration-300 shadow-2xl">
-            <Play className="w-6 h-6 ml-0.5 text-white" fill="white" />
+        {/* Animated preview on hover */}
+        {hovered && preview && (
+          <AnimatedPreview
+            preview={preview}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
+
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
+
+        {/* Animated media badge */}
+        {hasAnimatedMedia(project) && (
+          <div className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full
+                          bg-black/50 backdrop-blur-sm border border-white/15">
+            <Film className="w-3 h-3 text-primary" />
+            <span className="text-[10px] font-bold text-white uppercase tracking-widest">Preview</span>
           </div>
-        </div>
+        )}
 
+        {/* Play button - YouTube only */}
+        {isLink && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center
+                            opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100
+                            transition-all duration-300 shadow-2xl shadow-primary/40">
+              <Play className="w-6 h-6 ml-0.5 text-white" fill="white" />
+            </div>
+          </div>
+        )}
+
+        {/* Content overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-7 md:p-10">
           <div className="flex items-end justify-between gap-4">
-            <div className="space-y-2">
+            <div className="space-y-2 max-w-3xl">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary
                                  text-white text-[10px] font-bold uppercase tracking-widest">
                   {t(i18n.portfolio.featured, lang)}
                 </span>
-                {(project.categories ?? []).map((cat) => (
-                  <span
-                    key={cat.id}
-                    className="inline-flex items-center px-2.5 py-0.5 rounded-full
-                               bg-white/15 text-white text-[10px] font-bold uppercase tracking-widest
-                               backdrop-blur-sm border border-white/20"
-                  >
-                    {getCategoryName(cat, lang)}
-                  </span>
-                ))}
+                <CategoryChips categories={project.categories ?? []} lang={lang} dark />
               </div>
               <h3 className="font-display font-bold text-2xl md:text-4xl text-white
                              group-hover:text-primary transition-colors duration-200 leading-tight">
-                {localize(project as unknown as Record<string, unknown>, "title", lang)}
+                {title}
               </h3>
-              {localize(project as unknown as Record<string, unknown>, "description", lang) && (
-                <p className="text-white/65 font-light mt-1 max-w-2xl line-clamp-2 text-sm md:text-base">
-                  {localize(project as unknown as Record<string, unknown>, "description", lang)}
+              {desc && (
+                <p className="text-white/60 font-light mt-1 max-w-2xl line-clamp-2 text-sm md:text-base">
+                  {desc}
                 </p>
               )}
             </div>
-            <ExternalLink className="w-5 h-5 text-primary opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mb-1" />
+            {isLink && (
+              <ExternalLink className="w-5 h-5 text-primary opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mb-1" />
+            )}
           </div>
         </div>
       </div>
-    </motion.a>
+    </Wrapper>
   );
 }
 
 // ── Regular project card ──────────────────────────────────────────────────────
 
 function ProjectCard({ project, lang }: { project: Project; lang: Lang }) {
+  const [hovered, setHovered] = useState(false);
+  const preview = getAnimPreview(project);
+  const thumb = getThumbnail(project);
+  const title = localize(project as unknown as Record<string, unknown>, "title", lang) as string;
+  const desc = localize(project as unknown as Record<string, unknown>, "description", lang) as string | null;
+  const isLink = !!project.youtubeUrl;
+  const Wrapper = isLink ? motion.a : motion.div;
+  const linkProps = isLink
+    ? { href: ensureProtocol(project.youtubeUrl!) ?? "#", target: "_blank" as const, rel: "noopener noreferrer" }
+    : {};
+
   return (
-    <motion.a
+    <Wrapper
       layout
-      key={project.id}
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.96 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      href={ensureProtocol(project.youtubeUrl) ?? "#"}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group block rounded-2xl overflow-hidden border border-[#e8e8e8]
-                 hover:border-primary/30 hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.12)]
-                 transition-all duration-300 bg-white"
+      {...linkProps}
+      className={`group block rounded-2xl overflow-hidden border border-[#e8e8e8]
+                  hover:border-primary/30 hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.13)]
+                  transition-all duration-300 bg-white
+                  ${isLink ? "cursor-pointer" : "cursor-default"}`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
+      {/* Media area */}
       <div className="aspect-video relative overflow-hidden bg-[#0c0c0c]">
-        <img
-          src={project.bannerUrl}
-          alt={localize(project as unknown as Record<string, unknown>, "title", lang) as string}
-          className="w-full h-full object-cover transition-transform duration-600
-                     group-hover:scale-[1.05] opacity-90"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center
-                          opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100
-                          transition-all duration-300 shadow-xl">
-            <Play className="w-4 h-4 ml-0.5 text-white" fill="white" />
-          </div>
+        {/* Static thumbnail */}
+        {thumb && (
+          <img
+            src={thumb}
+            alt={title}
+            className={`absolute inset-0 w-full h-full object-cover transition-all duration-600
+                        ${hovered && preview ? "opacity-0" : "opacity-90 group-hover:scale-[1.04]"}`}
+            loading="lazy"
+          />
+        )}
+
+        {/* Animated preview on hover */}
+        {hovered && preview && (
+          <AnimatedPreview
+            preview={preview}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+
+        {/* Overlay badges */}
+        <div className="absolute top-3 left-3 flex items-center gap-1.5">
+          {hasAnimatedMedia(project) && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full
+                             bg-black/60 backdrop-blur-sm border border-white/10
+                             text-[9px] font-bold text-white uppercase tracking-widest">
+              <Film className="w-2.5 h-2.5 text-primary" />
+              {preview?.isVideo ? "Video" : "GIF"}
+            </span>
+          )}
         </div>
+
+        {/* Play button - YouTube only */}
+        {isLink && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-full bg-primary flex items-center justify-center
+                            opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100
+                            transition-all duration-300 shadow-xl shadow-primary/40">
+              <Play className="w-4 h-4 ml-0.5 text-white" fill="white" />
+            </div>
+          </div>
+        )}
       </div>
-      <div className="p-5 space-y-2">
+
+      {/* Text area */}
+      <div className="p-4 space-y-2">
         {(project.categories ?? []).length > 0 && (
           <CategoryChips categories={project.categories ?? []} lang={lang} />
         )}
-        <h4 className="font-display font-bold text-[#141414] text-base
-                       group-hover:text-primary transition-colors duration-200 line-clamp-1">
-          {localize(project as unknown as Record<string, unknown>, "title", lang)}
+        <h4 className="font-display font-bold text-[#141414] text-sm leading-snug
+                       group-hover:text-primary transition-colors duration-200 line-clamp-2">
+          {title}
         </h4>
-        {localize(project as unknown as Record<string, unknown>, "description", lang) && (
-          <p className="text-[#888] text-sm line-clamp-2 leading-relaxed font-light">
-            {localize(project as unknown as Record<string, unknown>, "description", lang)}
+        {desc && (
+          <p className="text-[#888] text-xs line-clamp-2 leading-relaxed font-light">
+            {desc}
           </p>
         )}
       </div>
-    </motion.a>
+    </Wrapper>
   );
 }
 
@@ -223,8 +355,13 @@ function Skeletons() {
   return (
     <div className="space-y-5">
       <div className="aspect-[3/1] rounded-2xl bg-[#f0f0f0] animate-pulse" />
+      <div className="flex flex-wrap gap-2 mb-8">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="h-8 w-20 rounded-full bg-[#f0f0f0] animate-pulse" />
+        ))}
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {[1, 2, 3].map((i) => (
+        {[1, 2, 3, 4, 5, 6].map((i) => (
           <div key={i} className="rounded-2xl bg-[#f0f0f0] animate-pulse aspect-video" />
         ))}
       </div>
@@ -241,7 +378,6 @@ export function Portfolio() {
 
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
-  // Only show active projects, sorted by sortOrder
   const activeProjects = useMemo(
     () =>
       [...(allProjects ?? [])]
@@ -250,13 +386,16 @@ export function Portfolio() {
     [allProjects]
   );
 
-  // Derive only categories that are actually in use
-  const usedCategories = useMemo(() => {
-    const used = new Set<number>();
-    activeProjects.forEach((p) => (p.categories ?? []).forEach((c) => used.add(c.id)));
-    return allCategories
+  // Derive only categories actually in use (with per-category counts)
+  const { usedCategories, counts } = useMemo(() => {
+    const used = new Map<number, number>();
+    activeProjects.forEach((p) =>
+      (p.categories ?? []).forEach((c) => used.set(c.id, (used.get(c.id) ?? 0) + 1))
+    );
+    const filtered = allCategories
       .filter((c) => used.has(c.id))
       .sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id);
+    return { usedCategories: filtered, counts: used };
   }, [allCategories, activeProjects]);
 
   const filtered = useMemo(() => {
@@ -298,9 +437,11 @@ export function Portfolio() {
               {t(i18n.portfolio.heading, lang)}
             </h2>
           </div>
-          <p className="text-[#888] text-sm md:text-right max-w-xs leading-relaxed font-light">
-            {t(i18n.portfolio.clickHint, lang)}
-          </p>
+          {activeProjects.some((p) => p.youtubeUrl) && (
+            <p className="text-[#888] text-sm md:text-right max-w-xs leading-relaxed font-light">
+              {t(i18n.portfolio.clickHint, lang)}
+            </p>
+          )}
         </motion.div>
 
         {/* Filter tabs */}
@@ -310,13 +451,16 @@ export function Portfolio() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="mb-8 overflow-x-auto pb-1"
+            className="mb-8 overflow-x-auto pb-1 -mx-1 px-1"
           >
             <FilterTabs
               categories={usedCategories}
               active={activeFilter}
-              onChange={setActiveFilter}
+              onChange={(slug) => {
+                setActiveFilter(slug);
+              }}
               lang={lang}
+              counts={counts}
             />
           </motion.div>
         )}
@@ -331,17 +475,26 @@ export function Portfolio() {
               exit={{ opacity: 0 }}
               className="text-center py-20 text-[#bbb] text-sm"
             >
-              {lang === "ru" ? "Проектов в этой категории нет." : lang === "tj" ? "Лоиҳаҳо дар ин категория нестанд." : "No projects in this category."}
+              {lang === "ru"
+                ? "Проектов в этой категории нет."
+                : lang === "tj"
+                ? "Лоиҳаҳо дар ин категория нестанд."
+                : "No projects in this category."}
             </motion.div>
           ) : (
             <motion.div key="content" className="space-y-5">
+              {/* Featured project */}
               {featured && (
-                <FeaturedCard key={`feat-${featured.id}`} project={featured} lang={lang} />
+                <AnimatePresence mode="popLayout">
+                  <FeaturedCard key={`feat-${featured.id}`} project={featured} lang={lang} />
+                </AnimatePresence>
               )}
+
+              {/* Grid */}
               {rest.length > 0 && (
                 <motion.div
                   layout
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
                 >
                   <AnimatePresence mode="popLayout">
                     {rest.map((project) => (

@@ -9,6 +9,13 @@ export interface HealthStatus {
   status: string;
 }
 
+export interface ProjectMediaItem {
+  url: string;
+  mimeType: string;
+  name: string;
+  sortOrder: number;
+}
+
 export interface Category {
   id: number;
   slug: string;
@@ -34,11 +41,14 @@ export interface Project {
   descriptionRu?: string | null;
   /** @nullable */
   descriptionTj?: string | null;
-  youtubeUrl: string;
-  bannerUrl: string;
+  /** @nullable */
+  youtubeUrl?: string | null;
+  /** @nullable */
+  bannerUrl?: string | null;
   isActive: boolean;
   sortOrder: number;
   createdAt: string;
+  mediaItems: ProjectMediaItem[];
   categories: Category[];
 }
 
@@ -55,10 +65,13 @@ export interface ProjectInput {
   descriptionRu?: string | null;
   /** @nullable */
   descriptionTj?: string | null;
-  youtubeUrl: string;
-  bannerUrl: string;
+  /** @nullable */
+  youtubeUrl?: string | null;
+  /** @nullable */
+  bannerUrl?: string | null;
   isActive?: boolean;
   sortOrder?: number;
+  mediaItems?: ProjectMediaItem[];
   categoryIds?: number[];
 }
 
@@ -75,10 +88,13 @@ export interface ProjectUpdate {
   descriptionRu?: string | null;
   /** @nullable */
   descriptionTj?: string | null;
-  youtubeUrl?: string;
-  bannerUrl?: string;
+  /** @nullable */
+  youtubeUrl?: string | null;
+  /** @nullable */
+  bannerUrl?: string | null;
   isActive?: boolean;
   sortOrder?: number;
+  mediaItems?: ProjectMediaItem[];
   categoryIds?: number[];
 }
 

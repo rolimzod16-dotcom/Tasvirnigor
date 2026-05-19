@@ -5,6 +5,7 @@
  * Tasvirnigor Film & Animation Studio API
  * OpenAPI spec version: 0.2.0
  */
+import type { ProjectMediaItem } from './projectMediaItem';
 
 export interface ProjectInput {
   /** @minLength 1 */
@@ -19,9 +20,12 @@ export interface ProjectInput {
   descriptionRu?: string | null;
   /** @nullable */
   descriptionTj?: string | null;
-  youtubeUrl: string;
-  bannerUrl: string;
+  /** @nullable */
+  youtubeUrl?: string | null;
+  /** @nullable */
+  bannerUrl?: string | null;
   isActive?: boolean;
   sortOrder?: number;
+  mediaItems?: ProjectMediaItem[];
   categoryIds?: number[];
 }

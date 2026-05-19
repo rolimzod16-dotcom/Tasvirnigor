@@ -27,11 +27,17 @@ export const ListProjectsResponseItem = zod.object({
   "description": zod.string().nullish(),
   "descriptionRu": zod.string().nullish(),
   "descriptionTj": zod.string().nullish(),
-  "youtubeUrl": zod.string(),
-  "bannerUrl": zod.string(),
+  "youtubeUrl": zod.string().nullish(),
+  "bannerUrl": zod.string().nullish(),
   "isActive": zod.boolean(),
   "sortOrder": zod.number(),
   "createdAt": zod.string(),
+  "mediaItems": zod.array(zod.object({
+  "url": zod.string(),
+  "mimeType": zod.string(),
+  "name": zod.string(),
+  "sortOrder": zod.number()
+})),
   "categories": zod.array(zod.object({
   "id": zod.number(),
   "slug": zod.string(),
@@ -58,10 +64,16 @@ export const CreateProjectBody = zod.object({
   "description": zod.string().nullish(),
   "descriptionRu": zod.string().nullish(),
   "descriptionTj": zod.string().nullish(),
-  "youtubeUrl": zod.string(),
-  "bannerUrl": zod.string(),
+  "youtubeUrl": zod.string().nullish(),
+  "bannerUrl": zod.string().nullish(),
   "isActive": zod.boolean().optional(),
   "sortOrder": zod.number().optional(),
+  "mediaItems": zod.array(zod.object({
+  "url": zod.string(),
+  "mimeType": zod.string(),
+  "name": zod.string(),
+  "sortOrder": zod.number()
+})).optional(),
   "categoryIds": zod.array(zod.number()).optional()
 })
 
@@ -83,10 +95,16 @@ export const UpdateProjectBody = zod.object({
   "description": zod.string().nullish(),
   "descriptionRu": zod.string().nullish(),
   "descriptionTj": zod.string().nullish(),
-  "youtubeUrl": zod.string().optional(),
-  "bannerUrl": zod.string().optional(),
+  "youtubeUrl": zod.string().nullish(),
+  "bannerUrl": zod.string().nullish(),
   "isActive": zod.boolean().optional(),
   "sortOrder": zod.number().optional(),
+  "mediaItems": zod.array(zod.object({
+  "url": zod.string(),
+  "mimeType": zod.string(),
+  "name": zod.string(),
+  "sortOrder": zod.number()
+})).optional(),
   "categoryIds": zod.array(zod.number()).optional()
 })
 
@@ -98,11 +116,17 @@ export const UpdateProjectResponse = zod.object({
   "description": zod.string().nullish(),
   "descriptionRu": zod.string().nullish(),
   "descriptionTj": zod.string().nullish(),
-  "youtubeUrl": zod.string(),
-  "bannerUrl": zod.string(),
+  "youtubeUrl": zod.string().nullish(),
+  "bannerUrl": zod.string().nullish(),
   "isActive": zod.boolean(),
   "sortOrder": zod.number(),
   "createdAt": zod.string(),
+  "mediaItems": zod.array(zod.object({
+  "url": zod.string(),
+  "mimeType": zod.string(),
+  "name": zod.string(),
+  "sortOrder": zod.number()
+})),
   "categories": zod.array(zod.object({
   "id": zod.number(),
   "slug": zod.string(),

@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.2.0
  */
 import type { Category } from './category';
+import type { ProjectMediaItem } from './projectMediaItem';
 
 export interface Project {
   id: number;
@@ -20,10 +21,13 @@ export interface Project {
   descriptionRu?: string | null;
   /** @nullable */
   descriptionTj?: string | null;
-  youtubeUrl: string;
-  bannerUrl: string;
+  /** @nullable */
+  youtubeUrl?: string | null;
+  /** @nullable */
+  bannerUrl?: string | null;
   isActive: boolean;
   sortOrder: number;
   createdAt: string;
+  mediaItems: ProjectMediaItem[];
   categories: Category[];
 }

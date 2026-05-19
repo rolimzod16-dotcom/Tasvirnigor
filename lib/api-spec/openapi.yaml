@@ -548,9 +548,22 @@ components:
           type: string
       required: [status]
 
+    ProjectMediaItem:
+      type: object
+      required: [url, mimeType, name, sortOrder]
+      properties:
+        url:
+          type: string
+        mimeType:
+          type: string
+        name:
+          type: string
+        sortOrder:
+          type: integer
+
     Project:
       type: object
-      required: [id, title, youtubeUrl, bannerUrl, isActive, sortOrder, createdAt, categories]
+      required: [id, title, isActive, sortOrder, createdAt, categories, mediaItems]
       properties:
         id:
           type: integer
@@ -567,15 +580,19 @@ components:
         descriptionTj:
           type: ["string", "null"]
         youtubeUrl:
-          type: string
+          type: ["string", "null"]
         bannerUrl:
-          type: string
+          type: ["string", "null"]
         isActive:
           type: boolean
         sortOrder:
           type: integer
         createdAt:
           type: string
+        mediaItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectMediaItem"
         categories:
           type: array
           items:
@@ -583,7 +600,7 @@ components:
 
     ProjectInput:
       type: object
-      required: [title, youtubeUrl, bannerUrl]
+      required: [title]
       properties:
         title:
           type: string
@@ -599,13 +616,17 @@ components:
         descriptionTj:
           type: ["string", "null"]
         youtubeUrl:
-          type: string
+          type: ["string", "null"]
         bannerUrl:
-          type: string
+          type: ["string", "null"]
         isActive:
           type: boolean
         sortOrder:
           type: integer
+        mediaItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectMediaItem"
         categoryIds:
           type: array
           items:
@@ -628,13 +649,17 @@ components:
         descriptionTj:
           type: ["string", "null"]
         youtubeUrl:
-          type: string
+          type: ["string", "null"]
         bannerUrl:
-          type: string
+          type: ["string", "null"]
         isActive:
           type: boolean
         sortOrder:
           type: integer
+        mediaItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectMediaItem"
         categoryIds:
           type: array
           items:

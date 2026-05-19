@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   useListProjects, useCreateProject, useUpdateProject, useDeleteProject, getListProjectsQueryKey,
   useListCategories, useCreateCategory, useUpdateCategory, useDeleteCategory, getListCategoriesQueryKey,
@@ -13,15 +13,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { FileUpload } from "@/components/ui/file-upload";
-import { Plus, Edit2, Trash2, ChevronUp, ChevronDown, Tag, Eye, EyeOff, X } from "lucide-react";
+import { MultiMediaUpload, type MediaItemValue } from "@/components/ui/multi-media-upload";
+import { Plus, Edit2, Trash2, ChevronUp, ChevronDown, Tag, Eye, EyeOff, X, Film, Image } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/language-context";
 import { i18n, t } from "@/lib/i18n";
-import type { Project, Category } from "@workspace/api-client-react";
+import type { Project, Category, ProjectMediaItem } from "@workspace/api-client-react";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CATEGORY MANAGER
@@ -55,7 +55,6 @@ function CategoryManager() {
   });
 
   const reset = () => { form.reset(); setEditingId(null); setShowForm(false); };
-
   const invalidate = () => queryClient.invalidateQueries({ queryKey: getListCategoriesQueryKey() });
 
   const startEdit = (cat: Category) => {
@@ -103,7 +102,6 @@ function CategoryManager() {
         </Button>
       </div>
 
-      {/* Category chips list */}
       {!isLoading && sorted.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-3">
           {sorted.map((cat) => (
@@ -126,7 +124,6 @@ function CategoryManager() {
         </div>
       )}
 
-      {/* Inline category form */}
       {showForm && (
         <form onSubmit={form.handleSubmit(onSubmit)}
           className="border border-border/50 rounded-lg p-3 bg-background space-y-2.5">
@@ -174,25 +171,64 @@ function CategoryManager() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PROJECT FORM TYPES
+// CARD PREVIEW
+// ─────────────────────────────────────────────────────────────────────────────
+
+function ProjectCardPreview({ project }: { project: Project }) {
+  const items = (project.mediaItems ?? []) as ProjectMediaItem[];
+  const firstVideo = items.find((m) => m.mimeType.startsWith("video/"));
+  const firstGif = items.find((m) => m.mimeType === "image/gif");
+  const thumb = project.bannerUrl ?? items.find((m) => m.mimeType.startsWith("image/") && m.mimeType !== "image/gif")?.url ?? items[0]?.url;
+
+  return (
+    <div className="aspect-video relative bg-[#0c0c0c] overflow-hidden">
+      {thumb && <img src={thumb} alt={project.title} className="w-full h-full object-cover" loading="lazy" />}
+      {!project.isActive && (
+        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+          <EyeOff className="w-5 h-5 text-white/70" />
+        </div>
+      )}
+      {/* Media type indicators */}
+      <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
+        {(firstVideo || firstGif) && (
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/70 text-[9px] font-bold text-white">
+            <Film className="w-2.5 h-2.5 text-primary" />
+            {firstVideo ? "Video" : "GIF"}
+          </span>
+        )}
+        {items.length > 0 && (
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/70 text-[9px] text-white">
+            <Image className="w-2.5 h-2.5" />
+            {items.length}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FORM TYPES
 // ─────────────────────────────────────────────────────────────────────────────
 
 type ProjectFormValues = {
   title: string; titleRu: string | null; titleTj: string | null;
   description: string | null; descriptionRu: string | null; descriptionTj: string | null;
-  youtubeUrl: string; bannerUrl: string;
+  youtubeUrl: string | null;
   isActive: boolean;
   categoryIds: number[];
   sortOrder: number;
+  mediaItems: MediaItemValue[];
 };
 
 const EMPTY: ProjectFormValues = {
   title: "", titleRu: "", titleTj: "",
   description: "", descriptionRu: "", descriptionTj: "",
-  youtubeUrl: "", bannerUrl: "",
+  youtubeUrl: "",
   isActive: true,
   categoryIds: [],
   sortOrder: 0,
+  mediaItems: [],
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -221,11 +257,27 @@ export function AdminProjects() {
         description: z.string().optional().nullable(),
         descriptionRu: z.string().optional().nullable(),
         descriptionTj: z.string().optional().nullable(),
-        youtubeUrl: z.string().url(t(i18n.validation.urlInvalid, lang)),
-        bannerUrl: z.string().min(1, t(i18n.validation.bannerRequired, lang)),
+        youtubeUrl: z
+          .string()
+          .optional()
+          .nullable()
+          .refine(
+            (v) => !v || /^https?:\/\//.test(v),
+            t(i18n.validation.urlInvalid, lang)
+          ),
         isActive: z.boolean().default(true),
         categoryIds: z.array(z.number()).default([]),
         sortOrder: z.coerce.number().default(0),
+        mediaItems: z
+          .array(
+            z.object({
+              url: z.string(),
+              mimeType: z.string(),
+              name: z.string(),
+              sortOrder: z.number(),
+            })
+          )
+          .default([]),
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [lang]
@@ -240,14 +292,26 @@ export function AdminProjects() {
 
   const handleEdit = (project: Project) => {
     setEditingProject(project);
+    // Migrate legacy bannerUrl into mediaItems if needed
+    const existingMedia = ((project.mediaItems ?? []) as ProjectMediaItem[]).map((m, i) => ({
+      url: m.url,
+      mimeType: m.mimeType,
+      name: m.name,
+      sortOrder: m.sortOrder ?? i,
+    }));
+    let mediaItems = existingMedia;
+    if (existingMedia.length === 0 && project.bannerUrl) {
+      mediaItems = [{ url: project.bannerUrl, mimeType: "image/jpeg", name: "banner", sortOrder: 0 }];
+    }
     form.reset({
       title: project.title, titleRu: project.titleRu ?? "", titleTj: project.titleTj ?? "",
       description: project.description ?? "", descriptionRu: project.descriptionRu ?? "",
       descriptionTj: project.descriptionTj ?? "",
-      youtubeUrl: project.youtubeUrl, bannerUrl: project.bannerUrl,
+      youtubeUrl: project.youtubeUrl ?? "",
       isActive: project.isActive ?? true,
       categoryIds: (project.categories ?? []).map((c) => c.id),
       sortOrder: project.sortOrder,
+      mediaItems,
     });
     setIsDialogOpen(true);
   };
@@ -255,12 +319,28 @@ export function AdminProjects() {
   const invalidate = () => queryClient.invalidateQueries({ queryKey: getListProjectsQueryKey() });
 
   const onSubmit = (values: ProjectFormValues) => {
+    // Derive bannerUrl from first non-animated image in mediaItems
+    const mediaItems = values.mediaItems;
+    const firstStill = mediaItems.find(
+      (m) => m.mimeType.startsWith("image/") && m.mimeType !== "image/gif"
+    );
+    const bannerUrl = firstStill?.url ?? mediaItems[0]?.url ?? null;
+
     const data = {
-      ...values,
-      titleRu: values.titleRu || null, titleTj: values.titleTj || null,
+      title: values.title,
+      titleRu: values.titleRu || null,
+      titleTj: values.titleTj || null,
       description: values.description || null,
-      descriptionRu: values.descriptionRu || null, descriptionTj: values.descriptionTj || null,
+      descriptionRu: values.descriptionRu || null,
+      descriptionTj: values.descriptionTj || null,
+      youtubeUrl: values.youtubeUrl || null,
+      bannerUrl,
+      isActive: values.isActive,
+      categoryIds: values.categoryIds,
+      sortOrder: values.sortOrder,
+      mediaItems,
     };
+
     if (editingProject) {
       updateMutation.mutate({ id: editingProject.id, data }, {
         onSuccess: () => { invalidate(); toast({ title: t(i18n.form.projectUpdated, lang) }); setIsDialogOpen(false); resetForm(); },
@@ -301,7 +381,6 @@ export function AdminProjects() {
   };
 
   const watchedCategoryIds = form.watch("categoryIds");
-
   const toggleCategory = (id: number) => {
     const current = form.getValues("categoryIds");
     form.setValue("categoryIds",
@@ -332,12 +411,21 @@ export function AdminProjects() {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
 
-                {/* Banner upload */}
-                <FormField control={form.control} name="bannerUrl" render={({ field }) => (
+                {/* Media gallery upload */}
+                <FormField control={form.control} name="mediaItems" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t(i18n.form.bannerImage, lang)}</FormLabel>
+                    <FormLabel>
+                      Media Files
+                      <span className="text-muted-foreground font-normal text-xs ml-2">
+                        JPG · PNG · WebP · GIF · SVG · AVIF · MP4 · WebM · MOV — first item is the cover
+                      </span>
+                    </FormLabel>
                     <FormControl>
-                      <FileUpload value={field.value} onChange={field.onChange} endpoint="/api/upload/project-banner" />
+                      <MultiMediaUpload
+                        value={field.value}
+                        onChange={field.onChange}
+                        endpoint="/api/upload/project-media"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -407,11 +495,16 @@ export function AdminProjects() {
                   </Tabs>
                 </div>
 
-                {/* YouTube URL */}
+                {/* YouTube URL (optional) */}
                 <FormField control={form.control} name="youtubeUrl" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t(i18n.form.youtubeUrl, lang)}</FormLabel>
-                    <FormControl><Input {...field} placeholder={t(i18n.form.youtubePlaceholder, lang)} /></FormControl>
+                    <FormLabel>
+                      {t(i18n.form.youtubeUrl, lang)}
+                      <span className="text-muted-foreground font-normal text-xs ml-2">optional — links the card to YouTube</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value ?? ""} placeholder={t(i18n.form.youtubePlaceholder, lang)} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
@@ -424,16 +517,12 @@ export function AdminProjects() {
                       {sortedCats.map((cat) => {
                         const checked = watchedCategoryIds.includes(cat.id);
                         return (
-                          <button
-                            key={cat.id}
-                            type="button"
-                            onClick={() => toggleCategory(cat.id)}
+                          <button key={cat.id} type="button" onClick={() => toggleCategory(cat.id)}
                             className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all
                               ${checked
                                 ? "bg-primary text-white border-primary"
                                 : "bg-white text-[#555] border-[#e0e0e0] hover:border-primary/40"
-                              }`}
-                          >
+                              }`}>
                             {cat.name}
                           </button>
                         );
@@ -442,7 +531,7 @@ export function AdminProjects() {
                   </div>
                 )}
 
-                {/* Sort + visibility */}
+                {/* Sort order + visibility */}
                 <div className="flex flex-wrap items-end gap-6">
                   <FormField control={form.control} name="sortOrder" render={({ field }) => (
                     <FormItem className="flex-1 min-w-[100px]">
@@ -492,15 +581,8 @@ export function AdminProjects() {
                             transition-all hover:border-primary/40
                             ${project.isActive ? "border-border/50" : "border-border/30 opacity-60"}`}
               >
-                <div className="aspect-video relative bg-[#0c0c0c]">
-                  <img src={project.bannerUrl} alt={project.title}
-                    className="w-full h-full object-cover" loading="lazy" />
-                  {!project.isActive && (
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                      <EyeOff className="w-5 h-5 text-white/70" />
-                    </div>
-                  )}
-                </div>
+                <ProjectCardPreview project={project} />
+
                 <div className="p-3 flex-1 flex flex-col gap-1.5">
                   <div className="flex items-start gap-2">
                     <p className="text-sm font-semibold leading-tight line-clamp-1 flex-1">{project.title}</p>
@@ -508,6 +590,7 @@ export function AdminProjects() {
                       <Badge variant="outline" className="text-[10px] px-1.5 shrink-0 text-muted-foreground">Hidden</Badge>
                     )}
                   </div>
+
                   {(project.categories ?? []).length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {(project.categories ?? []).map((c) => (

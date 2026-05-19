@@ -9,6 +9,7 @@ import {
 } from "@workspace/api-zod";
 import { requireAdmin } from "../middlewares/auth";
 import { serialize } from "../lib/serialize";
+import type { ProjectMediaItem } from "@workspace/db";
 
 const router: IRouter = Router();
 
@@ -52,6 +53,18 @@ async function syncCategories(projectId: number, categoryIds: number[] | null | 
   }
 }
 
+// ── Helper: derive bannerUrl from mediaItems if not explicitly provided ────────
+
+function deriveBanner(bannerUrl: string | null | undefined, mediaItems: ProjectMediaItem[]): string | null {
+  if (bannerUrl) return bannerUrl;
+  const firstImage = mediaItems.find(
+    (m) => m.mimeType.startsWith("image/") && m.mimeType !== "image/gif"
+  );
+  if (firstImage) return firstImage.url;
+  const first = mediaItems[0];
+  return first?.url ?? null;
+}
+
 // ── Routes ────────────────────────────────────────────────────────────────────
 
 router.get("/projects", async (req, res): Promise<void> => {
@@ -66,6 +79,7 @@ router.get("/projects", async (req, res): Promise<void> => {
   res.json(
     projects.map((p) => ({
       ...serialize(p),
+      mediaItems: (p.mediaItems as ProjectMediaItem[]) ?? [],
       categories: catsByProject.get(p.id) ?? [],
     }))
   );
@@ -79,14 +93,22 @@ router.post("/projects", requireAdmin, async (req, res): Promise<void> => {
     return;
   }
 
-  const { categoryIds, ...projectData } = parsed.data as typeof parsed.data & { categoryIds?: number[] };
+  const { categoryIds, mediaItems: rawMedia, bannerUrl: rawBanner, ...rest } =
+    parsed.data as typeof parsed.data & { categoryIds?: number[]; mediaItems?: ProjectMediaItem[]; bannerUrl?: string | null };
 
-  const [project] = await db.insert(projectsTable).values(projectData).returning();
+  const mediaItems: ProjectMediaItem[] = (rawMedia ?? []) as ProjectMediaItem[];
+  const bannerUrl = deriveBanner(rawBanner, mediaItems);
+
+  const [project] = await db
+    .insert(projectsTable)
+    .values({ ...rest, bannerUrl, mediaItems })
+    .returning();
   await syncCategories(project.id, categoryIds);
 
   const catsByProject = await loadCategoriesForProjects([project.id]);
   res.status(201).json({
     ...serialize(project),
+    mediaItems: (project.mediaItems as ProjectMediaItem[]) ?? [],
     categories: catsByProject.get(project.id) ?? [],
   });
 });
@@ -104,11 +126,26 @@ router.patch("/projects/:id", requireAdmin, async (req, res): Promise<void> => {
     return;
   }
 
-  const { categoryIds, ...projectData } = parsed.data as typeof parsed.data & { categoryIds?: number[] };
+  const { categoryIds, mediaItems: rawMedia, bannerUrl: rawBanner, ...rest } =
+    parsed.data as typeof parsed.data & { categoryIds?: number[]; mediaItems?: ProjectMediaItem[]; bannerUrl?: string | null };
+
+  const updateData: Record<string, unknown> = { ...rest };
+
+  if (rawMedia !== undefined) {
+    const mediaItems: ProjectMediaItem[] = rawMedia as ProjectMediaItem[];
+    updateData["mediaItems"] = mediaItems;
+    // Auto-derive bannerUrl from media if not explicitly provided
+    if (rawBanner === undefined) {
+      updateData["bannerUrl"] = deriveBanner(null, mediaItems);
+    }
+  }
+  if (rawBanner !== undefined) {
+    updateData["bannerUrl"] = rawBanner;
+  }
 
   const [project] = await db
     .update(projectsTable)
-    .set(projectData)
+    .set(updateData)
     .where(eq(projectsTable.id, params.data.id))
     .returning();
 
@@ -124,6 +161,7 @@ router.patch("/projects/:id", requireAdmin, async (req, res): Promise<void> => {
   const catsByProject = await loadCategoriesForProjects([project.id]);
   res.json({
     ...serialize(project),
+    mediaItems: (project.mediaItems as ProjectMediaItem[]) ?? [],
     categories: catsByProject.get(project.id) ?? [],
   });
 });
