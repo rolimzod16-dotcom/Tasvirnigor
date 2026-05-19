@@ -103,6 +103,17 @@ export const i18n = {
       tj: "Барои тамошо кардан дар YouTube лоиҳаро пахш кунед",
     } as T,
     featured: { en: "Featured", ru: "Главный", tj: "Барҷаста" } as T,
+    viewAll: { en: "View Full Portfolio", ru: "Полное портфолио", tj: "Портфолиои пурра" } as T,
+    dragHint: {
+      en: "Drag or swipe to explore",
+      ru: "Перетащите или проведите пальцем",
+      tj: "Кашед ё каҷ кунед",
+    } as T,
+    noFeatured: {
+      en: "No projects yet.",
+      ru: "Проектов пока нет.",
+      tj: "Лоиҳаҳо ҳанӯз нестанд.",
+    } as T,
   },
   team: {
     label: { en: "The Creators", ru: "Создатели", tj: "Офаринандагон" } as T,
@@ -319,6 +330,7 @@ export const i18n = {
     moveUp: { en: "Move Up", ru: "Вверх", tj: "Боло" } as T,
     moveDown: { en: "Move Down", ru: "Вниз", tj: "Поён" } as T,
     activeLabel: { en: "Visible on website", ru: "Отображается на сайте", tj: "Дар сайт намоён аст" } as T,
+    featuredLabel: { en: "Featured on homepage", ru: "На главной странице", tj: "Дар саҳифаи аввал" } as T,
 
     // Comics
     addComic: { en: "Add Comic", ru: "Добавить комикс", tj: "Комикс илова кунед" } as T,
@@ -365,6 +377,14 @@ export const i18n = {
     contactInfo: { en: "Contact Information", ru: "Контактная информация", tj: "Маълумоти тамос" } as T,
     contactsUpdated: { en: "Contacts updated successfully", ru: "Контакты обновлены", tj: "Тамос нав шуд" } as T,
     loadingContacts: { en: "Loading contacts...", ru: "Загрузка контактов...", tj: "Бор кардани тамос..." } as T,
+  },
+
+  // --- Services full page ---
+  servicesPage: {
+    label: { en: "All Services", ru: "Все услуги", tj: "Ҳамаи хидматҳо" } as T,
+    heading: { en: "Our Services", ru: "Наши услуги", tj: "Хидматҳои мо" } as T,
+    viewAll: { en: "View All Services", ru: "Все услуги", tj: "Ҳамаи хидматҳо" } as T,
+    backToHome: { en: "Back to Home", ru: "На главную", tj: "Ба саҳифаи аввал" } as T,
   },
 
   // --- Lang label tabs ---

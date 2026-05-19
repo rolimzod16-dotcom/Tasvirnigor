@@ -9,6 +9,8 @@ import AdminLogin from "@/pages/admin-login";
 import AdminDashboard from "@/pages/admin-dashboard";
 import { ComicDetail } from "@/pages/comic-detail";
 import { ComicReader } from "@/pages/comic-reader";
+import ServicesPage from "@/pages/services-page";
+import PortfolioPage from "@/pages/portfolio-page";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,6 +25,8 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/services" component={ServicesPage} />
+      <Route path="/portfolio" component={PortfolioPage} />
       <Route path="/comics/:comicId/read/:chapterId" component={ComicReader} />
       <Route path="/comics/:comicId" component={ComicDetail} />
       <Route path="/admin" component={AdminLogin} />

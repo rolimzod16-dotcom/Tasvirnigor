@@ -1,6 +1,7 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ArrowRight } from "lucide-react";
+import { Link } from "wouter";
 import { useLanguage, type Lang } from "@/contexts/language-context";
 import { i18n, t } from "@/lib/i18n";
 import { useListServices } from "@workspace/api-client-react";
@@ -107,7 +108,7 @@ const cardVariant = {
 
 // ── Single service card ────────────────────────────────────────────────────────
 
-function ServiceCard({ service, index, lang }: { service: Service; index: number; lang: Lang }) {
+export function ServiceCard({ service, index, lang }: { service: Service; index: number; lang: Lang }) {
   const num = String(index + 1).padStart(2, "0");
   const title = getTitle(service, lang);
   const subtitle = getSubtitle(service, lang);
@@ -195,7 +196,6 @@ function ServiceCard({ service, index, lang }: { service: Service; index: number
                        transition-transform duration-700 ease-out
                        group-hover:scale-[1.04] opacity-90"
           />
-          {/* Subtle left-edge vignette for seamless text → image transition */}
           <div className="absolute inset-0 pointer-events-none
                           bg-gradient-to-r from-white/8 via-transparent to-transparent
                           lg:bg-gradient-to-r lg:from-white/6 lg:via-transparent lg:to-transparent" />
@@ -224,15 +224,26 @@ function SkeletonCard() {
   );
 }
 
-// ── Public section ─────────────────────────────────────────────────────────────
+// ── Public section (homepage — shows featured/first 3 only) ───────────────────
 
 export function Services() {
   const { lang } = useLanguage();
   const { data: dbServices, isLoading } = useListServices();
 
-  const visible = [...(dbServices ?? [])]
-    .filter((s) => s.isActive !== false)
-    .sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id);
+  // Featured services for homepage: show isFeatured ones first (up to 3),
+  // fall back to first 3 active by sortOrder if none are marked featured.
+  const homepageServices = useMemo(() => {
+    const active = [...(dbServices ?? [])]
+      .filter((s) => s.isActive !== false)
+      .sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id);
+    const featured = active.filter((s) => s.isFeatured);
+    return featured.length > 0 ? featured.slice(0, 3) : active.slice(0, 3);
+  }, [dbServices]);
+
+  const totalActive = useMemo(
+    () => (dbServices ?? []).filter((s) => s.isActive !== false).length,
+    [dbServices]
+  );
 
   return (
     <section id="services" className="py-24 md:py-32 bg-[#f8f7f5]">
@@ -269,7 +280,7 @@ export function Services() {
         )}
 
         {/* Empty state */}
-        {!isLoading && visible.length === 0 && (
+        {!isLoading && homepageServices.length === 0 && (
           <div className="text-center py-20 text-[#bbb] text-sm">
             {lang === "ru"
               ? "Услуги появятся в ближайшее время."
@@ -280,7 +291,7 @@ export function Services() {
         )}
 
         {/* Cards */}
-        {!isLoading && visible.length > 0 && (
+        {!isLoading && homepageServices.length > 0 && (
           <motion.div
             variants={container}
             initial="hidden"
@@ -288,7 +299,7 @@ export function Services() {
             viewport={{ once: true, margin: "-40px" }}
             className="space-y-4"
           >
-            {visible.map((service, idx) => (
+            {homepageServices.map((service, idx) => (
               <ServiceCard
                 key={service.id}
                 service={service}
@@ -296,6 +307,56 @@ export function Services() {
                 lang={lang}
               />
             ))}
+          </motion.div>
+        )}
+
+        {/* View All button — shown when there are more than what's displayed */}
+        {!isLoading && totalActive > homepageServices.length && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex justify-center mt-12"
+          >
+            <Link href="/services">
+              <motion.span
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="inline-flex items-center gap-3 px-8 py-4 rounded-full
+                           border-2 border-[#141414] text-[#141414] font-semibold text-sm
+                           hover:bg-[#141414] hover:text-white
+                           transition-all duration-300 cursor-pointer group"
+              >
+                {t(i18n.servicesPage.viewAll, lang)}
+                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </motion.span>
+            </Link>
+          </motion.div>
+        )}
+
+        {/* View All button — always shown if any services exist (and all are shown, but page exists) */}
+        {!isLoading && homepageServices.length > 0 && totalActive <= homepageServices.length && totalActive > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex justify-center mt-12"
+          >
+            <Link href="/services">
+              <motion.span
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="inline-flex items-center gap-3 px-8 py-4 rounded-full
+                           border border-[#ddd] text-[#555] font-medium text-sm
+                           hover:border-primary hover:text-primary
+                           transition-all duration-300 cursor-pointer group"
+              >
+                {t(i18n.servicesPage.viewAll, lang)}
+                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </motion.span>
+            </Link>
           </motion.div>
         )}
       </div>

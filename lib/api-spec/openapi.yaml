@@ -834,7 +834,7 @@ components:
 
     Project:
       type: object
-      required: [id, title, isActive, sortOrder, createdAt, categories, mediaItems]
+      required: [id, title, isActive, isFeatured, sortOrder, createdAt, categories, mediaItems]
       properties:
         id:
           type: integer
@@ -855,6 +855,8 @@ components:
         bannerUrl:
           type: ["string", "null"]
         isActive:
+          type: boolean
+        isFeatured:
           type: boolean
         sortOrder:
           type: integer
@@ -892,6 +894,8 @@ components:
           type: ["string", "null"]
         isActive:
           type: boolean
+        isFeatured:
+          type: boolean
         sortOrder:
           type: integer
         mediaItems:
@@ -924,6 +928,8 @@ components:
         bannerUrl:
           type: ["string", "null"]
         isActive:
+          type: boolean
+        isFeatured:
           type: boolean
         sortOrder:
           type: integer
@@ -1104,7 +1110,7 @@ components:
 
     Service:
       type: object
-      required: [id, title, mediaUrl, mediaType, isActive, sortOrder, createdAt]
+      required: [id, title, mediaUrl, mediaType, isActive, isFeatured, sortOrder, createdAt]
       properties:
         id:
           type: integer
@@ -1139,6 +1145,8 @@ components:
         linkLabelTj:
           type: ["string", "null"]
         isActive:
+          type: boolean
+        isFeatured:
           type: boolean
         sortOrder:
           type: integer
@@ -1182,6 +1190,8 @@ components:
           type: ["string", "null"]
         isActive:
           type: boolean
+        isFeatured:
+          type: boolean
         sortOrder:
           type: integer
 
@@ -1220,6 +1230,8 @@ components:
         linkLabelTj:
           type: ["string", "null"]
         isActive:
+          type: boolean
+        isFeatured:
           type: boolean
         sortOrder:
           type: integer

@@ -1,6 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, ExternalLink, Film } from "lucide-react";
+import { Play, ExternalLink, Film, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { Link } from "wouter";
 import { useLanguage, type Lang } from "@/contexts/language-context";
 import { i18n, t } from "@/lib/i18n";
 import { localize } from "@/lib/localize";
@@ -40,90 +41,17 @@ function getCategoryName(cat: Category, lang: Lang): string {
   return cat.name;
 }
 
-// ── Category filter tabs ──────────────────────────────────────────────────────
-
-function FilterTabs({
-  categories,
-  active,
-  onChange,
-  lang,
-  counts,
-}: {
-  categories: Category[];
-  active: string | null;
-  onChange: (slug: string | null) => void;
-  lang: Lang;
-  counts: Map<number, number>;
-}) {
-  return (
-    <div className="flex items-center gap-2 flex-wrap">
-      <FilterPill
-        label={t(i18n.form.filterAll, lang)}
-        count={null}
-        active={active === null}
-        onClick={() => onChange(null)}
-      />
-      {categories.map((cat) => (
-        <FilterPill
-          key={cat.slug}
-          label={getCategoryName(cat, lang)}
-          count={counts.get(cat.id) ?? 0}
-          active={active === cat.slug}
-          onClick={() => onChange(cat.slug)}
-        />
-      ))}
-    </div>
-  );
-}
-
-function FilterPill({
-  label,
-  count,
-  active,
-  onClick,
-}: {
-  label: string;
-  count: number | null;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <motion.button
-      layout
-      onClick={onClick}
-      className={`relative inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold
-                  transition-colors duration-200 select-none
-        ${active
-          ? "bg-primary text-white shadow-md shadow-primary/20"
-          : "bg-white text-[#555] border border-[#e0e0e0] hover:border-primary/40 hover:text-primary"
-        }`}
-      whileTap={{ scale: 0.97 }}
-    >
-      {label}
-      {count !== null && count > 0 && (
-        <span className={`text-[10px] font-bold rounded-full px-1.5 py-0.5
-          ${active ? "bg-white/25 text-white" : "bg-primary/10 text-primary"}`}>
-          {count}
-        </span>
-      )}
-    </motion.button>
-  );
-}
-
 // ── Category chips ────────────────────────────────────────────────────────────
 
-function CategoryChips({ categories, lang, dark = false }: { categories: Category[]; lang: Lang; dark?: boolean }) {
+function CategoryChips({ categories, lang }: { categories: Category[]; lang: Lang }) {
   if (!categories.length) return null;
   return (
     <div className="flex flex-wrap gap-1.5">
       {categories.map((cat) => (
         <span
           key={cat.id}
-          className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full
-            ${dark
-              ? "bg-white/15 text-white border border-white/25 backdrop-blur-sm"
-              : "bg-primary/10 text-primary border border-primary/20"
-            }`}
+          className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full
+                     bg-white/15 text-white border border-white/25 backdrop-blur-sm"
         >
           {getCategoryName(cat, lang)}
         </span>
@@ -151,9 +79,9 @@ function AnimatedPreview({ preview, className }: { preview: AnimPreview; classNa
   return <img src={preview.url} alt="" className={className} />;
 }
 
-// ── Featured project card ─────────────────────────────────────────────────────
+// ── Carousel card ─────────────────────────────────────────────────────────────
 
-function FeaturedCard({ project, lang }: { project: Project; lang: Lang }) {
+function CarouselCard({ project, lang, priority = false }: { project: Project; lang: Lang; priority?: boolean }) {
   const [hovered, setHovered] = useState(false);
   const preview = getAnimPreview(project);
   const thumb = getThumbnail(project);
@@ -167,32 +95,33 @@ function FeaturedCard({ project, lang }: { project: Project; lang: Lang }) {
 
   return (
     <Wrapper
-      layout
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.98 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       {...linkProps}
-      className={`group block relative rounded-2xl overflow-hidden border border-[#e8e8e8]
-                  hover:border-primary/30 hover:shadow-[0_20px_80px_-16px_rgba(0,0,0,0.18)]
-                  transition-all duration-400 bg-[#0c0c0c]
+      className={`group block relative rounded-2xl overflow-hidden bg-[#0c0c0c]
+                  flex-shrink-0
+                  w-[82vw] sm:w-[340px] md:w-[380px] lg:w-[420px]
+                  border border-white/5 hover:border-primary/40
+                  hover:shadow-[0_24px_64px_-16px_rgba(196,145,10,0.25)]
+                  transition-all duration-400
                   ${isLink ? "cursor-pointer" : "cursor-default"}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      // prevent drag from triggering link click
+      onPointerDown={(e) => e.currentTarget.style.pointerEvents = "none"}
+      onPointerUp={(e) => {
+        setTimeout(() => { e.currentTarget.style.pointerEvents = ""; }, 0);
+      }}
     >
-      <div className="aspect-[21/9] md:aspect-[3/1] relative overflow-hidden">
-        {/* Static thumbnail */}
+      {/* Media */}
+      <div className="aspect-[3/4] relative overflow-hidden">
         {thumb && (
           <img
             src={thumb}
             alt={title}
             className={`absolute inset-0 w-full h-full object-cover transition-all duration-700
-                        ${hovered && preview ? "opacity-0 scale-[1.03]" : "opacity-90 group-hover:scale-[1.02]"}`}
-            loading="eager"
+                        ${hovered && preview ? "opacity-0 scale-[1.04]" : "opacity-80 group-hover:scale-[1.02]"}`}
+            loading={priority ? "eager" : "lazy"}
           />
         )}
-
-        {/* Animated preview on hover */}
         {hovered && preview && (
           <AnimatedPreview
             preview={preview}
@@ -201,112 +130,9 @@ function FeaturedCard({ project, lang }: { project: Project; lang: Lang }) {
         )}
 
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
 
-        {/* Animated media badge */}
-        {hasAnimatedMedia(project) && (
-          <div className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full
-                          bg-black/50 backdrop-blur-sm border border-white/15">
-            <Film className="w-3 h-3 text-primary" />
-            <span className="text-[10px] font-bold text-white uppercase tracking-widest">Preview</span>
-          </div>
-        )}
-
-        {/* Play button - YouTube only */}
-        {isLink && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center
-                            opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100
-                            transition-all duration-300 shadow-2xl shadow-primary/40">
-              <Play className="w-6 h-6 ml-0.5 text-white" fill="white" />
-            </div>
-          </div>
-        )}
-
-        {/* Content overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-7 md:p-10">
-          <div className="flex items-end justify-between gap-4">
-            <div className="space-y-2 max-w-3xl">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary
-                                 text-white text-[10px] font-bold uppercase tracking-widest">
-                  {t(i18n.portfolio.featured, lang)}
-                </span>
-                <CategoryChips categories={project.categories ?? []} lang={lang} dark />
-              </div>
-              <h3 className="font-display font-bold text-2xl md:text-4xl text-white
-                             group-hover:text-primary transition-colors duration-200 leading-tight">
-                {title}
-              </h3>
-              {desc && (
-                <p className="text-white/60 font-light mt-1 max-w-2xl line-clamp-2 text-sm md:text-base">
-                  {desc}
-                </p>
-              )}
-            </div>
-            {isLink && (
-              <ExternalLink className="w-5 h-5 text-primary opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mb-1" />
-            )}
-          </div>
-        </div>
-      </div>
-    </Wrapper>
-  );
-}
-
-// ── Regular project card ──────────────────────────────────────────────────────
-
-function ProjectCard({ project, lang }: { project: Project; lang: Lang }) {
-  const [hovered, setHovered] = useState(false);
-  const preview = getAnimPreview(project);
-  const thumb = getThumbnail(project);
-  const title = localize(project as unknown as Record<string, unknown>, "title", lang) as string;
-  const desc = localize(project as unknown as Record<string, unknown>, "description", lang) as string | null;
-  const isLink = !!project.youtubeUrl;
-  const Wrapper = isLink ? motion.a : motion.div;
-  const linkProps = isLink
-    ? { href: ensureProtocol(project.youtubeUrl!) ?? "#", target: "_blank" as const, rel: "noopener noreferrer" }
-    : {};
-
-  return (
-    <Wrapper
-      layout
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.96 }}
-      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      {...linkProps}
-      className={`group block rounded-2xl overflow-hidden border border-[#e8e8e8]
-                  hover:border-primary/30 hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.13)]
-                  transition-all duration-300 bg-white
-                  ${isLink ? "cursor-pointer" : "cursor-default"}`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      {/* Media area */}
-      <div className="aspect-video relative overflow-hidden bg-[#0c0c0c]">
-        {/* Static thumbnail */}
-        {thumb && (
-          <img
-            src={thumb}
-            alt={title}
-            className={`absolute inset-0 w-full h-full object-cover transition-all duration-600
-                        ${hovered && preview ? "opacity-0" : "opacity-90 group-hover:scale-[1.04]"}`}
-            loading="lazy"
-          />
-        )}
-
-        {/* Animated preview on hover */}
-        {hovered && preview && (
-          <AnimatedPreview
-            preview={preview}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-        )}
-
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-
-        {/* Overlay badges */}
+        {/* Badges */}
         <div className="absolute top-3 left-3 flex items-center gap-1.5">
           {hasAnimatedMedia(project) && (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full
@@ -318,31 +144,37 @@ function ProjectCard({ project, lang }: { project: Project; lang: Lang }) {
           )}
         </div>
 
-        {/* Play button - YouTube only */}
+        {/* Play button */}
         {isLink && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-11 h-11 rounded-full bg-primary flex items-center justify-center
+            <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center
                             opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100
-                            transition-all duration-300 shadow-xl shadow-primary/40">
-              <Play className="w-4 h-4 ml-0.5 text-white" fill="white" />
+                            transition-all duration-300 shadow-2xl shadow-primary/50">
+              <Play className="w-5 h-5 ml-0.5 text-white" fill="white" />
             </div>
           </div>
         )}
-      </div>
 
-      {/* Text area */}
-      <div className="p-4 space-y-2">
-        {(project.categories ?? []).length > 0 && (
-          <CategoryChips categories={project.categories ?? []} lang={lang} />
-        )}
-        <h4 className="font-display font-bold text-[#141414] text-sm leading-snug
-                       group-hover:text-primary transition-colors duration-200 line-clamp-2">
-          {title}
-        </h4>
-        {desc && (
-          <p className="text-[#888] text-xs line-clamp-2 leading-relaxed font-light">
-            {desc}
-          </p>
+        {/* Bottom content */}
+        <div className="absolute bottom-0 left-0 right-0 p-5">
+          <div className="space-y-2">
+            <CategoryChips categories={project.categories ?? []} lang={lang} />
+            <h4 className="font-display font-bold text-white text-lg leading-tight
+                           group-hover:text-primary transition-colors duration-200 line-clamp-2">
+              {title}
+            </h4>
+            {desc && (
+              <p className="text-white/50 text-xs line-clamp-2 leading-relaxed font-light">
+                {desc}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {isLink && (
+          <ExternalLink className="absolute top-3 right-3 w-4 h-4 text-white/40
+                                   opacity-0 group-hover:opacity-100 group-hover:text-primary
+                                   transition-all duration-200" />
         )}
       </div>
     </Wrapper>
@@ -351,20 +183,146 @@ function ProjectCard({ project, lang }: { project: Project; lang: Lang }) {
 
 // ── Skeleton loader ───────────────────────────────────────────────────────────
 
-function Skeletons() {
+function SkeletonCarousel() {
   return (
-    <div className="space-y-5">
-      <div className="aspect-[3/1] rounded-2xl bg-[#f0f0f0] animate-pulse" />
-      <div className="flex flex-wrap gap-2 mb-8">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-8 w-20 rounded-full bg-[#f0f0f0] animate-pulse" />
-        ))}
+    <div className="flex gap-5 overflow-hidden">
+      {[1, 2, 3].map((i) => (
+        <div
+          key={i}
+          className="flex-shrink-0 w-[82vw] sm:w-[340px] md:w-[380px] lg:w-[420px]
+                     rounded-2xl bg-[#f0f0f0] animate-pulse"
+          style={{ aspectRatio: "3/4" }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ── Horizontal draggable carousel ─────────────────────────────────────────────
+
+function DraggableCarousel({ children }: { children: React.ReactNode }) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const startScrollLeft = useRef(0);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const updateArrows = useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+  }, []);
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    updateArrows();
+    el.addEventListener("scroll", updateArrows, { passive: true });
+    return () => el.removeEventListener("scroll", updateArrows);
+  }, [updateArrows, children]);
+
+  const scroll = (dir: "left" | "right") => {
+    const el = trackRef.current;
+    if (!el) return;
+    const cardWidth = el.querySelector(":scope > *")?.getBoundingClientRect().width ?? 380;
+    el.scrollBy({ left: dir === "right" ? cardWidth + 20 : -(cardWidth + 20), behavior: "smooth" });
+  };
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = trackRef.current;
+    if (!el) return;
+    isDragging.current = true;
+    startX.current = e.clientX;
+    startScrollLeft.current = el.scrollLeft;
+    el.style.cursor = "grabbing";
+    el.style.userSelect = "none";
+    el.setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging.current || !trackRef.current) return;
+    const dx = e.clientX - startX.current;
+    trackRef.current.scrollLeft = startScrollLeft.current - dx;
+  };
+
+  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = trackRef.current;
+    if (!el) return;
+    isDragging.current = false;
+    el.style.cursor = "";
+    el.style.userSelect = "";
+    el.releasePointerCapture(e.pointerId);
+  };
+
+  return (
+    <div className="relative group/carousel">
+      {/* Scroll track */}
+      <div
+        ref={trackRef}
+        className="flex gap-5 overflow-x-auto pb-3
+                   scroll-smooth
+                   [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
+                   cursor-grab"
+        style={{ scrollSnapType: "x mandatory" }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerLeave={onPointerUp}
+      >
+        {children}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="rounded-2xl bg-[#f0f0f0] animate-pulse aspect-video" />
-        ))}
-      </div>
+
+      {/* Prev arrow */}
+      <AnimatePresence>
+        {canScrollLeft && (
+          <motion.button
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -8 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => scroll("left")}
+            className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5
+                       w-12 h-12 rounded-full bg-white border border-[#e8e8e8] shadow-lg
+                       items-center justify-center z-10
+                       hover:bg-primary hover:border-primary hover:text-white
+                       text-[#141414] transition-all duration-200"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* Next arrow */}
+      <AnimatePresence>
+        {canScrollRight && (
+          <motion.button
+            initial={{ opacity: 0, x: 8 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 8 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => scroll("right")}
+            className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-5
+                       w-12 h-12 rounded-full bg-white border border-[#e8e8e8] shadow-lg
+                       items-center justify-center z-10
+                       hover:bg-primary hover:border-primary hover:text-white
+                       text-[#141414] transition-all duration-200"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* Left/right fade edges */}
+      {canScrollLeft && (
+        <div className="pointer-events-none absolute left-0 top-0 bottom-3 w-12
+                        bg-gradient-to-r from-white/60 to-transparent" />
+      )}
+      {canScrollRight && (
+        <div className="pointer-events-none absolute right-0 top-0 bottom-3 w-12
+                        bg-gradient-to-l from-white/60 to-transparent" />
+      )}
     </div>
   );
 }
@@ -376,42 +334,35 @@ export function Portfolio() {
   const { data: allProjects, isLoading: loadingProjects } = useListProjects();
   const { data: allCategories = [] } = useListCategories();
 
-  const [activeFilter, setActiveFilter] = useState<string | null>(null);
-
   const activeProjects = useMemo(
     () =>
       [...(allProjects ?? [])]
         .filter((p) => p.isActive !== false)
-        .sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id),
+        .sort((a, b) => {
+          // Featured first, then by sortOrder
+          if (a.isFeatured && !b.isFeatured) return -1;
+          if (!a.isFeatured && b.isFeatured) return 1;
+          return a.sortOrder - b.sortOrder || a.id - b.id;
+        }),
     [allProjects]
   );
 
-  // Derive only categories actually in use (with per-category counts)
-  const { usedCategories, counts } = useMemo(() => {
-    const used = new Map<number, number>();
-    activeProjects.forEach((p) =>
-      (p.categories ?? []).forEach((c) => used.set(c.id, (used.get(c.id) ?? 0) + 1))
-    );
-    const filtered = allCategories
+  // Only use categories that appear in active projects
+  const usedCategories = useMemo(() => {
+    const used = new Set<number>();
+    activeProjects.forEach((p) => (p.categories ?? []).forEach((c) => used.add(c.id)));
+    return allCategories
       .filter((c) => used.has(c.id))
       .sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id);
-    return { usedCategories: filtered, counts: used };
   }, [allCategories, activeProjects]);
-
-  const filtered = useMemo(() => {
-    if (activeFilter === null) return activeProjects;
-    return activeProjects.filter((p) =>
-      (p.categories ?? []).some((c) => c.slug === activeFilter)
-    );
-  }, [activeProjects, activeFilter]);
-
-  const [featured, ...rest] = filtered;
 
   if (loadingProjects) {
     return (
-      <section id="portfolio" className="py-24 md:py-32 bg-white">
+      <section id="portfolio" className="py-24 md:py-32 bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-5 lg:px-10">
-          <Skeletons />
+          <div className="h-8 w-48 bg-[#f0f0f0] rounded animate-pulse mb-3" />
+          <div className="h-14 w-72 bg-[#f0f0f0] rounded animate-pulse mb-10" />
+          <SkeletonCarousel />
         </div>
       </section>
     );
@@ -420,7 +371,7 @@ export function Portfolio() {
   if (!activeProjects.length) return null;
 
   return (
-    <section id="portfolio" className="py-24 md:py-32 bg-white">
+    <section id="portfolio" className="py-24 md:py-32 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-5 lg:px-10">
 
         {/* Header */}
@@ -437,75 +388,66 @@ export function Portfolio() {
               {t(i18n.portfolio.heading, lang)}
             </h2>
           </div>
-          {activeProjects.some((p) => p.youtubeUrl) && (
-            <p className="text-[#888] text-sm md:text-right max-w-xs leading-relaxed font-light">
-              {t(i18n.portfolio.clickHint, lang)}
+          <div className="flex flex-col items-start md:items-end gap-2">
+            <p className="text-[#aaa] text-xs font-light">
+              {t(i18n.portfolio.dragHint, lang)}
             </p>
-          )}
+            {usedCategories.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 md:justify-end">
+                {usedCategories.slice(0, 5).map((cat) => (
+                  <span key={cat.id}
+                    className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full
+                               bg-[#f5f5f5] text-[#888] border border-[#eee]">
+                    {getCategoryName(cat, lang)}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
         </motion.div>
 
-        {/* Filter tabs */}
-        {usedCategories.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="mb-8 overflow-x-auto pb-1 -mx-1 px-1"
-          >
-            <FilterTabs
-              categories={usedCategories}
-              active={activeFilter}
-              onChange={(slug) => {
-                setActiveFilter(slug);
-              }}
-              lang={lang}
-              counts={counts}
-            />
-          </motion.div>
-        )}
+        {/* Carousel */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="-mx-5 px-5 lg:-mx-10 lg:px-10"
+        >
+          <DraggableCarousel>
+            {activeProjects.map((project, idx) => (
+              <div
+                key={project.id}
+                style={{ scrollSnapAlign: "start" }}
+              >
+                <CarouselCard project={project} lang={lang} priority={idx < 3} />
+              </div>
+            ))}
+          </DraggableCarousel>
+        </motion.div>
 
-        {/* Cards */}
-        <AnimatePresence mode="popLayout">
-          {filtered.length === 0 ? (
-            <motion.div
-              key="empty"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-center py-20 text-[#bbb] text-sm"
+        {/* View Full Portfolio CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="flex justify-center mt-12"
+        >
+          <Link href="/portfolio">
+            <motion.span
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-full
+                         bg-[#141414] text-white font-semibold text-sm
+                         hover:bg-primary
+                         transition-all duration-300 cursor-pointer group shadow-lg shadow-black/10"
             >
-              {lang === "ru"
-                ? "Проектов в этой категории нет."
-                : lang === "tj"
-                ? "Лоиҳаҳо дар ин категория нестанд."
-                : "No projects in this category."}
-            </motion.div>
-          ) : (
-            <motion.div key="content" className="space-y-5">
-              {/* Featured project */}
-              {featured && (
-                <AnimatePresence mode="popLayout">
-                  <FeaturedCard key={`feat-${featured.id}`} project={featured} lang={lang} />
-                </AnimatePresence>
-              )}
-
-              {/* Grid */}
-              {rest.length > 0 && (
-                <motion.div
-                  layout
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
-                >
-                  <AnimatePresence mode="popLayout">
-                    {rest.map((project) => (
-                      <ProjectCard key={project.id} project={project} lang={lang} />
-                    ))}
-                  </AnimatePresence>
-                </motion.div>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
+              {t(i18n.portfolio.viewAll, lang)}
+              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </motion.span>
+          </Link>
+        </motion.div>
       </div>
     </section>
   );

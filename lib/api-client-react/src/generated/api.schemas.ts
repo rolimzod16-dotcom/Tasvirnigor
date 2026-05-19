@@ -46,6 +46,7 @@ export interface Project {
   /** @nullable */
   bannerUrl?: string | null;
   isActive: boolean;
+  isFeatured: boolean;
   sortOrder: number;
   createdAt: string;
   mediaItems: ProjectMediaItem[];
@@ -70,6 +71,7 @@ export interface ProjectInput {
   /** @nullable */
   bannerUrl?: string | null;
   isActive?: boolean;
+  isFeatured?: boolean;
   sortOrder?: number;
   mediaItems?: ProjectMediaItem[];
   categoryIds?: number[];
@@ -93,6 +95,7 @@ export interface ProjectUpdate {
   /** @nullable */
   bannerUrl?: string | null;
   isActive?: boolean;
+  isFeatured?: boolean;
   sortOrder?: number;
   mediaItems?: ProjectMediaItem[];
   categoryIds?: number[];
@@ -263,6 +266,7 @@ export interface Service {
   /** @nullable */
   linkLabelTj?: string | null;
   isActive: boolean;
+  isFeatured: boolean;
   sortOrder: number;
   createdAt: string;
 }
@@ -297,6 +301,7 @@ export interface ServiceInput {
   /** @nullable */
   linkLabelTj?: string | null;
   isActive?: boolean;
+  isFeatured?: boolean;
   sortOrder?: number;
 }
 
@@ -330,6 +335,7 @@ export interface ServiceUpdate {
   /** @nullable */
   linkLabelTj?: string | null;
   isActive?: boolean;
+  isFeatured?: boolean;
   sortOrder?: number;
 }
 

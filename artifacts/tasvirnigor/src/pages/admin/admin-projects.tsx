@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { MultiMediaUpload, type MediaItemValue } from "@/components/ui/multi-media-upload";
-import { Plus, Edit2, Trash2, ChevronUp, ChevronDown, Tag, Eye, EyeOff, X, Film, Image } from "lucide-react";
+import { Plus, Edit2, Trash2, ChevronUp, ChevronDown, Tag, Eye, EyeOff, X, Film, Image, Star } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -368,6 +368,12 @@ export function AdminProjects() {
     });
   };
 
+  const handleToggleFeatured = (project: Project) => {
+    updateMutation.mutate({ id: project.id, data: { isFeatured: !project.isFeatured } }, {
+      onSuccess: () => invalidate(),
+    });
+  };
+
   const handleMove = (project: Project, dir: "up" | "down") => {
     const sorted = [...projects].sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id);
     const idx = sorted.findIndex((p) => p.id === project.id);
@@ -586,6 +592,12 @@ export function AdminProjects() {
                 <div className="p-3 flex-1 flex flex-col gap-1.5">
                   <div className="flex items-start gap-2">
                     <p className="text-sm font-semibold leading-tight line-clamp-1 flex-1">{project.title}</p>
+                    {project.isFeatured && (
+                      <Badge className="text-[10px] px-1.5 shrink-0 bg-amber-100 text-amber-700 border-amber-200">
+                        <Star className="w-2.5 h-2.5 mr-0.5 fill-amber-500 text-amber-500" />
+                        Featured
+                      </Badge>
+                    )}
                     {!project.isActive && (
                       <Badge variant="outline" className="text-[10px] px-1.5 shrink-0 text-muted-foreground">Hidden</Badge>
                     )}
@@ -617,6 +629,13 @@ export function AdminProjects() {
                       title={project.isActive ? "Hide" : "Show"} onClick={() => handleToggleActive(project)}
                       disabled={updateMutation.isPending}>
                       {project.isActive ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                    </Button>
+                    <Button
+                      variant="outline" size="icon" className={`h-7 w-7 transition-colors ${project.isFeatured ? "border-amber-300 bg-amber-50 text-amber-600 hover:bg-amber-100" : "hover:border-amber-300 hover:text-amber-500"}`}
+                      title={project.isFeatured ? "Unmark featured" : "Mark as featured"}
+                      onClick={() => handleToggleFeatured(project)}
+                      disabled={updateMutation.isPending}>
+                      <Star className={`w-3.5 h-3.5 ${project.isFeatured ? "fill-amber-500 text-amber-500" : ""}`} />
                     </Button>
                     <div className="flex-1" />
                     <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => handleEdit(project)}>

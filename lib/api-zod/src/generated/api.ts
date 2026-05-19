@@ -30,6 +30,7 @@ export const ListProjectsResponseItem = zod.object({
   "youtubeUrl": zod.string().nullish(),
   "bannerUrl": zod.string().nullish(),
   "isActive": zod.boolean(),
+  "isFeatured": zod.boolean(),
   "sortOrder": zod.number(),
   "createdAt": zod.string(),
   "mediaItems": zod.array(zod.object({
@@ -67,6 +68,7 @@ export const CreateProjectBody = zod.object({
   "youtubeUrl": zod.string().nullish(),
   "bannerUrl": zod.string().nullish(),
   "isActive": zod.boolean().optional(),
+  "isFeatured": zod.boolean().optional(),
   "sortOrder": zod.number().optional(),
   "mediaItems": zod.array(zod.object({
   "url": zod.string(),
@@ -98,6 +100,7 @@ export const UpdateProjectBody = zod.object({
   "youtubeUrl": zod.string().nullish(),
   "bannerUrl": zod.string().nullish(),
   "isActive": zod.boolean().optional(),
+  "isFeatured": zod.boolean().optional(),
   "sortOrder": zod.number().optional(),
   "mediaItems": zod.array(zod.object({
   "url": zod.string(),
@@ -119,6 +122,7 @@ export const UpdateProjectResponse = zod.object({
   "youtubeUrl": zod.string().nullish(),
   "bannerUrl": zod.string().nullish(),
   "isActive": zod.boolean(),
+  "isFeatured": zod.boolean(),
   "sortOrder": zod.number(),
   "createdAt": zod.string(),
   "mediaItems": zod.array(zod.object({
@@ -411,6 +415,7 @@ export const ListServicesResponseItem = zod.object({
   "linkLabelRu": zod.string().nullish(),
   "linkLabelTj": zod.string().nullish(),
   "isActive": zod.boolean(),
+  "isFeatured": zod.boolean(),
   "sortOrder": zod.number(),
   "createdAt": zod.string()
 })
@@ -440,6 +445,7 @@ export const CreateServiceBody = zod.object({
   "linkLabelRu": zod.string().nullish(),
   "linkLabelTj": zod.string().nullish(),
   "isActive": zod.boolean().optional(),
+  "isFeatured": zod.boolean().optional(),
   "sortOrder": zod.number().optional()
 })
 
@@ -471,6 +477,7 @@ export const UpdateServiceBody = zod.object({
   "linkLabelRu": zod.string().nullish(),
   "linkLabelTj": zod.string().nullish(),
   "isActive": zod.boolean().optional(),
+  "isFeatured": zod.boolean().optional(),
   "sortOrder": zod.number().optional()
 })
 
@@ -492,6 +499,7 @@ export const UpdateServiceResponse = zod.object({
   "linkLabelRu": zod.string().nullish(),
   "linkLabelTj": zod.string().nullish(),
   "isActive": zod.boolean(),
+  "isFeatured": zod.boolean(),
   "sortOrder": zod.number(),
   "createdAt": zod.string()
 })

@@ -1,7 +1,7 @@
 import { useParams, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { BookOpen, ChevronLeft, ChevronRight, BookMarked } from "lucide-react";
-import { useGetComic } from "@workspace/api-client-react";
+import { useGetComic, getGetComicQueryKey } from "@workspace/api-client-react";
 import { useLanguage } from "@/contexts/language-context";
 import { localize } from "@/lib/localize";
 import { i18n, t } from "@/lib/i18n";
@@ -69,7 +69,7 @@ export function ComicDetail() {
   const { lang } = useLanguage();
   const comicIdNum = Number(comicId);
 
-  const { data: comic, isLoading } = useGetComic(comicIdNum, { query: { enabled: !!comicIdNum } });
+  const { data: comic, isLoading } = useGetComic(comicIdNum, { query: { queryKey: getGetComicQueryKey(comicIdNum), enabled: !!comicIdNum } });
 
   if (isLoading) {
     return (

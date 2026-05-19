@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   X, ChevronLeft, ChevronRight, List, Maximize2, Minimize2, ArrowUp, Loader2
 } from "lucide-react";
-import { useGetChapter, useGetComic } from "@workspace/api-client-react";
+import { useGetChapter, useGetComic, getGetComicQueryKey, getGetChapterQueryKey } from "@workspace/api-client-react";
 import { useLanguage } from "@/contexts/language-context";
 import { localize } from "@/lib/localize";
 import { i18n, t } from "@/lib/i18n";
@@ -125,13 +125,13 @@ export function ComicReader() {
   const [showTop, setShowTop] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [barsVisible, setBarsVisible] = useState(true);
-  const hideTimer = useRef<ReturnType<typeof setTimeout>>();
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const comicIdNum = Number(comicId);
   const chapterIdNum = Number(chapterId);
 
-  const { data: comic } = useGetComic(comicIdNum, { query: { enabled: !!comicIdNum } });
-  const { data: chapter, isLoading } = useGetChapter(chapterIdNum, { query: { enabled: !!chapterIdNum } });
+  const { data: comic } = useGetComic(comicIdNum, { query: { queryKey: getGetComicQueryKey(comicIdNum), enabled: !!comicIdNum } });
+  const { data: chapter, isLoading } = useGetChapter(chapterIdNum, { query: { queryKey: getGetChapterQueryKey(chapterIdNum), enabled: !!chapterIdNum } });
 
   const chapters = comic?.chapters ?? [];
   const sortedChapters = [...chapters].sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id);

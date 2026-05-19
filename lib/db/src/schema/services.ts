@@ -20,6 +20,7 @@ export const servicesTable = pgTable("services", {
   linkLabelRu: text("link_label_ru"),
   linkLabelTj: text("link_label_tj"),
   isActive: boolean("is_active").notNull().default(true),
+  isFeatured: boolean("is_featured").notNull().default(false),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
