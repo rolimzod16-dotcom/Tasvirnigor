@@ -21,5 +21,7 @@ export interface ProjectUpdate {
   descriptionTj?: string | null;
   youtubeUrl?: string;
   bannerUrl?: string;
+  isActive?: boolean;
   sortOrder?: number;
+  categoryIds?: number[];
 }

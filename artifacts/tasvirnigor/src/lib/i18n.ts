@@ -296,6 +296,20 @@ export const i18n = {
     moveDown: { en: "Move Down", ru: "Вниз", tj: "Поён" } as T,
     activeLabel: { en: "Visible on website", ru: "Отображается на сайте", tj: "Дар сайт намоён аст" } as T,
 
+    // Categories
+    categories: { en: "Categories", ru: "Категории", tj: "Категорияҳо" } as T,
+    addCategory: { en: "Add Category", ru: "Добавить категорию", tj: "Категория илова кунед" } as T,
+    editCategory: { en: "Edit Category", ru: "Редактировать категорию", tj: "Вироиш кардани категория" } as T,
+    categorySlug: { en: "Slug (URL-friendly)", ru: "Слаг (для URL)", tj: "Слаг (барои URL)" } as T,
+    categoryName: { en: "Category Name", ru: "Название категории", tj: "Номи категория" } as T,
+    categoryCreated: { en: "Category created", ru: "Категория создана", tj: "Категория сохта шуд" } as T,
+    categoryUpdated: { en: "Category updated", ru: "Категория обновлена", tj: "Категория нав шуд" } as T,
+    categoryDeleted: { en: "Category deleted", ru: "Категория удалена", tj: "Категория ҳазф шуд" } as T,
+    deleteCategoryConfirm: { en: "Delete this category?", ru: "Удалить эту категорию?", tj: "Ин категорияро ҳазф кунед?" } as T,
+    assignCategories: { en: "Assign Categories", ru: "Назначить категории", tj: "Категорияҳоро таъин кунед" } as T,
+    filterAll: { en: "All", ru: "Все", tj: "Ҳама" } as T,
+    projectIsActive: { en: "Visible on website", ru: "Отображается на сайте", tj: "Дар сайт намоён аст" } as T,
+
     // About
     aboutSection: { en: "About Section", ru: "Раздел «О нас»", tj: "Бахши «Дар бораи мо»" } as T,
     aboutUpdated: { en: "About section updated successfully", ru: "Раздел «О нас» обновлён", tj: "Бахш нав шуд" } as T,

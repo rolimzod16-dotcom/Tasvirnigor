@@ -29,8 +29,18 @@ export const ListProjectsResponseItem = zod.object({
   "descriptionTj": zod.string().nullish(),
   "youtubeUrl": zod.string(),
   "bannerUrl": zod.string(),
+  "isActive": zod.boolean(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.string(),
+  "categories": zod.array(zod.object({
+  "id": zod.number(),
+  "slug": zod.string(),
+  "name": zod.string(),
+  "nameRu": zod.string().nullish(),
+  "nameTj": zod.string().nullish(),
   "sortOrder": zod.number(),
   "createdAt": zod.string()
+}))
 })
 export const ListProjectsResponse = zod.array(ListProjectsResponseItem)
 
@@ -50,7 +60,9 @@ export const CreateProjectBody = zod.object({
   "descriptionTj": zod.string().nullish(),
   "youtubeUrl": zod.string(),
   "bannerUrl": zod.string(),
-  "sortOrder": zod.number().optional()
+  "isActive": zod.boolean().optional(),
+  "sortOrder": zod.number().optional(),
+  "categoryIds": zod.array(zod.number()).optional()
 })
 
 
@@ -73,7 +85,9 @@ export const UpdateProjectBody = zod.object({
   "descriptionTj": zod.string().nullish(),
   "youtubeUrl": zod.string().optional(),
   "bannerUrl": zod.string().optional(),
-  "sortOrder": zod.number().optional()
+  "isActive": zod.boolean().optional(),
+  "sortOrder": zod.number().optional(),
+  "categoryIds": zod.array(zod.number()).optional()
 })
 
 export const UpdateProjectResponse = zod.object({
@@ -86,8 +100,18 @@ export const UpdateProjectResponse = zod.object({
   "descriptionTj": zod.string().nullish(),
   "youtubeUrl": zod.string(),
   "bannerUrl": zod.string(),
+  "isActive": zod.boolean(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.string(),
+  "categories": zod.array(zod.object({
+  "id": zod.number(),
+  "slug": zod.string(),
+  "name": zod.string(),
+  "nameRu": zod.string().nullish(),
+  "nameTj": zod.string().nullish(),
   "sortOrder": zod.number(),
   "createdAt": zod.string()
+}))
 })
 
 
@@ -95,6 +119,75 @@ export const UpdateProjectResponse = zod.object({
  * @summary Delete a project (admin only)
  */
 export const DeleteProjectParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List all project categories
+ */
+export const ListCategoriesResponseItem = zod.object({
+  "id": zod.number(),
+  "slug": zod.string(),
+  "name": zod.string(),
+  "nameRu": zod.string().nullish(),
+  "nameTj": zod.string().nullish(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.string()
+})
+export const ListCategoriesResponse = zod.array(ListCategoriesResponseItem)
+
+
+/**
+ * @summary Create a category (admin only)
+ */
+
+
+
+
+export const CreateCategoryBody = zod.object({
+  "slug": zod.string().min(1),
+  "name": zod.string().min(1),
+  "nameRu": zod.string().nullish(),
+  "nameTj": zod.string().nullish(),
+  "sortOrder": zod.number().optional()
+})
+
+
+/**
+ * @summary Update a category (admin only)
+ */
+export const UpdateCategoryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+
+export const UpdateCategoryBody = zod.object({
+  "slug": zod.string().min(1).optional(),
+  "name": zod.string().min(1).optional(),
+  "nameRu": zod.string().nullish(),
+  "nameTj": zod.string().nullish(),
+  "sortOrder": zod.number().optional()
+})
+
+export const UpdateCategoryResponse = zod.object({
+  "id": zod.number(),
+  "slug": zod.string(),
+  "name": zod.string(),
+  "nameRu": zod.string().nullish(),
+  "nameTj": zod.string().nullish(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Delete a category (admin only)
+ */
+export const DeleteCategoryParams = zod.object({
   "id": zod.coerce.number()
 })
 

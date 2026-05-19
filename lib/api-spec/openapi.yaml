@@ -10,6 +10,7 @@ servers:
 tags:
   - name: health
   - name: projects
+  - name: categories
   - name: team
   - name: content
   - name: partners
@@ -95,6 +96,86 @@ paths:
       operationId: deleteProject
       tags: [projects]
       summary: Delete a project (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+
+  /categories:
+    get:
+      operationId: listCategories
+      tags: [categories]
+      summary: List all project categories
+      responses:
+        "200":
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+    post:
+      operationId: createCategory
+      tags: [categories]
+      summary: Create a category (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "401":
+          description: Unauthorized
+
+  /categories/{id}:
+    patch:
+      operationId: updateCategory
+      tags: [categories]
+      summary: Update a category (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteCategory
+      tags: [categories]
+      summary: Delete a category (admin only)
       parameters:
         - name: id
           in: path
@@ -469,7 +550,7 @@ components:
 
     Project:
       type: object
-      required: [id, title, youtubeUrl, bannerUrl, sortOrder, createdAt]
+      required: [id, title, youtubeUrl, bannerUrl, isActive, sortOrder, createdAt, categories]
       properties:
         id:
           type: integer
@@ -489,10 +570,16 @@ components:
           type: string
         bannerUrl:
           type: string
+        isActive:
+          type: boolean
         sortOrder:
           type: integer
         createdAt:
           type: string
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/Category"
 
     ProjectInput:
       type: object
@@ -515,8 +602,14 @@ components:
           type: string
         bannerUrl:
           type: string
+        isActive:
+          type: boolean
         sortOrder:
           type: integer
+        categoryIds:
+          type: array
+          items:
+            type: integer
 
     ProjectUpdate:
       type: object
@@ -538,8 +631,14 @@ components:
           type: string
         bannerUrl:
           type: string
+        isActive:
+          type: boolean
         sortOrder:
           type: integer
+        categoryIds:
+          type: array
+          items:
+            type: integer
 
     TeamMember:
       type: object
@@ -888,6 +987,58 @@ components:
           type: ["string", "null"]
         logoUrl:
           type: string
+        sortOrder:
+          type: integer
+
+    Category:
+      type: object
+      required: [id, slug, name, sortOrder, createdAt]
+      properties:
+        id:
+          type: integer
+        slug:
+          type: string
+        name:
+          type: string
+        nameRu:
+          type: ["string", "null"]
+        nameTj:
+          type: ["string", "null"]
+        sortOrder:
+          type: integer
+        createdAt:
+          type: string
+
+    CategoryInput:
+      type: object
+      required: [slug, name]
+      properties:
+        slug:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        nameRu:
+          type: ["string", "null"]
+        nameTj:
+          type: ["string", "null"]
+        sortOrder:
+          type: integer
+
+    CategoryUpdate:
+      type: object
+      properties:
+        slug:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        nameRu:
+          type: ["string", "null"]
+        nameTj:
+          type: ["string", "null"]
         sortOrder:
           type: integer
 

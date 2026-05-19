@@ -5,6 +5,7 @@
  * Tasvirnigor Film & Animation Studio API
  * OpenAPI spec version: 0.2.0
  */
+import type { Category } from './category';
 
 export interface Project {
   id: number;
@@ -21,6 +22,8 @@ export interface Project {
   descriptionTj?: string | null;
   youtubeUrl: string;
   bannerUrl: string;
+  isActive: boolean;
   sortOrder: number;
   createdAt: string;
+  categories: Category[];
 }

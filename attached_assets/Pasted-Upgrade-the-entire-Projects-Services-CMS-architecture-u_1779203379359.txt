@@ -1,0 +1,179 @@
+Upgrade the entire Projects + Services CMS architecture using Supabase.
+
+MAIN GOAL:
+Create a scalable animation studio CMS with categorized projects, modern filtering, advanced media support, and full admin control.
+
+IMPORTANT:
+Keep existing frontend branding/design style.
+Do NOT break current pages/routes/domain/authentication.
+
+========================================
+
+1. PROJECT CATEGORIES + FILTER SYSTEM
+   ========================================
+
+Create categorized project filtering similar to modern creative studio websites.
+
+Add categories like:
+
+* 3D Animation
+* 2D Animation
+* Motion Design
+* VFX
+* CGI
+* Character Design
+* Storyboard
+* Comics
+* Illustration
+* UI/UX Design
+* Branding
+* Video Editing
+* Cinematics
+* Architectural Visualization
+* Game Art
+
+Requirements:
+
+* projects can belong to multiple categories
+* animated filter tabs/buttons
+* smooth filtering transitions
+* responsive mobile behavior
+* SEO friendly URLs/slugs
+
+========================================
+2. FULL ADMIN PANEL ACCESS
+==========================
+
+Admin must be able to:
+
+PROJECTS:
+
+* create project
+* edit project
+* delete project
+* reorder project
+* assign categories
+* upload media
+* enable/disable visibility
+* edit all languages (EN/RU/TJ)
+
+SERVICES:
+
+* create/edit/delete/reorder services
+* upload images/GIF/video
+* edit descriptions/buttons
+* multilingual support
+
+PARTNERS:
+
+* full CRUD management
+
+TEAM:
+
+* full CRUD management
+
+========================================
+3. SUPABASE INTEGRATION
+=======================
+
+Use Supabase for:
+
+* database
+* storage
+* media hosting
+
+Create proper tables for:
+
+* projects
+* categories
+* project_categories
+* services
+* partners
+* team_members
+
+Storage requirements:
+
+* persistent uploads
+* public CDN links
+* survive republish/restart
+* auto-create buckets if missing
+
+========================================
+4. MEDIA SUPPORT
+================
+
+Support uploads:
+
+* JPG
+* PNG
+* WEBP
+* GIF
+* SVG
+* AVIF
+* MP4
+* WEBM
+* MOV
+* Lottie JSON
+
+Allow:
+
+* drag & drop
+* upload from device
+* preview before save
+
+Frontend behavior:
+
+* GIF autoplay
+* videos autoplay muted loop
+* responsive media rendering
+* lazy loading
+
+========================================
+5. PROJECT CARD REDESIGN
+========================
+
+Redesign project/service cards inspired by premium animation studio websites.
+
+Layout:
+
+* text/content left
+* media preview right
+* rounded corners
+* hover animation
+* modern spacing
+* cinematic premium look
+
+========================================
+6. PERFORMANCE + SEO
+====================
+
+Optimize:
+
+* image compression
+* lazy loading
+* route caching
+* SEO metadata
+* sitemap
+* structured data
+
+Target:
+
+* mobile optimization
+* smooth scrolling
+* high Lighthouse score
+
+========================================
+7. STABILITY
+============
+
+Fix:
+
+* upload errors
+* bucket not found
+* stale cache after republish
+* broken media links
+* production storage failures
+
+Everything must work directly from the admin panel without manual coding afterward.
+
+Test all CRUD actions and uploads in production before finishing.

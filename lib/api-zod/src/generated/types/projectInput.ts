@@ -21,5 +21,7 @@ export interface ProjectInput {
   descriptionTj?: string | null;
   youtubeUrl: string;
   bannerUrl: string;
+  isActive?: boolean;
   sortOrder?: number;
+  categoryIds?: number[];
 }

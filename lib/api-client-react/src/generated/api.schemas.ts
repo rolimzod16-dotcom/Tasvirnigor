@@ -9,6 +9,18 @@ export interface HealthStatus {
   status: string;
 }
 
+export interface Category {
+  id: number;
+  slug: string;
+  name: string;
+  /** @nullable */
+  nameRu?: string | null;
+  /** @nullable */
+  nameTj?: string | null;
+  sortOrder: number;
+  createdAt: string;
+}
+
 export interface Project {
   id: number;
   title: string;
@@ -24,8 +36,10 @@ export interface Project {
   descriptionTj?: string | null;
   youtubeUrl: string;
   bannerUrl: string;
+  isActive: boolean;
   sortOrder: number;
   createdAt: string;
+  categories: Category[];
 }
 
 export interface ProjectInput {
@@ -43,7 +57,9 @@ export interface ProjectInput {
   descriptionTj?: string | null;
   youtubeUrl: string;
   bannerUrl: string;
+  isActive?: boolean;
   sortOrder?: number;
+  categoryIds?: number[];
 }
 
 export interface ProjectUpdate {
@@ -61,7 +77,9 @@ export interface ProjectUpdate {
   descriptionTj?: string | null;
   youtubeUrl?: string;
   bannerUrl?: string;
+  isActive?: boolean;
   sortOrder?: number;
+  categoryIds?: number[];
 }
 
 export interface TeamMember {
@@ -342,6 +360,30 @@ export interface PartnerUpdate {
   /** @nullable */
   websiteUrl?: string | null;
   logoUrl?: string;
+  sortOrder?: number;
+}
+
+export interface CategoryInput {
+  /** @minLength 1 */
+  slug: string;
+  /** @minLength 1 */
+  name: string;
+  /** @nullable */
+  nameRu?: string | null;
+  /** @nullable */
+  nameTj?: string | null;
+  sortOrder?: number;
+}
+
+export interface CategoryUpdate {
+  /** @minLength 1 */
+  slug?: string;
+  /** @minLength 1 */
+  name?: string;
+  /** @nullable */
+  nameRu?: string | null;
+  /** @nullable */
+  nameTj?: string | null;
   sortOrder?: number;
 }
 
