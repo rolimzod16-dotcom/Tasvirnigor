@@ -60,11 +60,7 @@ const uploadLarge = multer({
 
 const readyBuckets = new Set<string>();
 
-async function ensureBucket(
-  bucket: string,
-  allowedMimeTypes: string[],
-  fileSizeLimit: number
-): Promise<void> {
+async function ensureBucket(bucket: string): Promise<void> {
   if (readyBuckets.has(bucket)) return;
 
   const { data: buckets, error: listErr } = await supabase.storage.listBuckets();
@@ -72,14 +68,20 @@ async function ensureBucket(
 
   const exists = (buckets ?? []).some((b) => b.name === bucket);
   if (!exists) {
+    // Only set public:true — fileSizeLimit and allowedMimeTypes are plan-restricted
+    // Supabase settings and are rejected on most tiers. All validation is done in
+    // application code (multer limits + validateFile), so we don't need them here.
     const { error: createErr } = await supabase.storage.createBucket(bucket, {
       public: true,
-      fileSizeLimit,
-      allowedMimeTypes,
     });
 
-    if (createErr && !createErr.message.toLowerCase().includes("already exists")) {
-      throw new Error(`Cannot create storage bucket "${bucket}": ${createErr.message}`);
+    if (createErr) {
+      const msg = createErr.message.toLowerCase();
+      // Treat "already exists" / "duplicate" as success — bucket was created between
+      // our listBuckets check and the createBucket call (race condition on cold start)
+      if (!msg.includes("already exists") && !msg.includes("duplicate")) {
+        throw new Error(`Cannot create storage bucket "${bucket}": ${createErr.message}`);
+      }
     }
   }
 
@@ -155,7 +157,7 @@ async function handleImageUpload(req: Request, res: Response, bucket: string): P
     return;
   }
   try {
-    await ensureBucket(bucket, Array.from(IMAGE_MIME_TYPES), 26 * 1024 * 1024);
+    await ensureBucket(bucket);
     const url = await uploadToSupabase(bucket, req.file, IMAGE_EXT_TO_MIME, IMAGE_MIME_TYPES, "image/jpeg");
     res.json({ url });
   } catch (err) {
@@ -197,7 +199,7 @@ async function handleServiceMediaUpload(req: Request, res: Response): Promise<vo
   }
 
   try {
-    await ensureBucket(bucket, Array.from(SERVICE_MEDIA_MIME_TYPES), 102 * 1024 * 1024);
+    await ensureBucket(bucket);
     const url = await uploadToSupabase(
       bucket,
       req.file,
