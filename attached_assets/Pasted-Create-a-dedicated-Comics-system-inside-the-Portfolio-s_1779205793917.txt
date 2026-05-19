@@ -1,0 +1,124 @@
+Create a dedicated Comics system inside the Portfolio section.
+
+MAIN GOAL:
+Make comics comfortable to read directly on the website like a professional online comic/webtoon platform.
+
+========================================
+COMICS FEATURES
+===============
+
+Each comic must support:
+
+* title
+* cover image
+* description
+* genres/categories
+* chapters
+* pages/images
+* multilingual support (EN/RU/TJ)
+
+========================================
+COMIC READER SYSTEM
+===================
+
+Create a special comic reader page with:
+
+* vertical scrolling reading mode
+* mobile-first reading experience
+* optimized image loading
+* fullscreen reading support
+* smooth transitions between pages
+* next/previous chapter navigation
+* chapter selector
+* responsive layout
+
+Reader must work comfortably for:
+
+* manga style
+* webtoon style
+* comic page style
+
+========================================
+ADMIN PANEL
+===========
+
+Admin must be able to:
+
+COMICS:
+
+* create comic
+* edit comic
+* delete comic
+* upload cover
+* edit description
+* assign genres/categories
+
+CHAPTERS:
+
+* create chapters
+* rename chapters
+* reorder chapters
+* delete chapters
+
+PAGES:
+
+* upload multiple comic pages at once
+* drag & drop upload
+* reorder pages
+* delete pages
+* preview pages before publish
+
+========================================
+UPLOAD SUPPORT
+==============
+
+Support:
+
+* JPG
+* PNG
+* WEBP
+* GIF
+
+Allow bulk uploads for comic chapters.
+
+========================================
+STORAGE
+=======
+
+Use persistent production storage (Supabase).
+
+Requirements:
+
+* uploads survive republish/restart
+* fast CDN loading
+* optimized image delivery
+* lazy loading for long chapters
+
+========================================
+FRONTEND DESIGN
+===============
+
+Keep current Tasvirnigor branding/style.
+
+Comics section should feel cinematic, modern, and premium.
+
+Add:
+
+* comic cards
+* comic covers
+* hover animations
+* category filters
+
+========================================
+PERFORMANCE
+===========
+
+Optimize:
+
+* mobile reading
+* long-scroll chapters
+* image compression
+* lazy loading
+* SEO for comics pages
+
+Everything must work fully from the admin panel without manual coding afterward.

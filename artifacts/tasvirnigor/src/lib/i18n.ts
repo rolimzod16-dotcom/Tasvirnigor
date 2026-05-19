@@ -14,6 +14,7 @@ export const i18n = {
     about: { en: "About", ru: "О нас", tj: "Дар бораи мо" } as T,
     services: { en: "Services", ru: "Услуги", tj: "Хизматҳо" } as T,
     portfolio: { en: "Portfolio", ru: "Портфолио", tj: "Портфолио" } as T,
+    comics: { en: "Comics", ru: "Комиксы", tj: "Комикс" } as T,
     team: { en: "Team", ru: "Команда", tj: "Гурӯҳ" } as T,
     contacts: { en: "Contacts", ru: "Контакты", tj: "Тамос" } as T,
     adminLogin: { en: "Admin Login", ru: "Вход в панель", tj: "Вуруди маъмур" } as T,
@@ -168,6 +169,28 @@ export const i18n = {
     emailInvalid: { en: "Invalid email address", ru: "Неверный адрес электронной почты", tj: "Почтаи электронӣ нодуруст аст" } as T,
   },
 
+  // --- Comics (public section) ---
+  comics: {
+    label: { en: "Comics & Manga", ru: "Комиксы и манга", tj: "Комикс ва манга" } as T,
+    heading: { en: "Comics", ru: "Комиксы", tj: "Комикс" } as T,
+    subtitle: {
+      en: "Read our original comics and manga online, free.",
+      ru: "Читайте наши оригинальные комиксы онлайн, бесплатно.",
+      tj: "Комиксҳои аслии моро онлайн, ройгон хонед.",
+    } as T,
+    chapters: { en: "chapters", ru: "гл.", tj: "боб" } as T,
+    chapterList: { en: "Chapters", ru: "Главы", tj: "Бобҳо" } as T,
+    pages: { en: "pages", ru: "стр.", tj: "саҳ." } as T,
+    readNow: { en: "Read", ru: "Читать", tj: "Хондан" } as T,
+    startReading: { en: "Start Reading", ru: "Начать чтение", tj: "Хондан оғоз кунед" } as T,
+    backToComics: { en: "All Comics", ru: "Все комиксы", tj: "Ҳама комикс" } as T,
+    notFound: { en: "Comic not found", ru: "Комикс не найден", tj: "Комикс ёфт нашуд" } as T,
+    prevChapter: { en: "Previous", ru: "Назад", tj: "Қаблӣ" } as T,
+    nextChapter: { en: "Next Chapter", ru: "Следующая глава", tj: "Боби баъдӣ" } as T,
+    noPagesYet: { en: "No pages uploaded yet", ru: "Страницы ещё не загружены", tj: "Саҳифаҳо ҳанӯз бор нашудаанд" } as T,
+    noneInCategory: { en: "No comics in this category", ru: "Нет комиксов в этой категории", tj: "Дар ин категория комикс нест" } as T,
+  },
+
   // --- Admin panel common ---
   admin: {
     title: { en: "Content Management", ru: "Управление контентом", tj: "Идоракунии мазмун" } as T,
@@ -177,6 +200,7 @@ export const i18n = {
       tj: "Мазмуни вебсайти студияро аз ин ҷо идора кунед.",
     } as T,
     projects: { en: "Projects", ru: "Проекты", tj: "Лоиҳаҳо" } as T,
+    comics: { en: "Comics", ru: "Комиксы", tj: "Комикс" } as T,
     team: { en: "Team", ru: "Команда", tj: "Гурӯҳ" } as T,
     about: { en: "About", ru: "О нас", tj: "Дар бораи мо" } as T,
     contacts: { en: "Contacts", ru: "Контакты", tj: "Тамос" } as T,
@@ -295,6 +319,28 @@ export const i18n = {
     moveUp: { en: "Move Up", ru: "Вверх", tj: "Боло" } as T,
     moveDown: { en: "Move Down", ru: "Вниз", tj: "Поён" } as T,
     activeLabel: { en: "Visible on website", ru: "Отображается на сайте", tj: "Дар сайт намоён аст" } as T,
+
+    // Comics
+    addComic: { en: "Add Comic", ru: "Добавить комикс", tj: "Комикс илова кунед" } as T,
+    editComic: { en: "Edit Comic", ru: "Редактировать комикс", tj: "Вироиши комикс" } as T,
+    comicCreated: { en: "Comic created", ru: "Комикс создан", tj: "Комикс сохта шуд" } as T,
+    comicUpdated: { en: "Comic updated", ru: "Комикс обновлён", tj: "Комикс нав шуд" } as T,
+    comicDeleted: { en: "Comic deleted", ru: "Комикс удалён", tj: "Комикс ҳазф шуд" } as T,
+    deleteComicConfirm: { en: "Delete this comic?", ru: "Удалить этот комикс?", tj: "Ин комиксро ҳазф кунед?" } as T,
+    loadingComics: { en: "Loading comics...", ru: "Загрузка комиксов...", tj: "Бор кардани комиксҳо..." } as T,
+    coverImage: { en: "Cover Image", ru: "Обложка", tj: "Муқова" } as T,
+    manageChapters: { en: "Manage Chapters", ru: "Управление главами", tj: "Идораи бобҳо" } as T,
+
+    // Chapters
+    addChapter: { en: "Add Chapter", ru: "Добавить главу", tj: "Боб илова кунед" } as T,
+    chapterCreated: { en: "Chapter created", ru: "Глава создана", tj: "Боб сохта шуд" } as T,
+    chapterUpdated: { en: "Chapter updated", ru: "Глава обновлена", tj: "Боб нав шуд" } as T,
+    chapterDeleted: { en: "Chapter deleted", ru: "Глава удалена", tj: "Боб ҳазф шуд" } as T,
+    deleteChapterConfirm: { en: "Delete this chapter and all its pages?", ru: "Удалить эту главу со всеми страницами?", tj: "Ин бобро бо ҳамаи саҳифаҳо ҳазф кунед?" } as T,
+
+    // Pages
+    uploadPages: { en: "Upload Pages", ru: "Загрузить страницы", tj: "Саҳифаҳо бор кунед" } as T,
+    pageDeleted: { en: "Page deleted", ru: "Страница удалена", tj: "Саҳифа ҳазф шуд" } as T,
 
     // Categories
     categories: { en: "Categories", ru: "Категории", tj: "Категорияҳо" } as T,

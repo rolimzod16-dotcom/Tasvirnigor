@@ -258,6 +258,14 @@ router.post("/upload/team-photo", requireAdmin, upload.single("file"), async (re
   await handleImageUpload(req, res, "team-photos");
 });
 
+router.post("/upload/comic-cover", requireAdmin, upload.single("file"), async (req, res): Promise<void> => {
+  await handleImageUpload(req, res, "comic-covers");
+});
+
+router.post("/upload/comic-page", requireAdmin, upload.single("file"), async (req, res): Promise<void> => {
+  await handleImageUpload(req, res, "comic-pages");
+});
+
 router.post("/upload/partner-logo", requireAdmin, upload.single("file"), async (req, res): Promise<void> => {
   await handleImageUpload(req, res, "partner-logos");
 });

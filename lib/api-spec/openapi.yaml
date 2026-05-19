@@ -539,6 +539,277 @@ paths:
         "401":
           description: Not authenticated
 
+  /comics:
+    get:
+      operationId: listComics
+      tags: [comics]
+      summary: List all comics
+      responses:
+        "200":
+          description: List of comics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Comic"
+    post:
+      operationId: createComic
+      tags: [comics]
+      summary: Create a comic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComicInput"
+      responses:
+        "201":
+          description: Created comic
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comic"
+
+  /comics/{id}:
+    get:
+      operationId: getComic
+      tags: [comics]
+      summary: Get comic with chapters
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Comic with chapters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComicWithChapters"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateComic
+      tags: [comics]
+      summary: Update a comic
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComicUpdate"
+      responses:
+        "200":
+          description: Updated comic
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comic"
+    delete:
+      operationId: deleteComic
+      tags: [comics]
+      summary: Delete a comic
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /comics/{id}/chapters:
+    get:
+      operationId: listChapters
+      tags: [comics]
+      summary: List chapters of a comic
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of chapters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Chapter"
+    post:
+      operationId: createChapter
+      tags: [comics]
+      summary: Create a chapter
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChapterInput"
+      responses:
+        "201":
+          description: Created chapter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Chapter"
+
+  /chapters/{id}:
+    get:
+      operationId: getChapter
+      tags: [comics]
+      summary: Get chapter with pages
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Chapter with pages
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChapterWithPages"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateChapter
+      tags: [comics]
+      summary: Update a chapter
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChapterUpdate"
+      responses:
+        "200":
+          description: Updated chapter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Chapter"
+    delete:
+      operationId: deleteChapter
+      tags: [comics]
+      summary: Delete a chapter
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /chapters/{id}/pages:
+    post:
+      operationId: addPages
+      tags: [comics]
+      summary: Add pages to a chapter
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pages]
+              properties:
+                pages:
+                  type: array
+                  items:
+                    type: object
+                    required: [imageUrl, sortOrder]
+                    properties:
+                      imageUrl:
+                        type: string
+                      sortOrder:
+                        type: integer
+      responses:
+        "201":
+          description: Pages added
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ComicPage"
+
+  /pages/{id}:
+    delete:
+      operationId: deletePage
+      tags: [comics]
+      summary: Delete a page
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /pages/reorder:
+    post:
+      operationId: reorderPages
+      tags: [comics]
+      summary: Reorder pages
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pages]
+              properties:
+                pages:
+                  type: array
+                  items:
+                    type: object
+                    required: [id, sortOrder]
+                    properties:
+                      id:
+                        type: integer
+                      sortOrder:
+                        type: integer
+      responses:
+        "204":
+          description: Reordered
+
 components:
   schemas:
     HealthStatus:
@@ -1080,3 +1351,220 @@ components:
       properties:
         authenticated:
           type: boolean
+
+    ComicPage:
+      type: object
+      required: [id, chapterId, imageUrl, sortOrder, createdAt]
+      properties:
+        id:
+          type: integer
+        chapterId:
+          type: integer
+        imageUrl:
+          type: string
+        sortOrder:
+          type: integer
+        createdAt:
+          type: string
+
+    Chapter:
+      type: object
+      required: [id, comicId, title, sortOrder, isActive, createdAt]
+      properties:
+        id:
+          type: integer
+        comicId:
+          type: integer
+        title:
+          type: string
+        titleRu:
+          type: ["string", "null"]
+        titleTj:
+          type: ["string", "null"]
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+
+    ChapterWithPages:
+      type: object
+      required: [id, comicId, title, sortOrder, isActive, createdAt, pages]
+      properties:
+        id:
+          type: integer
+        comicId:
+          type: integer
+        title:
+          type: string
+        titleRu:
+          type: ["string", "null"]
+        titleTj:
+          type: ["string", "null"]
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+        pages:
+          type: array
+          items:
+            $ref: "#/components/schemas/ComicPage"
+
+    ChapterInput:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        titleRu:
+          type: ["string", "null"]
+        titleTj:
+          type: ["string", "null"]
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+
+    ChapterUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        titleRu:
+          type: ["string", "null"]
+        titleTj:
+          type: ["string", "null"]
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+
+    Comic:
+      type: object
+      required: [id, title, isActive, sortOrder, createdAt, categories, chapterCount]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        titleRu:
+          type: ["string", "null"]
+        titleTj:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        descriptionRu:
+          type: ["string", "null"]
+        descriptionTj:
+          type: ["string", "null"]
+        coverUrl:
+          type: ["string", "null"]
+        isActive:
+          type: boolean
+        sortOrder:
+          type: integer
+        createdAt:
+          type: string
+        chapterCount:
+          type: integer
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/Category"
+
+    ComicWithChapters:
+      type: object
+      required: [id, title, isActive, sortOrder, createdAt, categories, chapterCount, chapters]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        titleRu:
+          type: ["string", "null"]
+        titleTj:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        descriptionRu:
+          type: ["string", "null"]
+        descriptionTj:
+          type: ["string", "null"]
+        coverUrl:
+          type: ["string", "null"]
+        isActive:
+          type: boolean
+        sortOrder:
+          type: integer
+        createdAt:
+          type: string
+        chapterCount:
+          type: integer
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/Category"
+        chapters:
+          type: array
+          items:
+            $ref: "#/components/schemas/Chapter"
+
+    ComicInput:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        titleRu:
+          type: ["string", "null"]
+        titleTj:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        descriptionRu:
+          type: ["string", "null"]
+        descriptionTj:
+          type: ["string", "null"]
+        coverUrl:
+          type: ["string", "null"]
+        isActive:
+          type: boolean
+        sortOrder:
+          type: integer
+        categoryIds:
+          type: array
+          items:
+            type: integer
+
+    ComicUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        titleRu:
+          type: ["string", "null"]
+        titleTj:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        descriptionRu:
+          type: ["string", "null"]
+        descriptionTj:
+          type: ["string", "null"]
+        coverUrl:
+          type: ["string", "null"]
+        isActive:
+          type: boolean
+        sortOrder:
+          type: integer
+        categoryIds:
+          type: array
+          items:
+            type: integer

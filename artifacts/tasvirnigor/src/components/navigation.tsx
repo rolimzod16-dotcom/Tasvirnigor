@@ -15,6 +15,7 @@ export function Navigation() {
     { href: "#about", label: t(i18n.nav.about, lang) },
     { href: "#services", label: t(i18n.nav.services, lang) },
     { href: "#portfolio", label: t(i18n.nav.portfolio, lang) },
+    { href: "#comics", label: t(i18n.nav.comics, lang) },
     { href: "#team", label: t(i18n.nav.team, lang) },
     { href: "#partners", label: t(i18n.partners.nav, lang) },
     { href: "#contacts", label: t(i18n.nav.contacts, lang) },

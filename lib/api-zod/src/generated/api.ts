@@ -600,3 +600,287 @@ export const GetAdminMeResponse = zod.object({
 })
 
 
+/**
+ * @summary List all comics
+ */
+export const ListComicsResponseItem = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionTj": zod.string().nullish(),
+  "coverUrl": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.string(),
+  "chapterCount": zod.number(),
+  "categories": zod.array(zod.object({
+  "id": zod.number(),
+  "slug": zod.string(),
+  "name": zod.string(),
+  "nameRu": zod.string().nullish(),
+  "nameTj": zod.string().nullish(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.string()
+}))
+})
+export const ListComicsResponse = zod.array(ListComicsResponseItem)
+
+
+/**
+ * @summary Create a comic
+ */
+
+
+
+export const CreateComicBody = zod.object({
+  "title": zod.string().min(1),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionTj": zod.string().nullish(),
+  "coverUrl": zod.string().nullish(),
+  "isActive": zod.boolean().optional(),
+  "sortOrder": zod.number().optional(),
+  "categoryIds": zod.array(zod.number()).optional()
+})
+
+
+/**
+ * @summary Get comic with chapters
+ */
+export const GetComicParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetComicResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionTj": zod.string().nullish(),
+  "coverUrl": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.string(),
+  "chapterCount": zod.number(),
+  "categories": zod.array(zod.object({
+  "id": zod.number(),
+  "slug": zod.string(),
+  "name": zod.string(),
+  "nameRu": zod.string().nullish(),
+  "nameTj": zod.string().nullish(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.string()
+})),
+  "chapters": zod.array(zod.object({
+  "id": zod.number(),
+  "comicId": zod.number(),
+  "title": zod.string(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "sortOrder": zod.number(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.string()
+}))
+})
+
+
+/**
+ * @summary Update a comic
+ */
+export const UpdateComicParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+export const UpdateComicBody = zod.object({
+  "title": zod.string().min(1).optional(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionTj": zod.string().nullish(),
+  "coverUrl": zod.string().nullish(),
+  "isActive": zod.boolean().optional(),
+  "sortOrder": zod.number().optional(),
+  "categoryIds": zod.array(zod.number()).optional()
+})
+
+export const UpdateComicResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionTj": zod.string().nullish(),
+  "coverUrl": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.string(),
+  "chapterCount": zod.number(),
+  "categories": zod.array(zod.object({
+  "id": zod.number(),
+  "slug": zod.string(),
+  "name": zod.string(),
+  "nameRu": zod.string().nullish(),
+  "nameTj": zod.string().nullish(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.string()
+}))
+})
+
+
+/**
+ * @summary Delete a comic
+ */
+export const DeleteComicParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List chapters of a comic
+ */
+export const ListChaptersParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ListChaptersResponseItem = zod.object({
+  "id": zod.number(),
+  "comicId": zod.number(),
+  "title": zod.string(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "sortOrder": zod.number(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.string()
+})
+export const ListChaptersResponse = zod.array(ListChaptersResponseItem)
+
+
+/**
+ * @summary Create a chapter
+ */
+export const CreateChapterParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+export const CreateChapterBody = zod.object({
+  "title": zod.string().min(1),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "sortOrder": zod.number().optional(),
+  "isActive": zod.boolean().optional()
+})
+
+
+/**
+ * @summary Get chapter with pages
+ */
+export const GetChapterParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetChapterResponse = zod.object({
+  "id": zod.number(),
+  "comicId": zod.number(),
+  "title": zod.string(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "sortOrder": zod.number(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.string(),
+  "pages": zod.array(zod.object({
+  "id": zod.number(),
+  "chapterId": zod.number(),
+  "imageUrl": zod.string(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.string()
+}))
+})
+
+
+/**
+ * @summary Update a chapter
+ */
+export const UpdateChapterParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+export const UpdateChapterBody = zod.object({
+  "title": zod.string().min(1).optional(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "sortOrder": zod.number().optional(),
+  "isActive": zod.boolean().optional()
+})
+
+export const UpdateChapterResponse = zod.object({
+  "id": zod.number(),
+  "comicId": zod.number(),
+  "title": zod.string(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "sortOrder": zod.number(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Delete a chapter
+ */
+export const DeleteChapterParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary Add pages to a chapter
+ */
+export const AddPagesParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const AddPagesBody = zod.object({
+  "pages": zod.array(zod.object({
+  "imageUrl": zod.string(),
+  "sortOrder": zod.number()
+}))
+})
+
+
+/**
+ * @summary Delete a page
+ */
+export const DeletePageParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary Reorder pages
+ */
+export const ReorderPagesBody = zod.object({
+  "pages": zod.array(zod.object({
+  "id": zod.number(),
+  "sortOrder": zod.number()
+}))
+})
+
+

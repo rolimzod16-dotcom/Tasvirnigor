@@ -411,3 +411,163 @@ export interface AdminSession {
   authenticated: boolean;
 }
 
+export interface ComicPage {
+  id: number;
+  chapterId: number;
+  imageUrl: string;
+  sortOrder: number;
+  createdAt: string;
+}
+
+export interface Chapter {
+  id: number;
+  comicId: number;
+  title: string;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleTj?: string | null;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface ChapterWithPages {
+  id: number;
+  comicId: number;
+  title: string;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleTj?: string | null;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt: string;
+  pages: ComicPage[];
+}
+
+export interface ChapterInput {
+  /** @minLength 1 */
+  title: string;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleTj?: string | null;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export interface ChapterUpdate {
+  /** @minLength 1 */
+  title?: string;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleTj?: string | null;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export interface Comic {
+  id: number;
+  title: string;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleTj?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionTj?: string | null;
+  /** @nullable */
+  coverUrl?: string | null;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: string;
+  chapterCount: number;
+  categories: Category[];
+}
+
+export interface ComicWithChapters {
+  id: number;
+  title: string;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleTj?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionTj?: string | null;
+  /** @nullable */
+  coverUrl?: string | null;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: string;
+  chapterCount: number;
+  categories: Category[];
+  chapters: Chapter[];
+}
+
+export interface ComicInput {
+  /** @minLength 1 */
+  title: string;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleTj?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionTj?: string | null;
+  /** @nullable */
+  coverUrl?: string | null;
+  isActive?: boolean;
+  sortOrder?: number;
+  categoryIds?: number[];
+}
+
+export interface ComicUpdate {
+  /** @minLength 1 */
+  title?: string;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleTj?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionTj?: string | null;
+  /** @nullable */
+  coverUrl?: string | null;
+  isActive?: boolean;
+  sortOrder?: number;
+  categoryIds?: number[];
+}
+
+export type AddPagesBodyPagesItem = {
+  imageUrl: string;
+  sortOrder: number;
+};
+
+export type AddPagesBody = {
+  pages: AddPagesBodyPagesItem[];
+};
+
+export type ReorderPagesBodyPagesItem = {
+  id: number;
+  sortOrder: number;
+};
+
+export type ReorderPagesBody = {
+  pages: ReorderPagesBodyPagesItem[];
+};
+
