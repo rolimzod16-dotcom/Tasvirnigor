@@ -274,6 +274,105 @@ export const UpdateContactsResponse = zod.object({
 
 
 /**
+ * @summary List all services
+ */
+export const ListServicesResponseItem = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionTj": zod.string().nullish(),
+  "mediaUrl": zod.string(),
+  "mediaType": zod.string(),
+  "linkUrl": zod.string().nullish(),
+  "linkLabel": zod.string().nullish(),
+  "linkLabelRu": zod.string().nullish(),
+  "linkLabelTj": zod.string().nullish(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.string()
+})
+export const ListServicesResponse = zod.array(ListServicesResponseItem)
+
+
+/**
+ * @summary Create a service (admin only)
+ */
+
+
+
+export const CreateServiceBody = zod.object({
+  "title": zod.string().min(1),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionTj": zod.string().nullish(),
+  "mediaUrl": zod.string(),
+  "mediaType": zod.string(),
+  "linkUrl": zod.string().nullish(),
+  "linkLabel": zod.string().nullish(),
+  "linkLabelRu": zod.string().nullish(),
+  "linkLabelTj": zod.string().nullish(),
+  "sortOrder": zod.number().optional()
+})
+
+
+/**
+ * @summary Update a service (admin only)
+ */
+export const UpdateServiceParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+export const UpdateServiceBody = zod.object({
+  "title": zod.string().min(1).optional(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionTj": zod.string().nullish(),
+  "mediaUrl": zod.string().optional(),
+  "mediaType": zod.string().optional(),
+  "linkUrl": zod.string().nullish(),
+  "linkLabel": zod.string().nullish(),
+  "linkLabelRu": zod.string().nullish(),
+  "linkLabelTj": zod.string().nullish(),
+  "sortOrder": zod.number().optional()
+})
+
+export const UpdateServiceResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionTj": zod.string().nullish(),
+  "mediaUrl": zod.string(),
+  "mediaType": zod.string(),
+  "linkUrl": zod.string().nullish(),
+  "linkLabel": zod.string().nullish(),
+  "linkLabelRu": zod.string().nullish(),
+  "linkLabelTj": zod.string().nullish(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Delete a service (admin only)
+ */
+export const DeleteServiceParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
  * @summary List all partners
  */
 export const ListPartnersResponseItem = zod.object({

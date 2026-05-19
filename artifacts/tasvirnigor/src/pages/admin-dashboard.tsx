@@ -3,12 +3,13 @@ import { useLocation } from "wouter";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Film, Users, Info, Phone, Shield, Handshake } from "lucide-react";
+import { LogOut, Film, Users, Info, Phone, Shield, Handshake, Clapperboard } from "lucide-react";
 import { AdminProjects } from "./admin/admin-projects";
 import { AdminTeam } from "./admin/admin-team";
 import { AdminAbout } from "./admin/admin-about";
 import { AdminContacts } from "./admin/admin-contacts";
 import { AdminPartners } from "./admin/admin-partners";
+import { AdminServices } from "./admin/admin-services";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useLanguage } from "@/contexts/language-context";
 import { i18n, t } from "@/lib/i18n";
@@ -85,6 +86,9 @@ export default function AdminDashboard() {
             <TabsTrigger value="projects" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground" data-testid="tab-projects">
               <Film className="w-4 h-4" /> {t(i18n.admin.projects, lang)}
             </TabsTrigger>
+            <TabsTrigger value="services" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground" data-testid="tab-services">
+              <Clapperboard className="w-4 h-4" /> {t(i18n.admin.services, lang)}
+            </TabsTrigger>
             <TabsTrigger value="team" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground" data-testid="tab-team">
               <Users className="w-4 h-4" /> {t(i18n.admin.team, lang)}
             </TabsTrigger>
@@ -101,6 +105,9 @@ export default function AdminDashboard() {
 
           <TabsContent value="projects" className="mt-0 outline-none">
             <AdminProjects />
+          </TabsContent>
+          <TabsContent value="services" className="mt-0 outline-none">
+            <AdminServices />
           </TabsContent>
           <TabsContent value="team" className="mt-0 outline-none">
             <AdminTeam />

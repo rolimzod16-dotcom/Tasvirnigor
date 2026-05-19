@@ -199,6 +199,85 @@ export interface ContactsUpdate {
   facebook?: string | null;
 }
 
+export interface Service {
+  id: number;
+  title: string;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleTj?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionTj?: string | null;
+  mediaUrl: string;
+  mediaType: string;
+  /** @nullable */
+  linkUrl?: string | null;
+  /** @nullable */
+  linkLabel?: string | null;
+  /** @nullable */
+  linkLabelRu?: string | null;
+  /** @nullable */
+  linkLabelTj?: string | null;
+  sortOrder: number;
+  createdAt: string;
+}
+
+export interface ServiceInput {
+  /** @minLength 1 */
+  title: string;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleTj?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionTj?: string | null;
+  mediaUrl: string;
+  mediaType: string;
+  /** @nullable */
+  linkUrl?: string | null;
+  /** @nullable */
+  linkLabel?: string | null;
+  /** @nullable */
+  linkLabelRu?: string | null;
+  /** @nullable */
+  linkLabelTj?: string | null;
+  sortOrder?: number;
+}
+
+export interface ServiceUpdate {
+  /** @minLength 1 */
+  title?: string;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleTj?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionTj?: string | null;
+  mediaUrl?: string;
+  mediaType?: string;
+  /** @nullable */
+  linkUrl?: string | null;
+  /** @nullable */
+  linkLabel?: string | null;
+  /** @nullable */
+  linkLabelRu?: string | null;
+  /** @nullable */
+  linkLabelTj?: string | null;
+  sortOrder?: number;
+}
+
 export interface Partner {
   id: number;
   name: string;

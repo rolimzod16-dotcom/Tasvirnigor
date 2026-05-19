@@ -181,6 +181,7 @@ export const i18n = {
     about: { en: "About", ru: "О нас", tj: "Дар бораи мо" } as T,
     contacts: { en: "Contacts", ru: "Контакты", tj: "Тамос" } as T,
     partners: { en: "Partners", ru: "Партнёры", tj: "Шарикон" } as T,
+    services: { en: "Services", ru: "Услуги", tj: "Хизматҳо" } as T,
     logout: { en: "Logout", ru: "Выйти", tj: "Баромадан" } as T,
     administrator: { en: "Administrator", ru: "Администратор", tj: "Маъмур" } as T,
     loading: { en: "Loading Dashboard", ru: "Загрузка панели...", tj: "Бор кардани панел..." } as T,
@@ -265,6 +266,33 @@ export const i18n = {
     partnerLogo: { en: "Partner Logo", ru: "Логотип партнёра", tj: "Логотипи шарик" } as T,
     logoRequired: { en: "Logo is required", ru: "Загрузите логотип", tj: "Логотипро бор кунед" } as T,
     partnerNameRequired: { en: "Partner name is required", ru: "Введите название партнёра", tj: "Номи шарикро ворид кунед" } as T,
+
+    // Services
+    addService: { en: "Add Service", ru: "Добавить услугу", tj: "Илова кардани хидмат" } as T,
+    editService: { en: "Edit Service", ru: "Редактировать услугу", tj: "Таҳрири хидмат" } as T,
+    createService: { en: "Create Service", ru: "Создать услугу", tj: "Сохтани хидмат" } as T,
+    updateService: { en: "Update Service", ru: "Обновить услугу", tj: "Нав кардани хидмат" } as T,
+    serviceCreated: { en: "Service created successfully", ru: "Услуга создана", tj: "Хидмат сохта шуд" } as T,
+    serviceUpdated: { en: "Service updated successfully", ru: "Услуга обновлена", tj: "Хидмат нав шуд" } as T,
+    serviceDeleted: { en: "Service deleted", ru: "Услуга удалена", tj: "Хидмат ҳазф шуд" } as T,
+    deleteServiceConfirm: {
+      en: "Are you sure you want to delete this service?",
+      ru: "Вы уверены, что хотите удалить эту услугу?",
+      tj: "Оё мехоҳед ин хидматро ҳазф кунед?",
+    } as T,
+    loadingServices: { en: "Loading services...", ru: "Загрузка услуг...", tj: "Бор кардани хидматҳо..." } as T,
+    serviceMedia: { en: "Service Media", ru: "Медиа услуги", tj: "Медиаи хидмат" } as T,
+    serviceMediaHint: {
+      en: "Upload an image, GIF, video (MP4/WebM/MOV) or Lottie JSON — max 100 MB",
+      ru: "Загрузите изображение, GIF, видео (MP4/WebM/MOV) или Lottie JSON — до 100 МБ",
+      tj: "Расм, GIF, видео (MP4/WebM/MOV) ё Lottie JSON — то 100 МБ",
+    } as T,
+    serviceTitleRequired: { en: "Title is required", ru: "Введите заголовок", tj: "Унвонро ворид кунед" } as T,
+    serviceMediaRequired: { en: "Media file is required", ru: "Загрузите медиафайл", tj: "Медиафайлро бор кунед" } as T,
+    linkUrl: { en: "Link URL (optional)", ru: "Ссылка (необязательно)", tj: "Пайванд (ихтиёрӣ)" } as T,
+    linkLabel: { en: "Button Label (optional)", ru: "Текст кнопки (необязательно)", tj: "Матни тугма (ихтиёрӣ)" } as T,
+    moveUp: { en: "Move Up", ru: "Вверх", tj: "Боло" } as T,
+    moveDown: { en: "Move Down", ru: "Вниз", tj: "Поён" } as T,
 
     // About
     aboutSection: { en: "About Section", ru: "Раздел «О нас»", tj: "Бахши «Дар бораи мо»" } as T,

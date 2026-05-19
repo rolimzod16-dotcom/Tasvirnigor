@@ -13,6 +13,7 @@ tags:
   - name: team
   - name: content
   - name: partners
+  - name: services
   - name: admin
 paths:
   /healthz:
@@ -251,6 +252,86 @@ paths:
                 $ref: "#/components/schemas/Contacts"
         "401":
           description: Unauthorized
+
+  /services:
+    get:
+      operationId: listServices
+      tags: [services]
+      summary: List all services
+      responses:
+        "200":
+          description: List of services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+    post:
+      operationId: createService
+      tags: [services]
+      summary: Create a service (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+        "401":
+          description: Unauthorized
+
+  /services/{id}:
+    patch:
+      operationId: updateService
+      tags: [services]
+      summary: Update a service (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteService
+      tags: [services]
+      summary: Delete a service (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
 
   /partners:
     get:
@@ -625,6 +706,104 @@ components:
           type: ["string", "null"]
         facebook:
           type: ["string", "null"]
+
+    Service:
+      type: object
+      required: [id, title, mediaUrl, mediaType, sortOrder, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        titleRu:
+          type: ["string", "null"]
+        titleTj:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        descriptionRu:
+          type: ["string", "null"]
+        descriptionTj:
+          type: ["string", "null"]
+        mediaUrl:
+          type: string
+        mediaType:
+          type: string
+        linkUrl:
+          type: ["string", "null"]
+        linkLabel:
+          type: ["string", "null"]
+        linkLabelRu:
+          type: ["string", "null"]
+        linkLabelTj:
+          type: ["string", "null"]
+        sortOrder:
+          type: integer
+        createdAt:
+          type: string
+
+    ServiceInput:
+      type: object
+      required: [title, mediaUrl, mediaType]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        titleRu:
+          type: ["string", "null"]
+        titleTj:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        descriptionRu:
+          type: ["string", "null"]
+        descriptionTj:
+          type: ["string", "null"]
+        mediaUrl:
+          type: string
+        mediaType:
+          type: string
+        linkUrl:
+          type: ["string", "null"]
+        linkLabel:
+          type: ["string", "null"]
+        linkLabelRu:
+          type: ["string", "null"]
+        linkLabelTj:
+          type: ["string", "null"]
+        sortOrder:
+          type: integer
+
+    ServiceUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        titleRu:
+          type: ["string", "null"]
+        titleTj:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        descriptionRu:
+          type: ["string", "null"]
+        descriptionTj:
+          type: ["string", "null"]
+        mediaUrl:
+          type: string
+        mediaType:
+          type: string
+        linkUrl:
+          type: ["string", "null"]
+        linkLabel:
+          type: ["string", "null"]
+        linkLabelRu:
+          type: ["string", "null"]
+        linkLabelTj:
+          type: ["string", "null"]
+        sortOrder:
+          type: integer
 
     Partner:
       type: object
