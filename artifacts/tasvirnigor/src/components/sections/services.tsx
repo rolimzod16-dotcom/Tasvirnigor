@@ -154,7 +154,7 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
               {title}
             </h3>
             {description && (
-              <p className="text-[#777] text-xs font-light leading-relaxed max-w-sm">
+              <p className="text-[#777] font-light max-w-sm text-[17px] leading-relaxed">
                 {description}
               </p>
             )}
