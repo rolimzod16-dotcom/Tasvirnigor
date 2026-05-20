@@ -50,7 +50,7 @@ function CoverUpload({
     try {
       const fd = new FormData();
       fd.append("file", file);
-      const res = await fetch("/api/upload/comic-cover", { method: "POST", body: fd });
+      const res = await fetch("/api/upload/comic-cover", { method: "POST", body: fd, credentials: "include" });
       const json = (await res.json()) as { url?: string; error?: string };
       if (!res.ok) throw new Error(json.error ?? "Upload failed");
       onChange(json.url!);
@@ -157,7 +157,7 @@ function PageManager({ chapterId }: { chapterId: number }) {
         Array.from(files).map(async (file) => {
           const fd = new FormData();
           fd.append("file", file);
-          const r = await fetch("/api/upload/comic-page", { method: "POST", body: fd });
+          const r = await fetch("/api/upload/comic-page", { method: "POST", body: fd, credentials: "include" });
           const j = (await r.json()) as { url?: string; error?: string };
           if (!r.ok) throw new Error(j.error ?? "Upload failed");
           return j.url!;
@@ -169,6 +169,7 @@ function PageManager({ chapterId }: { chapterId: number }) {
         body: JSON.stringify({
           pages: uploaded.map((url, i) => ({ imageUrl: url, sortOrder: baseOrder + i })),
         }),
+        credentials: "include",
       });
       if (!addRes.ok) throw new Error("Failed to save pages");
       toast({ title: `${uploaded.length} page${uploaded.length > 1 ? "s" : ""} uploaded` });
@@ -181,7 +182,7 @@ function PageManager({ chapterId }: { chapterId: number }) {
   };
 
   const deletePage = async (id: number) => {
-    await fetch(`/api/pages/${id}`, { method: "DELETE" });
+    await fetch(`/api/pages/${id}`, { method: "DELETE", credentials: "include" });
     setPages((prev) => prev?.filter((p) => p.id !== id) ?? null);
     toast({ title: t(i18n.form.pageDeleted, lang) });
   };
@@ -198,6 +199,7 @@ function PageManager({ chapterId }: { chapterId: number }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ pages: reordered.map((p) => ({ id: p.id, sortOrder: p.sortOrder })) }),
+      credentials: "include",
     });
   };
 

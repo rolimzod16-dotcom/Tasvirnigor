@@ -49,7 +49,7 @@ export function MediaUpload({
       try {
         const fd = new FormData();
         fd.append("file", file);
-        const res = await fetch(endpoint, { method: "POST", body: fd });
+        const res = await fetch(endpoint, { method: "POST", body: fd, credentials: "include" });
         const json = await res.json();
         if (!res.ok) throw new Error(json.error ?? "Upload failed");
         const serverMediaType: MediaType = json.mediaType ?? local;

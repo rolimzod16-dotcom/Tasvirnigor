@@ -104,7 +104,7 @@ export function AdminHero() {
     try {
       const fd = new FormData();
       fd.append("file", file);
-      const res = await fetch("/api/upload/hero-video", { method: "POST", body: fd });
+      const res = await fetch("/api/upload/hero-video", { method: "POST", body: fd, credentials: "include" });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: "Upload failed" }));
         throw new Error(err.error ?? "Upload failed");
@@ -128,7 +128,7 @@ export function AdminHero() {
     try {
       const fd = new FormData();
       fd.append("file", file);
-      const res = await fetch("/api/upload/hero-image", { method: "POST", body: fd });
+      const res = await fetch("/api/upload/hero-image", { method: "POST", body: fd, credentials: "include" });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: "Upload failed" }));
         throw new Error(err.error ?? "Upload failed");
