@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, integer, boolean, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -11,7 +11,10 @@ export const teamMembersTable = pgTable("team_members", {
   bio: text("bio"),
   bioRu: text("bio_ru"),
   bioTj: text("bio_tj"),
+  experience: text("experience"),
   photoUrl: text("photo_url").notNull(),
+  socialLinks: jsonb("social_links").$type<Record<string, string>>().default({}).notNull(),
+  isActive: boolean("is_active").notNull().default(true),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),

@@ -232,7 +232,10 @@ export const ListTeamMembersResponseItem = zod.object({
   "bio": zod.string().nullish(),
   "bioRu": zod.string().nullish(),
   "bioTj": zod.string().nullish(),
+  "experience": zod.string().nullish(),
   "photoUrl": zod.string(),
+  "socialLinks": zod.record(zod.string(), zod.string()),
+  "isActive": zod.boolean(),
   "sortOrder": zod.number(),
   "createdAt": zod.string()
 })
@@ -254,7 +257,10 @@ export const CreateTeamMemberBody = zod.object({
   "bio": zod.string().nullish(),
   "bioRu": zod.string().nullish(),
   "bioTj": zod.string().nullish(),
+  "experience": zod.string().nullish(),
   "photoUrl": zod.string(),
+  "socialLinks": zod.record(zod.string(), zod.string()).optional(),
+  "isActive": zod.boolean().optional(),
   "sortOrder": zod.number().optional()
 })
 
@@ -278,7 +284,10 @@ export const UpdateTeamMemberBody = zod.object({
   "bio": zod.string().nullish(),
   "bioRu": zod.string().nullish(),
   "bioTj": zod.string().nullish(),
+  "experience": zod.string().nullish(),
   "photoUrl": zod.string().optional(),
+  "socialLinks": zod.record(zod.string(), zod.string()).optional(),
+  "isActive": zod.boolean().optional(),
   "sortOrder": zod.number().optional()
 })
 
@@ -291,7 +300,10 @@ export const UpdateTeamMemberResponse = zod.object({
   "bio": zod.string().nullish(),
   "bioRu": zod.string().nullish(),
   "bioTj": zod.string().nullish(),
+  "experience": zod.string().nullish(),
   "photoUrl": zod.string(),
+  "socialLinks": zod.record(zod.string(), zod.string()),
+  "isActive": zod.boolean(),
   "sortOrder": zod.number(),
   "createdAt": zod.string()
 })

@@ -976,7 +976,7 @@ components:
 
     TeamMember:
       type: object
-      required: [id, name, position, photoUrl, sortOrder, createdAt]
+      required: [id, name, position, photoUrl, socialLinks, isActive, sortOrder, createdAt]
       properties:
         id:
           type: integer
@@ -994,8 +994,16 @@ components:
           type: ["string", "null"]
         bioTj:
           type: ["string", "null"]
+        experience:
+          type: ["string", "null"]
         photoUrl:
           type: string
+        socialLinks:
+          type: object
+          additionalProperties:
+            type: string
+        isActive:
+          type: boolean
         sortOrder:
           type: integer
         createdAt:
@@ -1021,8 +1029,16 @@ components:
           type: ["string", "null"]
         bioTj:
           type: ["string", "null"]
+        experience:
+          type: ["string", "null"]
         photoUrl:
           type: string
+        socialLinks:
+          type: object
+          additionalProperties:
+            type: string
+        isActive:
+          type: boolean
         sortOrder:
           type: integer
 
@@ -1045,8 +1061,16 @@ components:
           type: ["string", "null"]
         bioTj:
           type: ["string", "null"]
+        experience:
+          type: ["string", "null"]
         photoUrl:
           type: string
+        socialLinks:
+          type: object
+          additionalProperties:
+            type: string
+        isActive:
+          type: boolean
         sortOrder:
           type: integer
 

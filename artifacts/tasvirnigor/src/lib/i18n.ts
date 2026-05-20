@@ -250,6 +250,11 @@ export const i18n = {
     instagramUrl: { en: "Instagram URL", ru: "Ссылка Instagram", tj: "Пайванди Instagram" } as T,
     youtubeUrlLabel: { en: "YouTube URL", ru: "Ссылка YouTube", tj: "Пайванди YouTube" } as T,
     facebookUrl: { en: "Facebook URL", ru: "Ссылка Facebook", tj: "Пайванди Facebook" } as T,
+    linkedinUrl: { en: "LinkedIn URL", ru: "Ссылка LinkedIn", tj: "Пайванди LinkedIn" } as T,
+    tiktokUrl: { en: "TikTok URL", ru: "Ссылка TikTok", tj: "Пайванди TikTok" } as T,
+    experience: { en: "Experience Highlights", ru: "Опыт работы", tj: "Таҷрибаи кор" } as T,
+    experiencePlaceholder: { en: "One highlight per line, e.g.\n10+ years in animation\nDGA Award winner", ru: "Каждый пункт с новой строки", tj: "Ҳар нукта аз сатри нав" } as T,
+    memberSocialLinks: { en: "Member Social Links", ru: "Соцсети участника", tj: "Шабакаҳои узв" } as T,
 
     // Projects
     addProject: { en: "Add Project", ru: "Добавить проект", tj: "Илова кардани лоиҳа" } as T,

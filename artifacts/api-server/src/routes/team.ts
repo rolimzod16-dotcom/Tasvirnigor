@@ -18,6 +18,7 @@ router.get("/team", async (req, res): Promise<void> => {
   const members = await db
     .select()
     .from(teamMembersTable)
+    .where(eq(teamMembersTable.isActive, true))
     .orderBy(asc(teamMembersTable.sortOrder), asc(teamMembersTable.createdAt));
   res.json(ListTeamMembersResponse.parse(serialize(members)));
 });

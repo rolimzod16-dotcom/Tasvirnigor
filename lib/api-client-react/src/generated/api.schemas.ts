@@ -101,6 +101,8 @@ export interface ProjectUpdate {
   categoryIds?: number[];
 }
 
+export type TeamMemberSocialLinks = {[key: string]: string};
+
 export interface TeamMember {
   id: number;
   name: string;
@@ -115,10 +117,16 @@ export interface TeamMember {
   bioRu?: string | null;
   /** @nullable */
   bioTj?: string | null;
+  /** @nullable */
+  experience?: string | null;
   photoUrl: string;
+  socialLinks: TeamMemberSocialLinks;
+  isActive: boolean;
   sortOrder: number;
   createdAt: string;
 }
+
+export type TeamMemberInputSocialLinks = {[key: string]: string};
 
 export interface TeamMemberInput {
   /** @minLength 1 */
@@ -135,9 +143,15 @@ export interface TeamMemberInput {
   bioRu?: string | null;
   /** @nullable */
   bioTj?: string | null;
+  /** @nullable */
+  experience?: string | null;
   photoUrl: string;
+  socialLinks?: TeamMemberInputSocialLinks;
+  isActive?: boolean;
   sortOrder?: number;
 }
+
+export type TeamMemberUpdateSocialLinks = {[key: string]: string};
 
 export interface TeamMemberUpdate {
   /** @minLength 1 */
@@ -154,7 +168,11 @@ export interface TeamMemberUpdate {
   bioRu?: string | null;
   /** @nullable */
   bioTj?: string | null;
+  /** @nullable */
+  experience?: string | null;
   photoUrl?: string;
+  socialLinks?: TeamMemberUpdateSocialLinks;
+  isActive?: boolean;
   sortOrder?: number;
 }
 

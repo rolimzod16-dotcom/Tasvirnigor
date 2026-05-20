@@ -1,0 +1,119 @@
+Redesign the “Our Team” section to look premium and cinematic like the reference layout.
+
+REFERENCE STYLE:
+
+* large portrait photo on the left
+* content/info on the right
+* modern studio/team-card style
+* rounded corners
+* cinematic spacing
+* clean typography
+* responsive grid
+* luxury animation studio feeling
+
+========================================
+TEAM CARD STRUCTURE
+===================
+
+Each team member card must contain:
+
+1. Large portrait image
+2. Full name
+3. Position / specialization
+4. Short bio
+5. Experience highlights
+6. Social media icons
+7. Optional “View Profile” button
+
+========================================
+CARD DESIGN
+===========
+
+Style requirements:
+
+* dark luxury aesthetic
+* soft shadows
+* rounded corners
+* hover animation
+* image zoom on hover
+* subtle glow accents
+* premium typography
+* responsive design
+
+Desktop:
+
+* 2 cards per row
+
+Tablet:
+
+* 1 card per row
+
+========================================
+ADMIN PANEL CONTROL
+===================
+
+Create FULL CMS control for team members.
+
+Admin must be able to:
+
+* add/edit/delete members
+* upload photos from device
+* add social links
+* change order via drag-and-drop
+* add experience points
+* edit biography
+* enable/disable member visibility
+
+========================================
+MEDIA SUPPORT
+=============
+
+Allow:
+
+* JPG
+* PNG
+* WebP
+* GIF
+
+========================================
+SOCIAL ICONS
+============
+
+Support:
+
+* Instagram
+* Telegram
+* YouTube
+* LinkedIn
+* Facebook
+* TikTok
+
+Icons should:
+
+* animate on hover
+* open in new tab
+* be editable in admin panel
+
+========================================
+ANIMATIONS
+==========
+
+Add:
+
+* fade-in on scroll
+* smooth hover transitions
+* cinematic motion
+* GPU-optimized animation
+
+========================================
+IMPORTANT
+=========
+
+Do NOT break:
+
+* current responsiveness
+* current CMS
+* multilingual support
+* performance
+
+Keep everything editable from admin panel.
