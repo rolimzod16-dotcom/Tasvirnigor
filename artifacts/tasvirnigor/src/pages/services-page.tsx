@@ -74,7 +74,7 @@ export default function ServicesPage() {
         )}
 
         {!isLoading && services.length === 0 && (
-          <div className="text-center py-24 text-[#bbb] text-sm">
+          <div className="text-center py-16 text-[#bbb] text-sm">
             {lang === "ru" ? "Услуги скоро появятся." : lang === "tj" ? "Хидматҳо ба зудӣ." : "Services coming soon."}
           </div>
         )}

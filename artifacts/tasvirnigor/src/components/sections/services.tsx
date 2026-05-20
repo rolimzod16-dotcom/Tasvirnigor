@@ -125,7 +125,7 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
       <div className="flex flex-col lg:flex-row lg:items-stretch">
 
         {/* ── Content column ── */}
-        <div className="flex-1 flex flex-col justify-between gap-4 p-5 md:p-7 lg:p-8 lg:py-8">
+        <div className="flex-1 flex flex-col justify-between gap-3 p-4 md:p-5 lg:p-6 lg:py-5">
           {/* Number + optional subtitle badge */}
           <div className="flex items-start justify-between">
             <span
@@ -185,8 +185,8 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
         {/* ── Media column ── */}
         <div
           className="relative overflow-hidden bg-[#0e0e0e]
-                     aspect-[4/3]
-                     lg:aspect-auto lg:w-[42%] lg:shrink-0"
+                     aspect-video
+                     lg:aspect-auto lg:w-[40%] lg:shrink-0"
         >
           <ServiceMedia
             mediaUrl={service.mediaUrl}
@@ -209,16 +209,16 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
 
 function SkeletonCard() {
   return (
-    <div className="bg-white rounded-2xl border border-[#e8e8e8] overflow-hidden animate-pulse">
-      <div className="flex flex-col lg:flex-row lg:min-h-[280px]">
-        <div className="flex-1 p-9 space-y-4">
-          <div className="h-14 w-16 bg-[#f0ede8] rounded-lg" />
-          <div className="h-6 bg-[#eee] rounded w-2/3" />
-          <div className="h-4 bg-[#eee] rounded w-full" />
-          <div className="h-4 bg-[#eee] rounded w-4/5" />
-          <div className="h-9 bg-[#eee] rounded-full w-28 mt-2" />
+    <div className="bg-white rounded-xl border border-[#e8e8e8] overflow-hidden animate-pulse">
+      <div className="flex flex-col lg:flex-row lg:min-h-[180px]">
+        <div className="flex-1 p-5 space-y-3">
+          <div className="h-10 w-12 bg-[#f0ede8] rounded-lg" />
+          <div className="h-5 bg-[#eee] rounded w-2/3" />
+          <div className="h-3 bg-[#eee] rounded w-full" />
+          <div className="h-3 bg-[#eee] rounded w-4/5" />
+          <div className="h-7 bg-[#eee] rounded-full w-24 mt-1" />
         </div>
-        <div className="aspect-[4/3] lg:aspect-auto lg:w-[46%] bg-[#e8e8e8]" />
+        <div className="aspect-video lg:aspect-auto lg:w-[40%] bg-[#e8e8e8]" />
       </div>
     </div>
   );
@@ -246,7 +246,7 @@ export function Services() {
   );
 
   return (
-    <section id="services" className="py-24 md:py-32 bg-[#f8f7f5]">
+    <section id="services" className="py-16 md:py-24 bg-[#f8f7f5]">
       <div className="max-w-7xl mx-auto px-5 lg:px-10">
 
         {/* Section header */}
@@ -297,7 +297,7 @@ export function Services() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, margin: "-40px" }}
-            className="space-y-4"
+            className="space-y-3"
           >
             {homepageServices.map((service, idx) => (
               <ServiceCard
