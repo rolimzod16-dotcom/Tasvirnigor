@@ -53,7 +53,7 @@ const upload = multer({
 
 const uploadLarge = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 102 * 1024 * 1024 }, // 102 MB raw; user-facing limit is 100 MB
+  limits: { fileSize: 215 * 1024 * 1024 }, // 210 MB raw; user-facing limit is 200 MB
 });
 
 // ── Bucket auto-creation ──────────────────────────────────────────────────────
@@ -307,6 +307,53 @@ router.post("/upload/hero-video", requireAdmin, uploadLarge.single("file"), asyn
 
 router.post("/upload/hero-image", requireAdmin, upload.single("file"), async (req, res): Promise<void> => {
   await handleImageUpload(req, res, "hero-images");
+});
+
+// ── Signed upload URL (direct browser → Supabase, bypasses proxy timeout) ────
+//
+// The client calls this to get a short-lived signed PUT URL for a specific bucket.
+// The actual file bytes never travel through our server — the browser PUTs directly
+// to Supabase Storage. This is the correct pattern for large video files.
+
+const ALLOWED_UPLOAD_BUCKETS = new Set([
+  "hero-videos", "hero-images",
+  "project-media", "project-banners",
+  "service-media",
+  "team-photos",
+  "comic-covers", "comic-pages",
+  "partner-logos",
+]);
+
+router.post("/upload/signed-url", requireAdmin, async (req, res): Promise<void> => {
+  const { bucket, ext } = req.body as { bucket?: string; ext?: string };
+
+  if (!bucket || !ALLOWED_UPLOAD_BUCKETS.has(bucket)) {
+    res.status(400).json({ error: "Invalid or missing bucket" });
+    return;
+  }
+
+  const safeExt = (ext ?? "bin").replace(/[^a-zA-Z0-9]/g, "").slice(0, 10);
+  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${safeExt}`;
+
+  try {
+    await ensureBucket(bucket);
+
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .createSignedUploadUrl(filename);
+
+    if (error || !data) {
+      req.log.error({ error }, "createSignedUploadUrl failed");
+      res.status(500).json({ error: error?.message ?? "Could not create upload URL" });
+      return;
+    }
+
+    const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(filename);
+    res.json({ signedUrl: data.signedUrl, token: data.token, path: data.path, publicUrl });
+  } catch (err) {
+    req.log.error({ err }, "Signed URL creation error");
+    res.status(500).json({ error: "Failed to create upload URL" });
+  }
 });
 
 export default router;

@@ -1,8 +1,9 @@
 import { useRef, useState, useCallback } from "react";
-import { Upload, X, Film, Image, Loader2, ChevronUp, ChevronDown, GripVertical } from "lucide-react";
+import { Upload, X, Film, Image, Loader2, ChevronUp, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { uploadDirect, bucketFromEndpoint } from "@/lib/upload-direct";
 
 export type MediaItemValue = {
   url: string;
@@ -57,12 +58,13 @@ export function MultiMediaUpload({
 }: MultiMediaUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState<string[]>([]);
+  const [progressMap, setProgressMap] = useState<Record<string, number>>({});
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const uploadFile = useCallback(
     async (file: File) => {
-      const MAX_MB = 100;
+      const MAX_MB = 200;
       if (file.size > MAX_MB * 1024 * 1024) {
         toast({ variant: "destructive", title: `File too large (max ${MAX_MB} MB): ${file.name}` });
         return null;
@@ -70,16 +72,31 @@ export function MultiMediaUpload({
 
       const tempId = `${Date.now()}-${file.name}`;
       setUploading((prev) => [...prev, tempId]);
-      try {
-        const fd = new FormData();
-        fd.append("file", file);
-        const res = await fetch(endpoint, { method: "POST", body: fd, credentials: "include" });
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.error ?? "Upload failed");
+      setProgressMap((prev) => ({ ...prev, [tempId]: 0 }));
 
-        const mimeType: string = json.mimeType ?? file.type ?? "application/octet-stream";
+      try {
+        const bucket = bucketFromEndpoint(endpoint);
+        let url: string;
+        let mimeType: string;
+
+        if (bucket) {
+          url = await uploadDirect(file, bucket, (pct) => {
+            setProgressMap((prev) => ({ ...prev, [tempId]: pct }));
+          });
+          mimeType = file.type || "application/octet-stream";
+        } else {
+          // Fallback: proxied upload for custom endpoints
+          const fd = new FormData();
+          fd.append("file", file);
+          const res = await fetch(endpoint, { method: "POST", body: fd, credentials: "include" });
+          const json = await res.json();
+          if (!res.ok) throw new Error(json.error ?? "Upload failed");
+          url = json.url as string;
+          mimeType = (json.mimeType as string | undefined) ?? file.type ?? "application/octet-stream";
+        }
+
         return {
-          url: json.url as string,
+          url,
           mimeType,
           name: file.name,
           sortOrder: 0,
@@ -92,6 +109,11 @@ export function MultiMediaUpload({
         return null;
       } finally {
         setUploading((prev) => prev.filter((id) => id !== tempId));
+        setProgressMap((prev) => {
+          const next = { ...prev };
+          delete next[tempId];
+          return next;
+        });
       }
     },
     [endpoint, toast]
@@ -147,6 +169,11 @@ export function MultiMediaUpload({
   const isUploading = uploading.length > 0;
   const canAdd = value.length < maxItems;
 
+  // Overall progress: average of in-flight items
+  const overallProgress = uploading.length > 0
+    ? Math.round(uploading.reduce((sum, id) => sum + (progressMap[id] ?? 0), 0) / uploading.length)
+    : 0;
+
   return (
     <div className={cn("space-y-3", className)}>
       {/* Upload zone */}
@@ -163,10 +190,28 @@ export function MultiMediaUpload({
         >
           <div className="flex flex-col items-center justify-center gap-2 py-6 px-4 text-center">
             {isUploading ? (
-              <>
-                <Loader2 className="w-7 h-7 text-primary animate-spin" />
-                <p className="text-sm text-muted-foreground">Uploading {uploading.length} file{uploading.length > 1 ? "s" : ""}…</p>
-              </>
+              <div className="w-full space-y-2">
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-5 h-5 text-primary animate-spin" />
+                  <p className="text-sm text-muted-foreground">
+                    Uploading {uploading.length} file{uploading.length > 1 ? "s" : ""}…
+                  </p>
+                </div>
+                {overallProgress > 0 && (
+                  <div className="w-full max-w-xs mx-auto space-y-1">
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Direct upload</span>
+                      <span className="font-mono font-semibold text-primary">{overallProgress}%</span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                      <div
+                        className="h-full bg-primary rounded-full transition-all duration-150"
+                        style={{ width: `${overallProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : (
               <>
                 <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
@@ -174,7 +219,7 @@ export function MultiMediaUpload({
                 </div>
                 <div>
                   <p className="text-sm font-medium text-foreground">Drop files or click to upload</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">JPG · PNG · WebP · GIF · SVG · AVIF · MP4 · WebM · MOV — max 100 MB each</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">JPG · PNG · WebP · GIF · SVG · AVIF · MP4 · WebM · MOV — max 200 MB each</p>
                 </div>
                 <div className="text-xs text-primary font-semibold flex items-center gap-1.5 bg-primary/8 px-3 py-1.5 rounded-lg">
                   <Upload className="w-3 h-3" />

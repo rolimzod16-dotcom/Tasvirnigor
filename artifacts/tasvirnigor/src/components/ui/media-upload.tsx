@@ -2,6 +2,7 @@ import { useRef, useState, useCallback } from "react";
 import { Upload, X, Film, FileJson, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { uploadDirect, bucketFromEndpoint } from "@/lib/upload-direct";
 
 export type MediaType = "image" | "gif" | "video" | "lottie";
 
@@ -33,27 +34,42 @@ export function MediaUpload({
 }: MediaUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const upload = useCallback(
     async (file: File) => {
       const local = detectMediaType(file);
-      const MAX_MB = 100;
+      const MAX_MB = 200;
       if (file.size > MAX_MB * 1024 * 1024) {
         toast({ variant: "destructive", title: `File too large. Maximum size is ${MAX_MB} MB.` });
         return;
       }
 
       setIsUploading(true);
+      setUploadProgress(0);
+
       try {
-        const fd = new FormData();
-        fd.append("file", file);
-        const res = await fetch(endpoint, { method: "POST", body: fd, credentials: "include" });
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.error ?? "Upload failed");
-        const serverMediaType: MediaType = json.mediaType ?? local;
-        onChange(json.url, serverMediaType);
+        const bucket = bucketFromEndpoint(endpoint);
+        let url: string;
+        let serverMediaType: MediaType;
+
+        if (bucket) {
+          url = await uploadDirect(file, bucket, setUploadProgress);
+          serverMediaType = local;
+        } else {
+          // Fallback: proxied upload for custom/unknown endpoints
+          const fd = new FormData();
+          fd.append("file", file);
+          const res = await fetch(endpoint, { method: "POST", body: fd, credentials: "include" });
+          const json = await res.json();
+          if (!res.ok) throw new Error(json.error ?? "Upload failed");
+          url = json.url as string;
+          serverMediaType = (json.mediaType as MediaType | undefined) ?? local;
+        }
+
+        onChange(url, serverMediaType);
       } catch (err) {
         toast({
           variant: "destructive",
@@ -61,6 +77,7 @@ export function MediaUpload({
         });
       } finally {
         setIsUploading(false);
+        setUploadProgress(0);
       }
     },
     [endpoint, onChange, toast]
@@ -69,7 +86,7 @@ export function MediaUpload({
   const handleFiles = useCallback(
     (files: FileList | null) => {
       if (!files || files.length === 0) return;
-      upload(files[0]);
+      void upload(files[0]);
     },
     [upload]
   );
@@ -148,10 +165,24 @@ export function MediaUpload({
         ) : (
           <div className="flex flex-col items-center justify-center gap-3 py-10 px-4 text-center">
             {isUploading ? (
-              <>
-                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+              <div className="w-full space-y-3">
+                <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto" />
                 <p className="text-sm text-muted-foreground">Uploading…</p>
-              </>
+                {uploadProgress > 0 && (
+                  <div className="w-full max-w-xs mx-auto space-y-1">
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Direct upload</span>
+                      <span className="font-mono font-semibold text-primary">{uploadProgress}%</span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                      <div
+                        className="h-full bg-primary rounded-full transition-all duration-150"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : (
               <>
                 <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
@@ -160,7 +191,7 @@ export function MediaUpload({
                 <div>
                   <p className="text-sm font-medium text-foreground">Drop media here or click to upload</p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {hint ?? "JPG · PNG · WebP · GIF · SVG · AVIF · MP4 · WebM · MOV · Lottie JSON — max 100 MB"}
+                    {hint ?? "JPG · PNG · WebP · GIF · SVG · AVIF · MP4 · WebM · MOV · Lottie JSON — max 200 MB"}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 text-primary text-xs font-semibold">
@@ -174,8 +205,22 @@ export function MediaUpload({
 
         {/* Loading overlay when replacing */}
         {isUploading && value && (
-          <div className="absolute inset-0 rounded-xl flex items-center justify-center bg-black/50">
+          <div className="absolute inset-0 rounded-xl flex flex-col items-center justify-center gap-3 bg-black/55 px-6">
             <Loader2 className="w-8 h-8 text-white animate-spin" />
+            {uploadProgress > 0 && (
+              <div className="w-full max-w-[200px] space-y-1">
+                <div className="flex justify-between text-xs text-white/70">
+                  <span>Uploading</span>
+                  <span className="font-mono font-semibold text-white">{uploadProgress}%</span>
+                </div>
+                <div className="h-1 rounded-full bg-white/20 overflow-hidden">
+                  <div
+                    className="h-full bg-white rounded-full transition-all duration-150"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

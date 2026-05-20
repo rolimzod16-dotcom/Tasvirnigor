@@ -40,10 +40,10 @@ export function Hero() {
   // Large radius (9999px) collapses to pill/capsule shape regardless of size.
   // On hover the insets sweep to 0 and radius drops to 0 (full section reveal).
   // inset(top right bottom left round radius)
-  const insetTop    = useTransform(expansion, [0, 1], [28, 0]);   // % — sits lower in hero
+  const insetTop    = useTransform(expansion, [0, 1], [48, 0]);   // % — bottom-right quarter
   const insetRight  = useTransform(expansion, [0, 1], [3,  0]);   // %
-  const insetBottom = useTransform(expansion, [0, 1], [5,  0]);   // % — close to bottom edge
-  const insetLeft   = useTransform(expansion, [0, 1], [56, 0]);   // % ← hides left side
+  const insetBottom = useTransform(expansion, [0, 1], [0,  0]);   // % — flush with bottom edge
+  const insetLeft   = useTransform(expansion, [0, 1], [72, 0]);   // % — ~25% section width
   const radius      = useTransform(expansion, [0, 1], [9999, 0]); // px → pill at rest, sharp on expand
   const videoClip   = useMotionTemplate`inset(${insetTop}% ${insetRight}% ${insetBottom}% ${insetLeft}% round ${radius}px)`;
 
@@ -67,8 +67,8 @@ export function Hero() {
     if (!effectsEnabled || !hasMedia) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const relX = (e.clientX - rect.left) / rect.width;
-    // Right half (with a bit of buffer so it activates naturally)
-    expansionRaw.set(relX > 0.44 ? 1 : 0);
+    // Activate when cursor reaches the right quarter where the oval sits
+    expansionRaw.set(relX > 0.62 ? 1 : 0);
   };
 
   const handleSectionLeave = () => expansionRaw.set(0);
@@ -178,7 +178,7 @@ export function Hero() {
       {/* Ambient amber radial glow (shows through the clip) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-[6]">
         <div
-          className="absolute top-1/2 left-[62%] -translate-x-1/2 -translate-y-1/2 w-[70vw] h-[70vh] rounded-full"
+          className="absolute top-1/2 left-[84%] -translate-x-1/2 -translate-y-1/2 w-[40vw] h-[70vh] rounded-full"
           style={{
             background: "radial-gradient(circle, hsl(38 82% 42%) 0%, transparent 65%)",
             opacity: 0.07,
@@ -203,8 +203,7 @@ export function Hero() {
       {/* ── Main grid content ────────────────────────────────────── */}
       <div
         className="relative z-10 max-w-7xl mx-auto px-5 lg:px-10 w-full pt-28 pb-24
-                   grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-16
-                   items-center min-h-[100dvh]"
+                   flex flex-col justify-center min-h-[100dvh]"
       >
         {/* LEFT: text — slides away as video takes over */}
         <motion.div
@@ -313,55 +312,52 @@ export function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* RIGHT: oval preview pill — sits bottom-right, fades as absolute layer blooms */}
-        {hasMedia && (
-          <motion.div
-            className="relative hidden lg:flex items-end justify-center pb-10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            style={effectsEnabled ? { opacity: previewOpacity } : undefined}
-          >
-            {/*
-              Oval/capsule placeholder that visually aligns with the
-              clip-path oval at rest. The clip-path on the absolute video
-              layer covers this same area, so users see the video through it.
-              This pill acts as the glowing frame UI element.
-            */}
-            <div className="relative" style={{ width: "82%", aspectRatio: "3/4" }}>
-              {/* Amber glow halo behind the pill */}
-              <div
-                className="absolute inset-[-18px] rounded-full pointer-events-none"
-                style={{
-                  background:
-                    "radial-gradient(ellipse at center, hsl(38 82% 42% / 0.18) 0%, transparent 70%)",
-                  filter: "blur(20px)",
-                }}
-              />
-              {/* The pill frame itself */}
-              <div
-                className="relative w-full h-full rounded-full overflow-hidden"
-                style={{
-                  border: "1px solid hsl(38 82% 42% / 0.18)",
-                  boxShadow:
-                    "0 0 60px 8px hsl(38 82% 42% / 0.10), inset 0 0 40px hsl(38 82% 42% / 0.04), 0 32px 80px rgba(0,0,0,0.5)",
-                  background:
-                    "linear-gradient(160deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 60%)",
-                }}
-              >
-                {/* Subtle inner shine at top */}
-                <div
-                  className="absolute inset-x-0 top-0 h-px"
-                  style={{
-                    background:
-                      "linear-gradient(90deg, transparent 10%, hsl(38 82% 42% / 0.3) 50%, transparent 90%)",
-                  }}
-                />
-              </div>
-            </div>
-          </motion.div>
-        )}
       </div>
+
+      {/* ── Oval decoration — bottom-right, absolute — fades as video expands ── */}
+      {hasMedia && (
+        <motion.div
+          className="absolute hidden lg:block z-20 pointer-events-none"
+          style={{
+            bottom: 0,
+            right: "3%",
+            width: "25%",
+            aspectRatio: "2/3",
+            ...(effectsEnabled ? { opacity: previewOpacity } : {}),
+          }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {/* Amber glow halo */}
+          <div
+            className="absolute inset-[-18px] rounded-full pointer-events-none"
+            style={{
+              background: "radial-gradient(ellipse at center, hsl(38 82% 42% / 0.18) 0%, transparent 70%)",
+              filter: "blur(24px)",
+            }}
+          />
+          {/* Pill frame */}
+          <div
+            className="relative w-full h-full rounded-full overflow-hidden"
+            style={{
+              border: "1px solid hsl(38 82% 42% / 0.22)",
+              boxShadow:
+                "0 0 60px 8px hsl(38 82% 42% / 0.12), inset 0 0 40px hsl(38 82% 42% / 0.04), 0 32px 80px rgba(0,0,0,0.5)",
+              background:
+                "linear-gradient(160deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 60%)",
+            }}
+          >
+            <div
+              className="absolute inset-x-0 top-0 h-px"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent 10%, hsl(38 82% 42% / 0.35) 50%, transparent 90%)",
+              }}
+            />
+          </div>
+        </motion.div>
+      )}
 
       {/* Scroll indicator */}
       <motion.button

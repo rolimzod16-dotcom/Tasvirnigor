@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/language-context";
 import { i18n, t } from "@/lib/i18n";
 import { Upload, Video, ImageIcon, Loader2 } from "lucide-react";
+import { uploadDirect } from "@/lib/upload-direct";
 
 type HeroFormValues = {
   titleEn: string;
@@ -60,6 +61,7 @@ export function AdminHero() {
 
   const [form, setForm] = useState<HeroFormValues>(EMPTY);
   const [videoUploading, setVideoUploading] = useState(false);
+  const [videoProgress, setVideoProgress] = useState(0);
   const [imageUploading, setImageUploading] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState<string | null>(null);
   const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
@@ -101,15 +103,9 @@ export function AdminHero() {
     const file = e.target.files?.[0];
     if (!file) return;
     setVideoUploading(true);
+    setVideoProgress(0);
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/upload/hero-video", { method: "POST", body: fd, credentials: "include" });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: "Upload failed" }));
-        throw new Error(err.error ?? "Upload failed");
-      }
-      const { url } = await res.json();
+      const url = await uploadDirect(file, "hero-videos", setVideoProgress);
       setCurrentVideoUrl(url);
       await saveField({ videoUrl: url });
       toast({ title: t(i18n.heroAdmin.videoUploaded, lang) });
@@ -117,6 +113,7 @@ export function AdminHero() {
       toast({ title: err instanceof Error ? err.message : "Upload failed", variant: "destructive" });
     } finally {
       setVideoUploading(false);
+      setVideoProgress(0);
       if (videoInputRef.current) videoInputRef.current.value = "";
     }
   };
@@ -231,7 +228,7 @@ export function AdminHero() {
             <Button
               variant="outline"
               size="sm"
-              className="gap-2"
+              className="gap-2 shrink-0"
               disabled={videoUploading}
               onClick={() => videoInputRef.current?.click()}
             >
@@ -244,11 +241,24 @@ export function AdminHero() {
                 ? t(i18n.heroAdmin.replaceVideo, lang)
                 : t(i18n.heroAdmin.uploadVideo, lang)}
             </Button>
-            {currentVideoUrl && (
+            {videoUploading ? (
+              <div className="flex-1 space-y-1 min-w-0">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>Uploading directly to storage…</span>
+                  <span className="font-mono font-semibold text-primary">{videoProgress}%</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full bg-primary rounded-full transition-all duration-150"
+                    style={{ width: `${videoProgress}%` }}
+                  />
+                </div>
+              </div>
+            ) : currentVideoUrl ? (
               <span className="text-xs text-muted-foreground truncate max-w-[240px]">
                 {currentVideoUrl.split("/").pop()}
               </span>
-            )}
+            ) : null}
           </div>
         </CardContent>
       </Card>
