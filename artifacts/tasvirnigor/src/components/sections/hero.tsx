@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import {
   motion,
   useMotionValue,
@@ -14,9 +13,8 @@ import { useGetHero } from "@workspace/api-client-react";
 const HERO_BG =
   "https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=1920&q=80";
 
-// Springs
-const PROXIMITY_SPRING = { stiffness: 130, damping: 22, mass: 0.7 };
-const PARALLAX_SPRING = { stiffness: 70, damping: 20 };
+// Spring used for the main expansion — weighted, cinematic feel
+const EXPAND_SPRING = { stiffness: 120, damping: 24, mass: 1.1 };
 
 export function Hero() {
   const { lang } = useLanguage();
@@ -28,92 +26,58 @@ export function Hero() {
   const hasMedia = !!(videoUrl || fallbackImageUrl);
 
   // ─────────────────────────────────────────────────────────────
-  // Cursor-proximity model
+  // Core animation driver: `expansion` goes 0 (rest) → 1 (full takeover)
   //
-  // `proximity` is 0 when the cursor is far from the video, smoothly
-  // approaches 1 as it nears the video frame center, and saturates at
-  // 1 when directly over it. Every animated property below derives
-  // from a spring-smoothed version of this single value.
+  // The absolute video layer uses clip-path to define its visible region.
+  // At rest it is clipped to the right-column area.
+  // On hover of the right half it opens to cover the full hero section.
+  // Every animated property derives from this single spring value.
   // ─────────────────────────────────────────────────────────────
-  const videoFrameRef = useRef<HTMLDivElement>(null);
+  const expansionRaw = useMotionValue(0);
+  const expansion = useSpring(expansionRaw, EXPAND_SPRING);
 
-  const proximityRaw = useMotionValue(0);
-  const proximity = useSpring(proximityRaw, PROXIMITY_SPRING);
+  // clip-path: at rest reveals only the right column (~43% of section width).
+  // inset(top right bottom left round radius)
+  const insetTop    = useTransform(expansion, [0, 1], [8,  0]);   // %
+  const insetRight  = useTransform(expansion, [0, 1], [2,  0]);   // %
+  const insetBottom = useTransform(expansion, [0, 1], [8,  0]);   // %
+  const insetLeft   = useTransform(expansion, [0, 1], [57, 0]);   // % ← key: hides left side
+  const radius      = useTransform(expansion, [0, 1], [32, 0]);   // px
+  const videoClip   = useMotionTemplate`inset(${insetTop}% ${insetRight}% ${insetBottom}% ${insetLeft}% round ${radius}px)`;
 
-  // Drives the cinematic transform of the video frame itself
-  const frameScale = useTransform(proximity, [0, 1], [1, 1.5]);
-  const insetH = useTransform(proximity, [0, 1], [7, -9]); // %
-  const insetV = useTransform(proximity, [0, 1], [6, -9]); // %
-  const radius = useTransform(proximity, [0, 1], [38, 4]); // px
-  const clipPath = useMotionTemplate`inset(${insetV}% ${insetH}% ${insetV}% ${insetH}% round ${radius}px)`;
+  // Left text column — slides left and fades as video expands
+  const textX       = useTransform(expansion, [0, 0.6], [0, -80]); // px
+  const textOpacity = useTransform(expansion, [0, 0.5], [1, 0]);
 
-  // Glow halo around the video
-  const glowOpacity = useTransform(proximity, [0, 1], [0.05, 0.28]);
-  const glowScale = useTransform(proximity, [0, 1], [1, 1.4]);
-  const glowBlur = useTransform(proximity, [0, 1], [60, 130]); // px
+  // Right preview card — fades as the absolute layer blooms over it
+  const previewOpacity = useTransform(expansion, [0, 0.4], [1, 0]);
 
-  // Section dim — quietly veils the rest of the section
-  const dimOpacity = useTransform(proximity, [0, 1], [0, 0.45]);
+  // Dark gradient overlay on the expanded video — keeps the section readable
+  const overlayOpacity = useTransform(expansion, [0, 1], [0, 0.38]);
 
-  // Text counter-parallax — shifts left and softens as video grows toward it
-  const textShiftX = useTransform(proximity, [0, 1], [0, -36]);
-  const textOpacity = useTransform(proximity, [0, 1], [1, 0.5]);
-
-  // Corner brackets vanish quickly once expansion begins
-  const cornerOpacity = useTransform(proximity, [0, 0.25], [1, 0]);
-
-  // Subtle parallax drift of the video frame, tracking cursor like a magnet
-  const parallaxXRaw = useMotionValue(0);
-  const parallaxYRaw = useMotionValue(0);
-  const parallaxX = useSpring(parallaxXRaw, PARALLAX_SPRING);
-  const parallaxY = useSpring(parallaxYRaw, PARALLAX_SPRING);
+  // Scroll hint dims while expanded
+  const scrollOpacity = useTransform(expansion, [0, 0.5], [1, 0]);
 
   // ─────────────────────────────────────────────────────────────
-  // Mouse handler — computes proximity from cursor distance to video
-  // center, normalized by the frame's own width.
+  // Mouse tracking — trigger expansion when cursor is in right half
   // ─────────────────────────────────────────────────────────────
   const handleSectionMove = (e: React.MouseEvent<HTMLElement>) => {
     if (!effectsEnabled || !hasMedia) return;
-    const frameEl = videoFrameRef.current;
-    if (!frameEl) return;
-
-    const r = frameEl.getBoundingClientRect();
-    const cx = r.left + r.width / 2;
-    const cy = r.top + r.height / 2;
-
-    // Distance normalized by frame width (so reach is consistent across viewports)
-    const dx = (e.clientX - cx) / r.width;
-    const dy = (e.clientY - cy) / r.width;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-
-    // Falloff: full strength at center (dist=0), zero at ~1.4 widths away
-    // Exponential curve makes the approach feel snappier near the frame.
-    const REACH = 1.4;
-    const t = Math.max(0, 1 - Math.min(dist, REACH) / REACH);
-    const p = Math.pow(t, 1.6);
-    proximityRaw.set(p);
-
-    // Magnetic drift: cursor pulls the frame slightly toward it
-    parallaxXRaw.set(dx * r.width * 0.045);
-    parallaxYRaw.set(dy * r.width * 0.045);
+    const rect = e.currentTarget.getBoundingClientRect();
+    const relX = (e.clientX - rect.left) / rect.width;
+    // Right half (with a bit of buffer so it activates naturally)
+    expansionRaw.set(relX > 0.44 ? 1 : 0);
   };
 
-  const handleSectionLeave = () => {
-    proximityRaw.set(0);
-    parallaxXRaw.set(0);
-    parallaxYRaw.set(0);
-  };
+  const handleSectionLeave = () => expansionRaw.set(0);
 
   // ─────────────────────────────────────────────────────────────
   // Localised content
   // ─────────────────────────────────────────────────────────────
   const title =
     heroContent
-      ? (lang === "ru"
-          ? heroContent.titleRu
-          : lang === "tj"
-          ? heroContent.titleTj
-          : null) ?? heroContent.titleEn
+      ? (lang === "ru" ? heroContent.titleRu : lang === "tj" ? heroContent.titleTj : null) ??
+        heroContent.titleEn
       : null;
 
   const subtitle =
@@ -127,23 +91,17 @@ export function Hero() {
 
   const ctaPrimaryLabel =
     heroContent
-      ? (lang === "ru"
-          ? heroContent.ctaPrimaryLabelRu
-          : lang === "tj"
-          ? heroContent.ctaPrimaryLabelTj
-          : null) ?? heroContent.ctaPrimaryLabel ?? null
+      ? (lang === "ru" ? heroContent.ctaPrimaryLabelRu : lang === "tj" ? heroContent.ctaPrimaryLabelTj : null) ??
+        heroContent.ctaPrimaryLabel ?? null
       : null;
 
   const ctaSecondaryLabel =
     heroContent
-      ? (lang === "ru"
-          ? heroContent.ctaSecondaryLabelRu
-          : lang === "tj"
-          ? heroContent.ctaSecondaryLabelTj
-          : null) ?? heroContent.ctaSecondaryLabel ?? null
+      ? (lang === "ru" ? heroContent.ctaSecondaryLabelRu : lang === "tj" ? heroContent.ctaSecondaryLabelTj : null) ??
+        heroContent.ctaSecondaryLabel ?? null
       : null;
 
-  const ctaPrimaryHref = heroContent?.ctaPrimaryHref ?? "#portfolio";
+  const ctaPrimaryHref  = heroContent?.ctaPrimaryHref  ?? "#portfolio";
   const ctaSecondaryHref = heroContent?.ctaSecondaryHref ?? "#about";
 
   const scrollTo = (id: string) =>
@@ -153,30 +111,18 @@ export function Hero() {
 
   const styledHeadline =
     lang === "ru" ? (
-      <>
-        Кино и <span className="text-primary">анимация</span> из Таджикистана
-      </>
+      <>Кино и <span className="text-primary">анимация</span> из Таджикистана</>
     ) : lang === "tj" ? (
-      <>
-        Кино ва <span className="text-primary">анимация</span> аз Тоҷикистон
-      </>
+      <>Кино ва <span className="text-primary">анимация</span> аз Тоҷикистон</>
     ) : (
-      <>
-        Film & <span className="text-primary">Animation</span> from Tajikistan
-      </>
+      <>Film & <span className="text-primary">Animation</span> from Tajikistan</>
     );
 
   const stats = [
-    { num: "10+", label: lang === "ru" ? "Лет" : lang === "tj" ? "Сол" : "Years" },
-    { num: "40+", label: lang === "ru" ? "Проектов" : lang === "tj" ? "Лоиҳа" : "Projects" },
-    { num: "20+", label: lang === "ru" ? "Стран" : lang === "tj" ? "Кишвар" : "Countries" },
+    { num: "10+", label: lang === "ru" ? "Лет"      : lang === "tj" ? "Сол"    : "Years"    },
+    { num: "40+", label: lang === "ru" ? "Проектов" : lang === "tj" ? "Лоиҳа"  : "Projects" },
+    { num: "20+", label: lang === "ru" ? "Стран"    : lang === "tj" ? "Кишвар" : "Countries" },
   ];
-
-  // Build animated box-shadow string from motion values
-  const boxShadow = useMotionTemplate`0 0 ${glowBlur}px ${useTransform(
-    glowBlur,
-    (b) => b / 3
-  )}px rgba(196,145,10,${glowOpacity}), 0 30px 90px rgba(0,0,0,0.6)`;
 
   return (
     <section
@@ -185,26 +131,60 @@ export function Hero() {
       onMouseMove={handleSectionMove}
       onMouseLeave={handleSectionLeave}
     >
-      {/* Ambient amber radial — pulses with proximity */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* ── Absolute full-hero video layer ─────────────────────────
+           Always inset-0. Clip-path controls what's visible.
+           At rest: shows only the right column area.
+           On hover of right half: expands to fill the entire section.
+      ─────────────────────────────────────────────────────────── */}
+      {hasMedia && (
         <motion.div
-          className="absolute top-1/2 left-[60%] -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vh] rounded-full"
+          className="absolute inset-0 z-[8]"
           style={{
-            background:
-              "radial-gradient(circle, hsl(38 82% 42%) 0%, transparent 65%)",
-            opacity: glowOpacity,
-            scale: glowScale,
+            clipPath: effectsEnabled ? videoClip : undefined,
+            willChange: "clip-path",
+          }}
+        >
+          {videoUrl ? (
+            <video
+              src={videoUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover"
+              poster={fallbackImageUrl ?? undefined}
+            />
+          ) : (
+            <img
+              src={fallbackImageUrl!}
+              alt="Tasvirnigor Studio"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          )}
+
+          {/* Overlay gradient — darkens expanded video subtly */}
+          <motion.div
+            className="absolute inset-0 bg-black pointer-events-none"
+            style={{ opacity: overlayOpacity }}
+          />
+
+          {/* Cinematic gradient at bottom edge for grounding */}
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#080808] to-transparent pointer-events-none" />
+        </motion.div>
+      )}
+
+      {/* Ambient amber radial glow (shows through the clip) */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-[6]">
+        <div
+          className="absolute top-1/2 left-[62%] -translate-x-1/2 -translate-y-1/2 w-[70vw] h-[70vh] rounded-full"
+          style={{
+            background: "radial-gradient(circle, hsl(38 82% 42%) 0%, transparent 65%)",
+            opacity: 0.07,
           }}
         />
       </div>
 
-      {/* Section dim — focuses attention on the video */}
-      <motion.div
-        className="absolute inset-0 bg-black pointer-events-none z-[5]"
-        style={{ opacity: dimOpacity }}
-      />
-
-      {/* Static BG fallback when no custom media uploaded */}
+      {/* Static BG when no media */}
       {!hasMedia && (
         <div className="absolute inset-0 z-0">
           <img
@@ -218,18 +198,18 @@ export function Hero() {
         </div>
       )}
 
-      {/* Main grid */}
+      {/* ── Main grid content ────────────────────────────────────── */}
       <div
         className="relative z-10 max-w-7xl mx-auto px-5 lg:px-10 w-full pt-28 pb-24
                    grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-16
                    items-center min-h-[100dvh]"
       >
-        {/* ── LEFT: Text — drifts left & softens as video grows ──── */}
+        {/* LEFT: text — slides away as video takes over */}
         <motion.div
           className="flex flex-col justify-center"
           style={
             effectsEnabled
-              ? { x: textShiftX, opacity: textOpacity }
+              ? { x: textX, opacity: textOpacity }
               : undefined
           }
         >
@@ -324,90 +304,48 @@ export function Hero() {
           >
             {stats.map(({ num, label }) => (
               <div key={num} className="flex flex-col gap-0.5">
-                <span className="font-display font-bold text-[1.75rem] text-primary leading-none">
-                  {num}
-                </span>
-                <span className="text-white/35 text-[10px] tracking-[0.18em] uppercase">
-                  {label}
-                </span>
+                <span className="font-display font-bold text-[1.75rem] text-primary leading-none">{num}</span>
+                <span className="text-white/35 text-[10px] tracking-[0.18em] uppercase">{label}</span>
               </div>
             ))}
           </motion.div>
         </motion.div>
 
-        {/* ── RIGHT: Cinematic video frame (desktop) ───────────────── */}
+        {/* RIGHT: preview card — fades as the absolute video layer blooms */}
         {hasMedia && (
           <motion.div
             className="relative hidden lg:flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            style={{ zIndex: 20 }}
+            style={effectsEnabled ? { opacity: previewOpacity } : undefined}
           >
-            {/* Animated amber glow halo */}
-            <motion.div
-              className="absolute inset-[-30px] rounded-[60px] pointer-events-none"
-              style={{ boxShadow }}
-            />
-
-            {/* The video frame itself — scales dramatically with proximity */}
-            <motion.div
-              ref={videoFrameRef}
-              className="relative w-full overflow-hidden"
-              style={{
-                aspectRatio: "10/13",
-                maxHeight: "70vh",
-                scale: effectsEnabled ? frameScale : 1,
-                clipPath: effectsEnabled ? clipPath : undefined,
-                x: effectsEnabled ? parallaxX : 0,
-                y: effectsEnabled ? parallaxY : 0,
-                willChange: "transform, clip-path",
-                transformOrigin: "center center",
-              }}
+            {/*
+              This acts as a visual hint / ghost — the clip-path on the
+              absolute layer covers this area at rest, so users see the
+              video here. This div provides the correct layout dimensions.
+              We show a subtle placeholder border so it's visible before
+              the absolute layer loads.
+            */}
+            <div
+              className="w-full relative overflow-hidden rounded-[32px] border border-white/[0.06]"
+              style={{ aspectRatio: "10/13", maxHeight: "70vh" }}
             >
-              {/* Media */}
-              {videoUrl ? (
-                <video
-                  src={videoUrl}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="absolute inset-0 w-full h-full object-cover"
-                  poster={fallbackImageUrl ?? undefined}
-                  style={{ willChange: "transform" }}
-                />
-              ) : (
-                <img
-                  src={fallbackImageUrl!}
-                  alt="Tasvirnigor Studio"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  style={{ willChange: "transform" }}
-                />
-              )}
-
-              {/* Cinematic gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10 pointer-events-none" />
-
-              {/* Corner marks — fade away the moment expansion begins */}
-              <motion.div
-                className="absolute inset-0 pointer-events-none"
-                style={{ opacity: cornerOpacity }}
-              >
-                <div className="absolute top-4 left-4 w-5 h-5 border-t-[1.5px] border-l-[1.5px] border-white/30" />
-                <div className="absolute top-4 right-4 w-5 h-5 border-t-[1.5px] border-r-[1.5px] border-white/30" />
-                <div className="absolute bottom-4 left-4 w-5 h-5 border-b-[1.5px] border-l-[1.5px] border-white/30" />
-                <div className="absolute bottom-4 right-4 w-5 h-5 border-b-[1.5px] border-r-[1.5px] border-white/30" />
-              </motion.div>
-            </motion.div>
+              {/* Subtle corner marks */}
+              <div className="absolute top-4 left-4 w-5 h-5 border-t-[1.5px] border-l-[1.5px] border-white/20" />
+              <div className="absolute top-4 right-4 w-5 h-5 border-t-[1.5px] border-r-[1.5px] border-white/20" />
+              <div className="absolute bottom-4 left-4 w-5 h-5 border-b-[1.5px] border-l-[1.5px] border-white/20" />
+              <div className="absolute bottom-4 right-4 w-5 h-5 border-b-[1.5px] border-r-[1.5px] border-white/20" />
+            </div>
           </motion.div>
         )}
       </div>
 
       {/* Scroll indicator */}
       <motion.button
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2
                    text-white/35 hover:text-white/65 transition-colors duration-200"
+        style={effectsEnabled ? { opacity: scrollOpacity } : undefined}
         animate={{ y: [0, 7, 0] }}
         transition={{ repeat: Infinity, duration: 2.8, ease: "easeInOut" }}
         onClick={() => scrollTo("#about")}
