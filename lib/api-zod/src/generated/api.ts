@@ -395,6 +395,76 @@ export const UpdateContactsResponse = zod.object({
 
 
 /**
+ * @summary Get hero section content
+ */
+export const GetHeroResponse = zod.object({
+  "id": zod.number(),
+  "videoUrl": zod.string().nullish(),
+  "fallbackImageUrl": zod.string().nullish(),
+  "titleEn": zod.string(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "subtitleEn": zod.string().nullish(),
+  "subtitleRu": zod.string().nullish(),
+  "subtitleTj": zod.string().nullish(),
+  "ctaPrimaryLabel": zod.string().nullish(),
+  "ctaPrimaryLabelRu": zod.string().nullish(),
+  "ctaPrimaryLabelTj": zod.string().nullish(),
+  "ctaPrimaryHref": zod.string().nullish(),
+  "ctaSecondaryLabel": zod.string().nullish(),
+  "ctaSecondaryLabelRu": zod.string().nullish(),
+  "ctaSecondaryLabelTj": zod.string().nullish(),
+  "ctaSecondaryHref": zod.string().nullish(),
+  "effectsEnabled": zod.boolean()
+})
+
+
+/**
+ * @summary Update hero section (admin only)
+ */
+export const UpdateHeroBody = zod.object({
+  "videoUrl": zod.string().nullish(),
+  "fallbackImageUrl": zod.string().nullish(),
+  "titleEn": zod.string().optional(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "subtitleEn": zod.string().nullish(),
+  "subtitleRu": zod.string().nullish(),
+  "subtitleTj": zod.string().nullish(),
+  "ctaPrimaryLabel": zod.string().nullish(),
+  "ctaPrimaryLabelRu": zod.string().nullish(),
+  "ctaPrimaryLabelTj": zod.string().nullish(),
+  "ctaPrimaryHref": zod.string().nullish(),
+  "ctaSecondaryLabel": zod.string().nullish(),
+  "ctaSecondaryLabelRu": zod.string().nullish(),
+  "ctaSecondaryLabelTj": zod.string().nullish(),
+  "ctaSecondaryHref": zod.string().nullish(),
+  "effectsEnabled": zod.boolean().optional()
+})
+
+export const UpdateHeroResponse = zod.object({
+  "id": zod.number(),
+  "videoUrl": zod.string().nullish(),
+  "fallbackImageUrl": zod.string().nullish(),
+  "titleEn": zod.string(),
+  "titleRu": zod.string().nullish(),
+  "titleTj": zod.string().nullish(),
+  "subtitleEn": zod.string().nullish(),
+  "subtitleRu": zod.string().nullish(),
+  "subtitleTj": zod.string().nullish(),
+  "ctaPrimaryLabel": zod.string().nullish(),
+  "ctaPrimaryLabelRu": zod.string().nullish(),
+  "ctaPrimaryLabelTj": zod.string().nullish(),
+  "ctaPrimaryHref": zod.string().nullish(),
+  "ctaSecondaryLabel": zod.string().nullish(),
+  "ctaSecondaryLabelRu": zod.string().nullish(),
+  "ctaSecondaryLabelTj": zod.string().nullish(),
+  "ctaSecondaryHref": zod.string().nullish(),
+  "effectsEnabled": zod.boolean()
+})
+
+
+/**
  * @summary List all services
  */
 export const ListServicesResponseItem = zod.object({

@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { sql } from "drizzle-orm";
-import { db, aboutTable, contactsTable } from "@workspace/db";
+import { db, aboutTable, contactsTable, heroTable } from "@workspace/db";
 import {
   UpdateAboutBody,
   UpdateAboutResponse,
@@ -8,6 +8,9 @@ import {
   UpdateContactsBody,
   UpdateContactsResponse,
   GetContactsResponse,
+  UpdateHeroBody,
+  UpdateHeroResponse,
+  GetHeroResponse,
 } from "@workspace/api-zod";
 import { requireAdmin } from "../middlewares/auth";
 import { serialize } from "../lib/serialize";
@@ -102,6 +105,43 @@ router.patch("/contacts", requireAdmin, async (req, res): Promise<void> => {
     .where(sql`${contactsTable.id} = ${existing.id}`)
     .returning();
   res.json(UpdateContactsResponse.parse(serialize(updated ?? existing)));
+});
+
+router.get("/hero", async (req, res): Promise<void> => {
+  const [hero] = await db.select().from(heroTable).limit(1);
+  if (!hero) {
+    const [created] = await db.insert(heroTable).values({
+      titleEn: "Film & Animation from Tajikistan",
+      effectsEnabled: true,
+    }).returning();
+    res.json(GetHeroResponse.parse(serialize(created)));
+    return;
+  }
+  res.json(GetHeroResponse.parse(serialize(hero)));
+});
+
+router.patch("/hero", requireAdmin, async (req, res): Promise<void> => {
+  const parsed = UpdateHeroBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [existing] = await db.select().from(heroTable).limit(1);
+  if (!existing) {
+    const [created] = await db.insert(heroTable).values({
+      titleEn: parsed.data.titleEn ?? "Film & Animation from Tajikistan",
+      effectsEnabled: parsed.data.effectsEnabled ?? true,
+      ...parsed.data,
+    }).returning();
+    res.json(UpdateHeroResponse.parse(serialize(created)));
+    return;
+  }
+  const [updated] = await db
+    .update(heroTable)
+    .set(parsed.data)
+    .where(sql`${heroTable.id} = ${existing.id}`)
+    .returning();
+  res.json(UpdateHeroResponse.parse(serialize(updated ?? existing)));
 });
 
 export default router;

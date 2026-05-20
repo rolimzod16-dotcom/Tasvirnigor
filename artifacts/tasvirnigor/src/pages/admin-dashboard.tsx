@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Film, Users, Info, Phone, Shield, Handshake, Clapperboard, BookText } from "lucide-react";
+import { LogOut, Film, Users, Info, Phone, Shield, Handshake, Clapperboard, BookText, LayoutTemplate } from "lucide-react";
 import { AdminProjects } from "./admin/admin-projects";
 import { AdminTeam } from "./admin/admin-team";
 import { AdminAbout } from "./admin/admin-about";
@@ -11,6 +11,7 @@ import { AdminContacts } from "./admin/admin-contacts";
 import { AdminPartners } from "./admin/admin-partners";
 import { AdminServices } from "./admin/admin-services";
 import { AdminComics } from "./admin/admin-comics";
+import { AdminHero } from "./admin/admin-hero";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useLanguage } from "@/contexts/language-context";
 import { i18n, t } from "@/lib/i18n";
@@ -82,8 +83,11 @@ export default function AdminDashboard() {
           <p className="text-muted-foreground text-sm">{t(i18n.admin.subtitle, lang)}</p>
         </div>
 
-        <Tabs defaultValue="projects" className="space-y-6">
+        <Tabs defaultValue="hero" className="space-y-6">
           <TabsList className="bg-card/40 border border-border/40 h-auto p-1 flex-wrap gap-1">
+            <TabsTrigger value="hero" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground" data-testid="tab-hero">
+              <LayoutTemplate className="w-4 h-4" /> {t(i18n.heroAdmin.heading, lang)}
+            </TabsTrigger>
             <TabsTrigger value="projects" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground" data-testid="tab-projects">
               <Film className="w-4 h-4" /> {t(i18n.admin.projects, lang)}
             </TabsTrigger>
@@ -107,6 +111,9 @@ export default function AdminDashboard() {
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="hero" className="mt-0 outline-none">
+            <AdminHero />
+          </TabsContent>
           <TabsContent value="projects" className="mt-0 outline-none">
             <AdminProjects />
           </TabsContent>

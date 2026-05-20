@@ -334,6 +334,38 @@ paths:
         "401":
           description: Unauthorized
 
+  /hero:
+    get:
+      operationId: getHero
+      tags: [content]
+      summary: Get hero section content
+      responses:
+        "200":
+          description: Hero content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Hero"
+    patch:
+      operationId: updateHero
+      tags: [content]
+      summary: Update hero section (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HeroUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Hero"
+        "401":
+          description: Unauthorized
+
   /services:
     get:
       operationId: listServices
@@ -1107,6 +1139,85 @@ components:
           type: ["string", "null"]
         facebook:
           type: ["string", "null"]
+
+    Hero:
+      type: object
+      required: [id, titleEn, effectsEnabled]
+      properties:
+        id:
+          type: integer
+        videoUrl:
+          type: ["string", "null"]
+        fallbackImageUrl:
+          type: ["string", "null"]
+        titleEn:
+          type: string
+        titleRu:
+          type: ["string", "null"]
+        titleTj:
+          type: ["string", "null"]
+        subtitleEn:
+          type: ["string", "null"]
+        subtitleRu:
+          type: ["string", "null"]
+        subtitleTj:
+          type: ["string", "null"]
+        ctaPrimaryLabel:
+          type: ["string", "null"]
+        ctaPrimaryLabelRu:
+          type: ["string", "null"]
+        ctaPrimaryLabelTj:
+          type: ["string", "null"]
+        ctaPrimaryHref:
+          type: ["string", "null"]
+        ctaSecondaryLabel:
+          type: ["string", "null"]
+        ctaSecondaryLabelRu:
+          type: ["string", "null"]
+        ctaSecondaryLabelTj:
+          type: ["string", "null"]
+        ctaSecondaryHref:
+          type: ["string", "null"]
+        effectsEnabled:
+          type: boolean
+
+    HeroUpdate:
+      type: object
+      properties:
+        videoUrl:
+          type: ["string", "null"]
+        fallbackImageUrl:
+          type: ["string", "null"]
+        titleEn:
+          type: string
+        titleRu:
+          type: ["string", "null"]
+        titleTj:
+          type: ["string", "null"]
+        subtitleEn:
+          type: ["string", "null"]
+        subtitleRu:
+          type: ["string", "null"]
+        subtitleTj:
+          type: ["string", "null"]
+        ctaPrimaryLabel:
+          type: ["string", "null"]
+        ctaPrimaryLabelRu:
+          type: ["string", "null"]
+        ctaPrimaryLabelTj:
+          type: ["string", "null"]
+        ctaPrimaryHref:
+          type: ["string", "null"]
+        ctaSecondaryLabel:
+          type: ["string", "null"]
+        ctaSecondaryLabelRu:
+          type: ["string", "null"]
+        ctaSecondaryLabelTj:
+          type: ["string", "null"]
+        ctaSecondaryHref:
+          type: ["string", "null"]
+        effectsEnabled:
+          type: boolean
 
     Service:
       type: object

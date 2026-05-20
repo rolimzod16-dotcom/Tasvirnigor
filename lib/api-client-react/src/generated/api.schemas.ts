@@ -236,6 +236,77 @@ export interface ContactsUpdate {
   facebook?: string | null;
 }
 
+export interface Hero {
+  id: number;
+  /** @nullable */
+  videoUrl?: string | null;
+  /** @nullable */
+  fallbackImageUrl?: string | null;
+  titleEn: string;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleTj?: string | null;
+  /** @nullable */
+  subtitleEn?: string | null;
+  /** @nullable */
+  subtitleRu?: string | null;
+  /** @nullable */
+  subtitleTj?: string | null;
+  /** @nullable */
+  ctaPrimaryLabel?: string | null;
+  /** @nullable */
+  ctaPrimaryLabelRu?: string | null;
+  /** @nullable */
+  ctaPrimaryLabelTj?: string | null;
+  /** @nullable */
+  ctaPrimaryHref?: string | null;
+  /** @nullable */
+  ctaSecondaryLabel?: string | null;
+  /** @nullable */
+  ctaSecondaryLabelRu?: string | null;
+  /** @nullable */
+  ctaSecondaryLabelTj?: string | null;
+  /** @nullable */
+  ctaSecondaryHref?: string | null;
+  effectsEnabled: boolean;
+}
+
+export interface HeroUpdate {
+  /** @nullable */
+  videoUrl?: string | null;
+  /** @nullable */
+  fallbackImageUrl?: string | null;
+  titleEn?: string;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleTj?: string | null;
+  /** @nullable */
+  subtitleEn?: string | null;
+  /** @nullable */
+  subtitleRu?: string | null;
+  /** @nullable */
+  subtitleTj?: string | null;
+  /** @nullable */
+  ctaPrimaryLabel?: string | null;
+  /** @nullable */
+  ctaPrimaryLabelRu?: string | null;
+  /** @nullable */
+  ctaPrimaryLabelTj?: string | null;
+  /** @nullable */
+  ctaPrimaryHref?: string | null;
+  /** @nullable */
+  ctaSecondaryLabel?: string | null;
+  /** @nullable */
+  ctaSecondaryLabelRu?: string | null;
+  /** @nullable */
+  ctaSecondaryLabelTj?: string | null;
+  /** @nullable */
+  ctaSecondaryHref?: string | null;
+  effectsEnabled?: boolean;
+}
+
 export interface Service {
   id: number;
   title: string;

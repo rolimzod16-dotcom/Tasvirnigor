@@ -379,6 +379,45 @@ export const i18n = {
     loadingContacts: { en: "Loading contacts...", ru: "Загрузка контактов...", tj: "Бор кардани тамос..." } as T,
   },
 
+  // --- Hero admin ---
+  heroAdmin: {
+    label: { en: "Hero Section", ru: "Секция Hero", tj: "Бахши Hero" } as T,
+    heading: { en: "Hero", ru: "Hero", tj: "Hero" } as T,
+    videoSection: { en: "Hero Video", ru: "Видео Hero", tj: "Видеои Hero" } as T,
+    videoHint: {
+      en: "Upload MP4, WebM or GIF — up to 100 MB. Plays autoplay looped in the background.",
+      ru: "Загрузите MP4, WebM или GIF — до 100 МБ. Воспроизводится автоматически в фоне.",
+      tj: "MP4, WebM ё GIF бор кунед — то 100 МБ. Ба таври автоматӣ дар замина пахш мешавад.",
+    } as T,
+    imageSection: { en: "Fallback Image", ru: "Запасное изображение", tj: "Расми захиравӣ" } as T,
+    imageHint: {
+      en: "Shown when video is not yet loaded or not set. JPG, PNG, WebP.",
+      ru: "Показывается, если видео ещё не загружено или не задано. JPG, PNG, WebP.",
+      tj: "Ҳангоме ки видео бор нашудааст нишон дода мешавад. JPG, PNG, WebP.",
+    } as T,
+    ctaSection: { en: "Call-to-Action Buttons", ru: "Кнопки призыва к действию", tj: "Тугмаҳои даъвати амал" } as T,
+    ctaPrimaryLabel: { en: "Primary Button Label", ru: "Текст основной кнопки", tj: "Матни тугмаи асосӣ" } as T,
+    ctaPrimaryHref: { en: "Primary Button Link", ru: "Ссылка основной кнопки", tj: "Пайванди тугмаи асосӣ" } as T,
+    ctaSecondaryLabel: { en: "Secondary Button Label", ru: "Текст второй кнопки", tj: "Матни тугмаи дуюм" } as T,
+    ctaSecondaryHref: { en: "Secondary Button Link", ru: "Ссылка второй кнопки", tj: "Пайванди тугмаи дуюм" } as T,
+    effectsEnabled: { en: "Enable interactive effects", ru: "Включить интерактивные эффекты", tj: "Эффектҳои интерактивиро фаъол кунед" } as T,
+    effectsHint: {
+      en: "When on: video expands and parallax activates on hover. Disable for simpler experience.",
+      ru: "Если включено: видео расширяется при наведении, параллакс активен. Отключите для упрощённого вида.",
+      tj: "Ҳангоми фаъол: видео ҳангоми кашидани муш васеъ мешавад. Барои намои оддӣ хомӯш кунед.",
+    } as T,
+    uploadVideo: { en: "Upload Video", ru: "Загрузить видео", tj: "Видео бор кунед" } as T,
+    uploadImage: { en: "Upload Image", ru: "Загрузить изображение", tj: "Расм бор кунед" } as T,
+    replaceVideo: { en: "Replace Video", ru: "Заменить видео", tj: "Видеоро иваз кунед" } as T,
+    replaceImage: { en: "Replace Image", ru: "Заменить изображение", tj: "Расмро иваз кунед" } as T,
+    videoUploaded: { en: "Hero video uploaded", ru: "Видео Hero загружено", tj: "Видеои Hero бор шуд" } as T,
+    imageUploaded: { en: "Fallback image uploaded", ru: "Запасное изображение загружено", tj: "Расми захиравӣ бор шуд" } as T,
+    heroUpdated: { en: "Hero section updated", ru: "Секция Hero обновлена", tj: "Бахши Hero нав шуд" } as T,
+    titleSection: { en: "Headline Text", ru: "Текст заголовка", tj: "Матни унвон" } as T,
+    titleEn: { en: "Title (EN)", ru: "Заголовок (EN)", tj: "Унвон (EN)" } as T,
+    subtitleEn: { en: "Subtitle (EN)", ru: "Подзаголовок (EN)", tj: "Зерунвон (EN)" } as T,
+  },
+
   // --- Services full page ---
   servicesPage: {
     label: { en: "All Services", ru: "Все услуги", tj: "Ҳамаи хидматҳо" } as T,

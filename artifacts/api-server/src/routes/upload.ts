@@ -274,4 +274,39 @@ router.post("/upload/service-media", requireAdmin, uploadLarge.single("file"), a
   await handleServiceMediaUpload(req, res);
 });
 
+router.post("/upload/hero-video", requireAdmin, uploadLarge.single("file"), async (req, res): Promise<void> => {
+  const bucket = "hero-videos";
+  const VIDEO_MIME_TYPES = new Set([
+    "video/mp4", "video/webm", "video/quicktime", "video/x-msvideo", "video/x-matroska",
+    "image/gif",
+  ]);
+  const VIDEO_EXTENSIONS = new Set(["mp4", "webm", "mov", "avi", "mkv", "gif"]);
+  const VIDEO_EXT_TO_MIME: Record<string, string> = {
+    mp4: "video/mp4", webm: "video/webm", mov: "video/quicktime",
+    avi: "video/x-msvideo", mkv: "video/x-matroska", gif: "image/gif",
+  };
+  if (!req.file) {
+    res.status(400).json({ error: "No file provided." });
+    return;
+  }
+  const validationError = validateFile(req.file, VIDEO_MIME_TYPES, VIDEO_EXTENSIONS, "MP4, WebM, MOV, GIF");
+  if (validationError) {
+    res.status(400).json({ error: validationError });
+    return;
+  }
+  try {
+    await ensureBucket(bucket);
+    const url = await uploadToSupabase(bucket, req.file, VIDEO_EXT_TO_MIME, VIDEO_MIME_TYPES, "video/mp4");
+    res.json({ url });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Upload failed.";
+    req.log.error({ err, bucket }, "Hero video upload error");
+    res.status(500).json({ error: message });
+  }
+});
+
+router.post("/upload/hero-image", requireAdmin, upload.single("file"), async (req, res): Promise<void> => {
+  await handleImageUpload(req, res, "hero-images");
+});
+
 export default router;

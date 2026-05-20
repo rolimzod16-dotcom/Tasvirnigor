@@ -40,6 +40,8 @@ import type {
   Contacts,
   ContactsUpdate,
   HealthStatus,
+  Hero,
+  HeroUpdate,
   Partner,
   PartnerInput,
   PartnerUpdate,
@@ -1308,6 +1310,154 @@ export const useUpdateContacts = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getUpdateContactsMutationOptions(options));
+    }
+
+export const getGetHeroUrl = () => {
+
+
+
+
+  return `/api/hero`
+}
+
+/**
+ * @summary Get hero section content
+ */
+export const getHero = async ( options?: RequestInit): Promise<Hero> => {
+
+  return customFetch<Hero>(getGetHeroUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetHeroQueryKey = () => {
+    return [
+    `/api/hero`
+    ] as const;
+    }
+
+
+export const getGetHeroQueryOptions = <TData = Awaited<ReturnType<typeof getHero>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getHero>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetHeroQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getHero>>> = ({ signal }) => getHero({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getHero>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetHeroQueryResult = NonNullable<Awaited<ReturnType<typeof getHero>>>
+export type GetHeroQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get hero section content
+ */
+
+export function useGetHero<TData = Awaited<ReturnType<typeof getHero>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getHero>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetHeroQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getUpdateHeroUrl = () => {
+
+
+
+
+  return `/api/hero`
+}
+
+/**
+ * @summary Update hero section (admin only)
+ */
+export const updateHero = async (heroUpdate: HeroUpdate, options?: RequestInit): Promise<Hero> => {
+
+  return customFetch<Hero>(getUpdateHeroUrl(),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      heroUpdate,)
+  }
+);}
+
+
+
+
+export const getUpdateHeroMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateHero>>, TError,{data: BodyType<HeroUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateHero>>, TError,{data: BodyType<HeroUpdate>}, TContext> => {
+
+const mutationKey = ['updateHero'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateHero>>, {data: BodyType<HeroUpdate>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  updateHero(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateHeroMutationResult = NonNullable<Awaited<ReturnType<typeof updateHero>>>
+    export type UpdateHeroMutationBody = BodyType<HeroUpdate>
+    export type UpdateHeroMutationError = ErrorType<void>
+
+    /**
+ * @summary Update hero section (admin only)
+ */
+export const useUpdateHero = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateHero>>, TError,{data: BodyType<HeroUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateHero>>,
+        TError,
+        {data: BodyType<HeroUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateHeroMutationOptions(options));
     }
 
 export const getListServicesUrl = () => {

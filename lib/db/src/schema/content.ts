@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -20,6 +20,32 @@ export const aboutTable = pgTable("about", {
 export const insertAboutSchema = createInsertSchema(aboutTable).omit({ id: true, updatedAt: true });
 export type InsertAbout = z.infer<typeof insertAboutSchema>;
 export type About = typeof aboutTable.$inferSelect;
+
+export const heroTable = pgTable("hero", {
+  id: serial("id").primaryKey(),
+  videoUrl: text("video_url"),
+  fallbackImageUrl: text("fallback_image_url"),
+  titleEn: text("title_en").notNull().default("Film & Animation from Tajikistan"),
+  titleRu: text("title_ru"),
+  titleTj: text("title_tj"),
+  subtitleEn: text("subtitle_en"),
+  subtitleRu: text("subtitle_ru"),
+  subtitleTj: text("subtitle_tj"),
+  ctaPrimaryLabel: text("cta_primary_label"),
+  ctaPrimaryLabelRu: text("cta_primary_label_ru"),
+  ctaPrimaryLabelTj: text("cta_primary_label_tj"),
+  ctaPrimaryHref: text("cta_primary_href"),
+  ctaSecondaryLabel: text("cta_secondary_label"),
+  ctaSecondaryLabelRu: text("cta_secondary_label_ru"),
+  ctaSecondaryLabelTj: text("cta_secondary_label_tj"),
+  ctaSecondaryHref: text("cta_secondary_href"),
+  effectsEnabled: boolean("effects_enabled").notNull().default(true),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+});
+
+export const insertHeroSchema = createInsertSchema(heroTable).omit({ id: true, updatedAt: true });
+export type InsertHero = z.infer<typeof insertHeroSchema>;
+export type Hero = typeof heroTable.$inferSelect;
 
 export const contactsTable = pgTable("contacts", {
   id: serial("id").primaryKey(),
