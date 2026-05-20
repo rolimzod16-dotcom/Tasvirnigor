@@ -36,13 +36,15 @@ export function Hero() {
   const expansionRaw = useMotionValue(0);
   const expansion = useSpring(expansionRaw, EXPAND_SPRING);
 
-  // clip-path: at rest reveals only the right column (~43% of section width).
+  // clip-path: at rest reveals an oval/pill in the bottom-right column area.
+  // Large radius (9999px) collapses to pill/capsule shape regardless of size.
+  // On hover the insets sweep to 0 and radius drops to 0 (full section reveal).
   // inset(top right bottom left round radius)
-  const insetTop    = useTransform(expansion, [0, 1], [8,  0]);   // %
-  const insetRight  = useTransform(expansion, [0, 1], [2,  0]);   // %
-  const insetBottom = useTransform(expansion, [0, 1], [8,  0]);   // %
-  const insetLeft   = useTransform(expansion, [0, 1], [57, 0]);   // % ← key: hides left side
-  const radius      = useTransform(expansion, [0, 1], [32, 0]);   // px
+  const insetTop    = useTransform(expansion, [0, 1], [28, 0]);   // % — sits lower in hero
+  const insetRight  = useTransform(expansion, [0, 1], [3,  0]);   // %
+  const insetBottom = useTransform(expansion, [0, 1], [5,  0]);   // % — close to bottom edge
+  const insetLeft   = useTransform(expansion, [0, 1], [56, 0]);   // % ← hides left side
+  const radius      = useTransform(expansion, [0, 1], [9999, 0]); // px → pill at rest, sharp on expand
   const videoClip   = useMotionTemplate`inset(${insetTop}% ${insetRight}% ${insetBottom}% ${insetLeft}% round ${radius}px)`;
 
   // Left text column — slides left and fades as video expands
@@ -138,7 +140,7 @@ export function Hero() {
       ─────────────────────────────────────────────────────────── */}
       {hasMedia && (
         <motion.div
-          className="absolute inset-0 z-[8]"
+          className="absolute inset-0 z-[8] bg-[#080808]"
           style={{
             clipPath: effectsEnabled ? videoClip : undefined,
             willChange: "clip-path",
@@ -151,14 +153,14 @@ export function Hero() {
               muted
               loop
               playsInline
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-contain"
               poster={fallbackImageUrl ?? undefined}
             />
           ) : (
             <img
               src={fallbackImageUrl!}
               alt="Tasvirnigor Studio"
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-contain"
             />
           )}
 
@@ -311,31 +313,51 @@ export function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* RIGHT: preview card — fades as the absolute video layer blooms */}
+        {/* RIGHT: oval preview pill — sits bottom-right, fades as absolute layer blooms */}
         {hasMedia && (
           <motion.div
-            className="relative hidden lg:flex items-center justify-center"
-            initial={{ opacity: 0, scale: 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
+            className="relative hidden lg:flex items-end justify-center pb-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             style={effectsEnabled ? { opacity: previewOpacity } : undefined}
           >
             {/*
-              This acts as a visual hint / ghost — the clip-path on the
-              absolute layer covers this area at rest, so users see the
-              video here. This div provides the correct layout dimensions.
-              We show a subtle placeholder border so it's visible before
-              the absolute layer loads.
+              Oval/capsule placeholder that visually aligns with the
+              clip-path oval at rest. The clip-path on the absolute video
+              layer covers this same area, so users see the video through it.
+              This pill acts as the glowing frame UI element.
             */}
-            <div
-              className="w-full relative overflow-hidden rounded-[32px] border border-white/[0.06]"
-              style={{ aspectRatio: "10/13", maxHeight: "70vh" }}
-            >
-              {/* Subtle corner marks */}
-              <div className="absolute top-4 left-4 w-5 h-5 border-t-[1.5px] border-l-[1.5px] border-white/20" />
-              <div className="absolute top-4 right-4 w-5 h-5 border-t-[1.5px] border-r-[1.5px] border-white/20" />
-              <div className="absolute bottom-4 left-4 w-5 h-5 border-b-[1.5px] border-l-[1.5px] border-white/20" />
-              <div className="absolute bottom-4 right-4 w-5 h-5 border-b-[1.5px] border-r-[1.5px] border-white/20" />
+            <div className="relative" style={{ width: "82%", aspectRatio: "3/4" }}>
+              {/* Amber glow halo behind the pill */}
+              <div
+                className="absolute inset-[-18px] rounded-full pointer-events-none"
+                style={{
+                  background:
+                    "radial-gradient(ellipse at center, hsl(38 82% 42% / 0.18) 0%, transparent 70%)",
+                  filter: "blur(20px)",
+                }}
+              />
+              {/* The pill frame itself */}
+              <div
+                className="relative w-full h-full rounded-full overflow-hidden"
+                style={{
+                  border: "1px solid hsl(38 82% 42% / 0.18)",
+                  boxShadow:
+                    "0 0 60px 8px hsl(38 82% 42% / 0.10), inset 0 0 40px hsl(38 82% 42% / 0.04), 0 32px 80px rgba(0,0,0,0.5)",
+                  background:
+                    "linear-gradient(160deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 60%)",
+                }}
+              >
+                {/* Subtle inner shine at top */}
+                <div
+                  className="absolute inset-x-0 top-0 h-px"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, transparent 10%, hsl(38 82% 42% / 0.3) 50%, transparent 90%)",
+                  }}
+                />
+              </div>
             </div>
           </motion.div>
         )}
