@@ -1,89 +1,119 @@
-import { useState } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { useRef } from "react";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  useMotionTemplate,
+} from "framer-motion";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
 import { i18n, t } from "@/lib/i18n";
 import { useGetHero } from "@workspace/api-client-react";
 
-const HERO_BG = "https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=1920&q=80";
+const HERO_BG =
+  "https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=1920&q=80";
 
-// Cinematic spring — fluid, weighted feel
-const SPRING = { type: "spring" as const, damping: 26, stiffness: 160, mass: 1.1 };
-// Parallax spring — lags slightly behind cursor for depth feel
-const PARALLAX = { stiffness: 42, damping: 18 };
+// Springs
+const PROXIMITY_SPRING = { stiffness: 130, damping: 22, mass: 0.7 };
+const PARALLAX_SPRING = { stiffness: 70, damping: 20 };
 
 export function Hero() {
   const { lang } = useLanguage();
   const { data: heroContent } = useGetHero();
-
-  // Three-level hover state
-  // "near"   → cursor in the right column (proximity zone)
-  // "over"   → cursor directly over the video frame
-  const [hoverLevel, setHoverLevel] = useState<"idle" | "near" | "over">("idle");
 
   const effectsEnabled = heroContent?.effectsEnabled !== false;
   const videoUrl = heroContent?.videoUrl ?? null;
   const fallbackImageUrl = heroContent?.fallbackImageUrl ?? null;
   const hasMedia = !!(videoUrl || fallbackImageUrl);
 
-  // Section-wide ambient parallax (drives the whole video column)
-  const sectionX = useMotionValue(0);
-  const sectionY = useMotionValue(0);
-  const columnX = useSpring(sectionX, PARALLAX);
-  const columnY = useSpring(sectionY, PARALLAX);
+  // ─────────────────────────────────────────────────────────────
+  // Cursor-proximity model
+  //
+  // `proximity` is 0 when the cursor is far from the video, smoothly
+  // approaches 1 as it nears the video frame center, and saturates at
+  // 1 when directly over it. Every animated property below derives
+  // from a spring-smoothed version of this single value.
+  // ─────────────────────────────────────────────────────────────
+  const videoFrameRef = useRef<HTMLDivElement>(null);
 
-  // Video-area precise parallax (drives the inner frame — stronger, more responsive)
-  const videoX = useMotionValue(0);
-  const videoY = useMotionValue(0);
-  const frameX = useSpring(videoX, { stiffness: 68, damping: 20 });
-  const frameY = useSpring(videoY, { stiffness: 68, damping: 20 });
+  const proximityRaw = useMotionValue(0);
+  const proximity = useSpring(proximityRaw, PROXIMITY_SPRING);
 
-  // Section-level mouse tracking — ambient parallax + near-video detection
+  // Drives the cinematic transform of the video frame itself
+  const frameScale = useTransform(proximity, [0, 1], [1, 1.5]);
+  const insetH = useTransform(proximity, [0, 1], [7, -9]); // %
+  const insetV = useTransform(proximity, [0, 1], [6, -9]); // %
+  const radius = useTransform(proximity, [0, 1], [38, 4]); // px
+  const clipPath = useMotionTemplate`inset(${insetV}% ${insetH}% ${insetV}% ${insetH}% round ${radius}px)`;
+
+  // Glow halo around the video
+  const glowOpacity = useTransform(proximity, [0, 1], [0.05, 0.28]);
+  const glowScale = useTransform(proximity, [0, 1], [1, 1.4]);
+  const glowBlur = useTransform(proximity, [0, 1], [60, 130]); // px
+
+  // Section dim — quietly veils the rest of the section
+  const dimOpacity = useTransform(proximity, [0, 1], [0, 0.45]);
+
+  // Text counter-parallax — shifts left and softens as video grows toward it
+  const textShiftX = useTransform(proximity, [0, 1], [0, -36]);
+  const textOpacity = useTransform(proximity, [0, 1], [1, 0.5]);
+
+  // Corner brackets vanish quickly once expansion begins
+  const cornerOpacity = useTransform(proximity, [0, 0.25], [1, 0]);
+
+  // Subtle parallax drift of the video frame, tracking cursor like a magnet
+  const parallaxXRaw = useMotionValue(0);
+  const parallaxYRaw = useMotionValue(0);
+  const parallaxX = useSpring(parallaxXRaw, PARALLAX_SPRING);
+  const parallaxY = useSpring(parallaxYRaw, PARALLAX_SPRING);
+
+  // ─────────────────────────────────────────────────────────────
+  // Mouse handler — computes proximity from cursor distance to video
+  // center, normalized by the frame's own width.
+  // ─────────────────────────────────────────────────────────────
   const handleSectionMove = (e: React.MouseEvent<HTMLElement>) => {
-    if (!effectsEnabled) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const rx = (e.clientX - rect.left - rect.width / 2) * 0.018;
-    const ry = (e.clientY - rect.top - rect.height / 2) * 0.018;
-    sectionX.set(rx);
-    sectionY.set(ry);
+    if (!effectsEnabled || !hasMedia) return;
+    const frameEl = videoFrameRef.current;
+    if (!frameEl) return;
+
+    const r = frameEl.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+
+    // Distance normalized by frame width (so reach is consistent across viewports)
+    const dx = (e.clientX - cx) / r.width;
+    const dy = (e.clientY - cy) / r.width;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    // Falloff: full strength at center (dist=0), zero at ~1.4 widths away
+    // Exponential curve makes the approach feel snappier near the frame.
+    const REACH = 1.4;
+    const t = Math.max(0, 1 - Math.min(dist, REACH) / REACH);
+    const p = Math.pow(t, 1.6);
+    proximityRaw.set(p);
+
+    // Magnetic drift: cursor pulls the frame slightly toward it
+    parallaxXRaw.set(dx * r.width * 0.045);
+    parallaxYRaw.set(dy * r.width * 0.045);
   };
 
   const handleSectionLeave = () => {
-    sectionX.set(0);
-    sectionY.set(0);
-    videoX.set(0);
-    videoY.set(0);
-    setHoverLevel("idle");
+    proximityRaw.set(0);
+    parallaxXRaw.set(0);
+    parallaxYRaw.set(0);
   };
 
-  // Right-column tracking — proximity hover stage
-  const handleColumnMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!effectsEnabled) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    videoX.set((e.clientX - rect.left - rect.width / 2) * 0.055);
-    videoY.set((e.clientY - rect.top - rect.height / 2) * 0.055);
-    if (hoverLevel === "idle") setHoverLevel("near");
-  };
-
-  const handleColumnLeave = () => {
-    videoX.set(0);
-    videoY.set(0);
-    setHoverLevel("idle");
-  };
-
-  // Video frame tracking — direct hover stage
-  const handleFrameEnter = () => {
-    if (effectsEnabled) setHoverLevel("over");
-  };
-  const handleFrameLeave = () => {
-    setHoverLevel("near");
-  };
-
-  // Localized text
+  // ─────────────────────────────────────────────────────────────
+  // Localised content
+  // ─────────────────────────────────────────────────────────────
   const title =
     heroContent
-      ? (lang === "ru" ? heroContent.titleRu : lang === "tj" ? heroContent.titleTj : null) ??
-        heroContent.titleEn
+      ? (lang === "ru"
+          ? heroContent.titleRu
+          : lang === "tj"
+          ? heroContent.titleTj
+          : null) ?? heroContent.titleEn
       : null;
 
   const subtitle =
@@ -97,26 +127,44 @@ export function Hero() {
 
   const ctaPrimaryLabel =
     heroContent
-      ? (lang === "ru" ? heroContent.ctaPrimaryLabelRu : lang === "tj" ? heroContent.ctaPrimaryLabelTj : null) ??
-        heroContent.ctaPrimaryLabel ?? null
+      ? (lang === "ru"
+          ? heroContent.ctaPrimaryLabelRu
+          : lang === "tj"
+          ? heroContent.ctaPrimaryLabelTj
+          : null) ?? heroContent.ctaPrimaryLabel ?? null
       : null;
 
   const ctaSecondaryLabel =
     heroContent
-      ? (lang === "ru" ? heroContent.ctaSecondaryLabelRu : lang === "tj" ? heroContent.ctaSecondaryLabelTj : null) ??
-        heroContent.ctaSecondaryLabel ?? null
+      ? (lang === "ru"
+          ? heroContent.ctaSecondaryLabelRu
+          : lang === "tj"
+          ? heroContent.ctaSecondaryLabelTj
+          : null) ?? heroContent.ctaSecondaryLabel ?? null
       : null;
 
   const ctaPrimaryHref = heroContent?.ctaPrimaryHref ?? "#portfolio";
   const ctaSecondaryHref = heroContent?.ctaSecondaryHref ?? "#about";
 
-  const scrollTo = (id: string) => document.querySelector(id)?.scrollIntoView({ behavior: "smooth" });
-  const handleCta = (href: string) => href.startsWith("#") ? scrollTo(href) : (window.location.href = href);
+  const scrollTo = (id: string) =>
+    document.querySelector(id)?.scrollIntoView({ behavior: "smooth" });
+  const handleCta = (href: string) =>
+    href.startsWith("#") ? scrollTo(href) : (window.location.href = href);
 
   const styledHeadline =
-    lang === "ru" ? <>Кино и <span className="text-primary">анимация</span> из Таджикистана</> :
-    lang === "tj" ? <>Кино ва <span className="text-primary">анимация</span> аз Тоҷикистон</> :
-    <>Film & <span className="text-primary">Animation</span> from Tajikistan</>;
+    lang === "ru" ? (
+      <>
+        Кино и <span className="text-primary">анимация</span> из Таджикистана
+      </>
+    ) : lang === "tj" ? (
+      <>
+        Кино ва <span className="text-primary">анимация</span> аз Тоҷикистон
+      </>
+    ) : (
+      <>
+        Film & <span className="text-primary">Animation</span> from Tajikistan
+      </>
+    );
 
   const stats = [
     { num: "10+", label: lang === "ru" ? "Лет" : lang === "tj" ? "Сол" : "Years" },
@@ -124,19 +172,11 @@ export function Hero() {
     { num: "20+", label: lang === "ru" ? "Стран" : lang === "tj" ? "Кишвар" : "Countries" },
   ];
 
-  // Animation values per hover level
-  const isNear = hoverLevel === "near" || hoverLevel === "over";
-  const isOver = hoverLevel === "over";
-
-  const clipPath =
-    isOver  ? "inset(-3% -3% -3% -3% round 6px)"   // bleeds outside, near-sharp corners
-    : isNear ? "inset(1%  1%  1%  1%  round 16px)"  // slight reveal, softened
-    :           "inset(6%  7%  6%  7%  round 36px)"; // default: portrait aperture
-
-  const frameScale  = isOver ? 1.10 : isNear ? 1.045 : 1;
-  const glowOpacity = isOver ? 0.22  : isNear ? 0.12  : 0.06;
-  const glowScale   = isOver ? 1.25  : isNear ? 1.08  : 1;
-  const dimOpacity  = isOver ? 0.30  : isNear ? 0.14  : 0;
+  // Build animated box-shadow string from motion values
+  const boxShadow = useMotionTemplate`0 0 ${glowBlur}px ${useTransform(
+    glowBlur,
+    (b) => b / 3
+  )}px rgba(196,145,10,${glowOpacity}), 0 30px 90px rgba(0,0,0,0.6)`;
 
   return (
     <section
@@ -145,28 +185,31 @@ export function Hero() {
       onMouseMove={handleSectionMove}
       onMouseLeave={handleSectionLeave}
     >
-      {/* Ambient radial glow — grows on hover */}
+      {/* Ambient amber radial — pulses with proximity */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div
-          className="absolute top-1/2 left-[55%] -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vh] rounded-full"
-          style={{ background: "radial-gradient(circle, hsl(38 82% 42%) 0%, transparent 65%)" }}
-          animate={{ opacity: glowOpacity, scale: glowScale }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="absolute top-1/2 left-[60%] -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vh] rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle, hsl(38 82% 42%) 0%, transparent 65%)",
+            opacity: glowOpacity,
+            scale: glowScale,
+          }}
         />
       </div>
 
-      {/* Section dim — subtle veil that focuses on video when cursor is near */}
+      {/* Section dim — focuses attention on the video */}
       <motion.div
         className="absolute inset-0 bg-black pointer-events-none z-[5]"
-        animate={{ opacity: dimOpacity }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        style={{ opacity: dimOpacity }}
       />
 
-      {/* Static BG (no custom media uploaded yet) */}
+      {/* Static BG fallback when no custom media uploaded */}
       {!hasMedia && (
         <div className="absolute inset-0 z-0">
           <img
-            src={HERO_BG} alt=""
+            src={HERO_BG}
+            alt=""
             className="absolute inset-0 w-full h-full object-cover opacity-[0.18]"
             fetchPriority="high"
           />
@@ -181,11 +224,18 @@ export function Hero() {
                    grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-16
                    items-center min-h-[100dvh]"
       >
-
-        {/* ── LEFT: Text ─────────────────────────────────────────── */}
-        <div className="flex flex-col justify-center">
+        {/* ── LEFT: Text — drifts left & softens as video grows ──── */}
+        <motion.div
+          className="flex flex-col justify-center"
+          style={
+            effectsEnabled
+              ? { x: textShiftX, opacity: textOpacity }
+              : undefined
+          }
+        >
           <motion.p
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
             className="text-primary font-semibold tracking-[0.22em] uppercase text-xs mb-6"
           >
@@ -193,7 +243,8 @@ export function Hero() {
           </motion.p>
 
           <motion.h1
-            initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.2 }}
             className="font-display font-extrabold text-white leading-[0.93] tracking-tight mb-7"
             style={{ fontSize: "clamp(2.7rem, 6.5vw, 5.6rem)" }}
@@ -202,7 +253,8 @@ export function Hero() {
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.35 }}
             className="text-white/55 font-light text-base md:text-lg max-w-xl leading-relaxed mb-10"
           >
@@ -210,7 +262,8 @@ export function Hero() {
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.5 }}
             className="flex flex-wrap gap-4"
           >
@@ -232,22 +285,31 @@ export function Hero() {
             </button>
           </motion.div>
 
-          {/* Mobile: simple embedded video (no fullscreen, no controls) */}
+          {/* Mobile: simple embedded video */}
           {hasMedia && (
             <motion.div
-              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.65 }}
               className="lg:hidden mt-8 relative rounded-2xl overflow-hidden"
               style={{ aspectRatio: "16/9" }}
             >
               {videoUrl ? (
-                <video src={videoUrl} autoPlay muted loop playsInline
+                <video
+                  src={videoUrl}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
                   className="w-full h-full object-cover"
                   poster={fallbackImageUrl ?? undefined}
                 />
               ) : (
-                <img src={fallbackImageUrl!} alt="Tasvirnigor Studio"
-                  className="w-full h-full object-cover" />
+                <img
+                  src={fallbackImageUrl!}
+                  alt="Tasvirnigor Studio"
+                  className="w-full h-full object-cover"
+                />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
             </motion.div>
@@ -255,103 +317,87 @@ export function Hero() {
 
           {/* Stats */}
           <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.75 }}
             className="hidden lg:flex items-center gap-8 mt-14 pt-10 border-t border-white/[0.07]"
           >
             {stats.map(({ num, label }) => (
               <div key={num} className="flex flex-col gap-0.5">
-                <span className="font-display font-bold text-[1.75rem] text-primary leading-none">{num}</span>
-                <span className="text-white/35 text-[10px] tracking-[0.18em] uppercase">{label}</span>
+                <span className="font-display font-bold text-[1.75rem] text-primary leading-none">
+                  {num}
+                </span>
+                <span className="text-white/35 text-[10px] tracking-[0.18em] uppercase">
+                  {label}
+                </span>
               </div>
             ))}
           </motion.div>
-        </div>
+        </motion.div>
 
-        {/* ── RIGHT: Cinematic video frame (desktop only) ──────────── */}
+        {/* ── RIGHT: Cinematic video frame (desktop) ───────────────── */}
         {hasMedia && (
-          /* Proximity zone — entering this column triggers Stage 1 expansion */
           <motion.div
             className="relative hidden lg:flex items-center justify-center"
-            style={{ x: effectsEnabled ? columnX : 0, y: effectsEnabled ? columnY : 0 }}
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            onMouseMove={handleColumnMove}
-            onMouseLeave={handleColumnLeave}
+            style={{ zIndex: 20 }}
           >
-            {/* Animated amber glow ring */}
+            {/* Animated amber glow halo */}
             <motion.div
-              className="absolute inset-[-24px] rounded-[52px] pointer-events-none"
-              animate={{
-                boxShadow: isOver
-                  ? "0 0 160px 60px rgba(196,145,10,0.20), 0 50px 120px rgba(0,0,0,0.75)"
-                  : isNear
-                  ? "0 0 110px 35px rgba(196,145,10,0.11), 0 30px 80px rgba(0,0,0,0.55)"
-                  : "0 0 80px 20px rgba(196,145,10,0.05), 0 16px 50px rgba(0,0,0,0.35)",
-              }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
+              className="absolute inset-[-30px] rounded-[60px] pointer-events-none"
+              style={{ boxShadow }}
             />
 
-            {/* Video frame — the core cinematic element */}
+            {/* The video frame itself — scales dramatically with proximity */}
             <motion.div
-              className="relative overflow-visible w-full"
+              ref={videoFrameRef}
+              className="relative w-full overflow-hidden"
               style={{
                 aspectRatio: "10/13",
                 maxHeight: "70vh",
-                x: effectsEnabled ? frameX : 0,
-                y: effectsEnabled ? frameY : 0,
+                scale: effectsEnabled ? frameScale : 1,
+                clipPath: effectsEnabled ? clipPath : undefined,
+                x: effectsEnabled ? parallaxX : 0,
+                y: effectsEnabled ? parallaxY : 0,
                 willChange: "transform, clip-path",
+                transformOrigin: "center center",
               }}
-              animate={{ clipPath, scale: frameScale }}
-              transition={SPRING}
-              onMouseEnter={handleFrameEnter}
-              onMouseLeave={handleFrameLeave}
             >
               {/* Media */}
-              <div className="absolute inset-0 overflow-hidden rounded-[inherit]">
-                {videoUrl ? (
-                  <video
-                    src={videoUrl}
-                    autoPlay muted loop playsInline
-                    className="w-full h-full object-cover"
-                    poster={fallbackImageUrl ?? undefined}
-                    style={{ willChange: "transform" }}
-                  />
-                ) : (
-                  <img
-                    src={fallbackImageUrl!}
-                    alt="Tasvirnigor Studio"
-                    className="w-full h-full object-cover"
-                    style={{ willChange: "transform" }}
-                  />
-                )}
-              </div>
+              {videoUrl ? (
+                <video
+                  src={videoUrl}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-cover"
+                  poster={fallbackImageUrl ?? undefined}
+                  style={{ willChange: "transform" }}
+                />
+              ) : (
+                <img
+                  src={fallbackImageUrl!}
+                  alt="Tasvirnigor Studio"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={{ willChange: "transform" }}
+                />
+              )}
 
               {/* Cinematic gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10 pointer-events-none" />
 
-              {/* Corner marks — fade away as video expands */}
+              {/* Corner marks — fade away the moment expansion begins */}
               <motion.div
                 className="absolute inset-0 pointer-events-none"
-                animate={{ opacity: isOver ? 0 : isNear ? 0.4 : 1 }}
-                transition={{ duration: 0.4 }}
+                style={{ opacity: cornerOpacity }}
               >
-                <div className="absolute top-4 left-4 w-5 h-5 border-t-[1.5px] border-l-[1.5px] border-white/25" />
-                <div className="absolute top-4 right-4 w-5 h-5 border-t-[1.5px] border-r-[1.5px] border-white/25" />
-                <div className="absolute bottom-4 left-4 w-5 h-5 border-b-[1.5px] border-l-[1.5px] border-white/25" />
-                <div className="absolute bottom-4 right-4 w-5 h-5 border-b-[1.5px] border-r-[1.5px] border-white/25" />
-              </motion.div>
-
-              {/* Bottom label — fades in as cursor approaches */}
-              <motion.div
-                className="absolute bottom-5 left-0 right-0 flex justify-center pointer-events-none"
-                animate={{ opacity: isNear ? 1 : 0, y: isNear ? 0 : 6 }}
-                transition={{ duration: 0.35, ease: "easeOut" }}
-              >
-                <span className="text-[9px] tracking-[0.28em] uppercase text-white/35 font-medium">
-                  Tasvirnigor Studio
-                </span>
+                <div className="absolute top-4 left-4 w-5 h-5 border-t-[1.5px] border-l-[1.5px] border-white/30" />
+                <div className="absolute top-4 right-4 w-5 h-5 border-t-[1.5px] border-r-[1.5px] border-white/30" />
+                <div className="absolute bottom-4 left-4 w-5 h-5 border-b-[1.5px] border-l-[1.5px] border-white/30" />
+                <div className="absolute bottom-4 right-4 w-5 h-5 border-b-[1.5px] border-r-[1.5px] border-white/30" />
               </motion.div>
             </motion.div>
           </motion.div>
@@ -366,7 +412,9 @@ export function Hero() {
         transition={{ repeat: Infinity, duration: 2.8, ease: "easeInOut" }}
         onClick={() => scrollTo("#about")}
       >
-        <span className="text-[10px] tracking-[0.2em] uppercase font-medium">{t(i18n.hero.scroll, lang)}</span>
+        <span className="text-[10px] tracking-[0.2em] uppercase font-medium">
+          {t(i18n.hero.scroll, lang)}
+        </span>
         <ArrowDown className="w-4 h-4" />
       </motion.button>
     </section>
