@@ -118,18 +118,18 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
   return (
     <motion.article
       variants={cardVariant}
-      className="group relative bg-white rounded-2xl border border-[#e8e8e8] overflow-hidden
-                 hover:border-primary/25 hover:shadow-[0_24px_64px_-16px_rgba(0,0,0,0.13)]
+      className="group relative bg-white rounded-xl border border-[#e8e8e8] overflow-hidden
+                 hover:border-primary/25 hover:shadow-[0_16px_48px_-12px_rgba(0,0,0,0.11)]
                  transition-all duration-500"
     >
       <div className="flex flex-col lg:flex-row lg:items-stretch">
 
         {/* ── Content column ── */}
-        <div className="flex-1 flex flex-col justify-between gap-6 p-7 md:p-9 lg:p-10 lg:py-11">
+        <div className="flex-1 flex flex-col justify-between gap-4 p-5 md:p-7 lg:p-8 lg:py-8">
           {/* Number + optional subtitle badge */}
           <div className="flex items-start justify-between">
             <span
-              className="font-display font-black text-[56px] lg:text-[72px] leading-none
+              className="font-display font-black text-[40px] lg:text-[52px] leading-none
                          text-[#f0ede8] select-none transition-colors duration-500
                          group-hover:text-primary/15"
             >
@@ -137,8 +137,8 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
             </span>
             {subtitle && (
               <span
-                className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary
-                           bg-[#fdf5e4] px-2.5 py-1 rounded-full mt-1"
+                className="text-[9px] font-bold uppercase tracking-[0.14em] text-primary
+                           bg-[#fdf5e4] px-2 py-0.5 rounded-full mt-1"
               >
                 {subtitle}
               </span>
@@ -146,15 +146,15 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
           </div>
 
           {/* Title + description */}
-          <div className="flex-1 flex flex-col gap-3">
+          <div className="flex-1 flex flex-col gap-2">
             <h3
               className="font-display font-bold text-[#141414]
-                         text-xl md:text-2xl lg:text-[1.65rem] leading-tight"
+                         text-lg md:text-xl lg:text-[1.35rem] leading-tight"
             >
               {title}
             </h3>
             {description && (
-              <p className="text-[#777] text-sm font-light leading-relaxed max-w-sm">
+              <p className="text-[#777] text-xs font-light leading-relaxed max-w-sm">
                 {description}
               </p>
             )}
@@ -166,16 +166,16 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
               href={service.linkUrl!}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 self-start
-                         text-sm font-semibold text-[#141414]
-                         border border-[#e0e0e0] rounded-full px-4 py-2
+              className="inline-flex items-center gap-1.5 self-start
+                         text-xs font-semibold text-[#141414]
+                         border border-[#e0e0e0] rounded-full px-3.5 py-1.5
                          hover:bg-primary hover:border-primary hover:text-white
                          transition-all duration-300 group/btn"
               onClick={(e) => e.stopPropagation()}
             >
               <span>{getLinkLabel(service, lang)}</span>
               <ArrowUpRight
-                className="w-3.5 h-3.5 transition-transform duration-300
+                className="w-3 h-3 transition-transform duration-300
                            group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5"
               />
             </a>
@@ -186,7 +186,7 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
         <div
           className="relative overflow-hidden bg-[#0e0e0e]
                      aspect-[4/3]
-                     lg:aspect-auto lg:w-[46%] lg:shrink-0"
+                     lg:aspect-auto lg:w-[42%] lg:shrink-0"
         >
           <ServiceMedia
             mediaUrl={service.mediaUrl}
