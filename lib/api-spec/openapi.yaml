@@ -1135,7 +1135,37 @@ components:
           type: ["string", "null"]
         phone:
           type: ["string", "null"]
+        whatsapp:
+          type: ["string", "null"]
         address:
+          type: ["string", "null"]
+        addressRu:
+          type: ["string", "null"]
+        addressTj:
+          type: ["string", "null"]
+        workingHoursEn:
+          type: ["string", "null"]
+        workingHoursRu:
+          type: ["string", "null"]
+        workingHoursTj:
+          type: ["string", "null"]
+        labelEn:
+          type: ["string", "null"]
+        labelRu:
+          type: ["string", "null"]
+        labelTj:
+          type: ["string", "null"]
+        headingEn:
+          type: ["string", "null"]
+        headingRu:
+          type: ["string", "null"]
+        headingTj:
+          type: ["string", "null"]
+        subtextEn:
+          type: ["string", "null"]
+        subtextRu:
+          type: ["string", "null"]
+        subtextTj:
           type: ["string", "null"]
         telegram:
           type: ["string", "null"]
@@ -1153,7 +1183,37 @@ components:
           type: ["string", "null"]
         phone:
           type: ["string", "null"]
+        whatsapp:
+          type: ["string", "null"]
         address:
+          type: ["string", "null"]
+        addressRu:
+          type: ["string", "null"]
+        addressTj:
+          type: ["string", "null"]
+        workingHoursEn:
+          type: ["string", "null"]
+        workingHoursRu:
+          type: ["string", "null"]
+        workingHoursTj:
+          type: ["string", "null"]
+        labelEn:
+          type: ["string", "null"]
+        labelRu:
+          type: ["string", "null"]
+        labelTj:
+          type: ["string", "null"]
+        headingEn:
+          type: ["string", "null"]
+        headingRu:
+          type: ["string", "null"]
+        headingTj:
+          type: ["string", "null"]
+        subtextEn:
+          type: ["string", "null"]
+        subtextRu:
+          type: ["string", "null"]
+        subtextTj:
           type: ["string", "null"]
         telegram:
           type: ["string", "null"]

@@ -226,7 +226,37 @@ export interface Contacts {
   /** @nullable */
   phone?: string | null;
   /** @nullable */
+  whatsapp?: string | null;
+  /** @nullable */
   address?: string | null;
+  /** @nullable */
+  addressRu?: string | null;
+  /** @nullable */
+  addressTj?: string | null;
+  /** @nullable */
+  workingHoursEn?: string | null;
+  /** @nullable */
+  workingHoursRu?: string | null;
+  /** @nullable */
+  workingHoursTj?: string | null;
+  /** @nullable */
+  labelEn?: string | null;
+  /** @nullable */
+  labelRu?: string | null;
+  /** @nullable */
+  labelTj?: string | null;
+  /** @nullable */
+  headingEn?: string | null;
+  /** @nullable */
+  headingRu?: string | null;
+  /** @nullable */
+  headingTj?: string | null;
+  /** @nullable */
+  subtextEn?: string | null;
+  /** @nullable */
+  subtextRu?: string | null;
+  /** @nullable */
+  subtextTj?: string | null;
   /** @nullable */
   telegram?: string | null;
   /** @nullable */
@@ -243,7 +273,37 @@ export interface ContactsUpdate {
   /** @nullable */
   phone?: string | null;
   /** @nullable */
+  whatsapp?: string | null;
+  /** @nullable */
   address?: string | null;
+  /** @nullable */
+  addressRu?: string | null;
+  /** @nullable */
+  addressTj?: string | null;
+  /** @nullable */
+  workingHoursEn?: string | null;
+  /** @nullable */
+  workingHoursRu?: string | null;
+  /** @nullable */
+  workingHoursTj?: string | null;
+  /** @nullable */
+  labelEn?: string | null;
+  /** @nullable */
+  labelRu?: string | null;
+  /** @nullable */
+  labelTj?: string | null;
+  /** @nullable */
+  headingEn?: string | null;
+  /** @nullable */
+  headingRu?: string | null;
+  /** @nullable */
+  headingTj?: string | null;
+  /** @nullable */
+  subtextEn?: string | null;
+  /** @nullable */
+  subtextRu?: string | null;
+  /** @nullable */
+  subtextTj?: string | null;
   /** @nullable */
   telegram?: string | null;
   /** @nullable */

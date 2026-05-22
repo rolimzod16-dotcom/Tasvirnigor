@@ -144,6 +144,7 @@ export const i18n = {
     email: { en: "Email", ru: "Эл. почта", tj: "Почтаи электронӣ" } as T,
     phone: { en: "Phone", ru: "Телефон", tj: "Телефон" } as T,
     studio: { en: "Studio", ru: "Студия", tj: "Студия" } as T,
+    workingHours: { en: "Working Hours", ru: "Часы работы", tj: "Соатҳои корӣ" } as T,
   },
   footer: {
     rights: { en: "All rights reserved.", ru: "Все права защищены.", tj: "Ҳамаи ҳуқуқҳо ҳифз шудаанд." } as T,
@@ -382,6 +383,15 @@ export const i18n = {
     contactInfo: { en: "Contact Information", ru: "Контактная информация", tj: "Маълумоти тамос" } as T,
     contactsUpdated: { en: "Contacts updated successfully", ru: "Контакты обновлены", tj: "Тамос нав шуд" } as T,
     loadingContacts: { en: "Loading contacts...", ru: "Загрузка контактов...", tj: "Бор кардани тамос..." } as T,
+    sectionContent: { en: "Section Content", ru: "Содержание раздела", tj: "Мазмуни бахш" } as T,
+    sectionLabel: { en: "Section Label", ru: "Метка раздела", tj: "Нишонаи бахш" } as T,
+    sectionHeading: { en: "Section Heading", ru: "Заголовок раздела", tj: "Унвони бахш" } as T,
+    sectionSubtext: { en: "Introductory Text", ru: "Вводный текст", tj: "Матни муқаддимавӣ" } as T,
+    workingHours: { en: "Working Hours", ru: "Часы работы", tj: "Соатҳои корӣ" } as T,
+    workingHoursPlaceholder: { en: "e.g. Mon–Fri: 9:00–18:00", ru: "напр. Пн–Пт: 9:00–18:00", tj: "м. Душ–Ҷум: 9:00–18:00" } as T,
+    whatsappUrl: { en: "WhatsApp URL", ru: "Ссылка WhatsApp", tj: "Пайванди WhatsApp" } as T,
+    whatsappPlaceholder: { en: "https://wa.me/992...", ru: "https://wa.me/992...", tj: "https://wa.me/992..." } as T,
+    contactDetails: { en: "Contact Details", ru: "Контактные данные", tj: "Маълумоти тамос" } as T,
   },
 
   // --- Hero admin ---
