@@ -53,9 +53,8 @@ export default function ServicesPage() {
           </motion.div>
         </div>
       </div>
-
       {/* Cards */}
-      <div className="max-w-7xl mx-auto px-5 lg:px-10 py-16 md:py-24">
+      <div className="max-w-7xl mx-auto px-5 lg:px-10 py-16 md:py-24 bg-[#2e6775]">
         {isLoading && (
           <div className="space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (
