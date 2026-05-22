@@ -28,7 +28,7 @@ export default function Home() {
         <Contacts />
       </main>
 
-      <footer className="bg-[#0f0f0f] text-white">
+      <footer className="bg-gradient-to-r from-[#1A3A4A] via-[#122E3C] to-[#0A2530] text-white">
         <div className="max-w-7xl mx-auto px-5 lg:px-10 py-14">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
             <div>

@@ -119,9 +119,9 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
     <motion.article
       variants={cardVariant}
       className="group relative bg-white rounded-xl border border-[#e8e8e8] overflow-hidden
-                 hover:bg-[#C6922B] hover:border-[#B8820A]
-                 hover:shadow-[0_16px_52px_-10px_rgba(196,145,10,0.45)]
-                 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                 hover:bg-[#5AAAC5] hover:border-[#4F8FA8]
+                 hover:shadow-[0_12px_40px_-8px_rgba(79,143,168,0.55)]
+                 transition-all duration-[400ms] ease-out"
     >
       <div className="flex flex-col lg:flex-row lg:items-stretch">
 
@@ -200,12 +200,12 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
             mediaType={service.mediaType}
             alt={title}
             className="w-full h-full object-cover opacity-90
-                       transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
-                       group-hover:scale-[1.07]"
+                       transition-transform duration-[400ms] ease-out
+                       group-hover:scale-[1.04]"
           />
-          <div className="absolute inset-0 pointer-events-none transition-all duration-500
+          <div className="absolute inset-0 pointer-events-none transition-all duration-[400ms]
                           bg-gradient-to-r from-white/8 via-transparent to-transparent
-                          group-hover:from-[#C6922B]/25
+                          group-hover:from-[#5AAAC5]/30
                           lg:from-white/6" />
         </div>
       </div>
@@ -246,8 +246,8 @@ export function Services() {
   }, [dbServices]);
 
   return (
-    <section id="services" className="py-10 md:py-14 bg-[#2e6876]">
-      <div className="max-w-7xl mx-auto px-5 lg:px-10 bg-[#2e6876]">
+    <section id="services" className="py-10 md:py-14 bg-gradient-to-r from-[#4F8FA8] via-[#3F7388] to-[#2F5F73]">
+      <div className="max-w-7xl mx-auto px-5 lg:px-10">
 
         {/* Section header */}
         <motion.div
@@ -259,11 +259,11 @@ export function Services() {
         >
           <div>
             <p className="section-label">{t(i18n.services.label, lang)}</p>
-            <h2 className="section-heading text-[#141414]">
+            <h2 className="section-heading text-white">
               {t(i18n.services.heading, lang)}
             </h2>
           </div>
-          <p className="text-[#999] text-sm max-w-xs leading-relaxed font-light md:text-right">
+          <p className="text-white/60 text-sm max-w-xs leading-relaxed font-light md:text-right">
             {lang === "ru"
               ? "Полный цикл — от идеи до финального экрана"
               : lang === "tj"
@@ -323,7 +323,7 @@ export function Services() {
               <motion.span
                 whileHover="hover"
                 initial="rest"
-                className="inline-flex items-center gap-2.5 px-7 py-2.5 rounded-full border border-primary/50 text-primary/90 font-medium text-[13px] hover:border-primary hover:text-primary hover:shadow-[0_0_24px_-4px_rgba(196,145,10,0.35)] transition-all duration-300 cursor-pointer tracking-wide bg-[#000000]"
+                className="inline-flex items-center gap-2.5 px-7 py-2.5 rounded-full border border-white/30 text-white/85 font-medium text-[13px] hover:border-white/60 hover:text-white hover:bg-white/15 hover:shadow-[0_0_28px_-4px_rgba(79,143,168,0.45)] transition-all duration-300 cursor-pointer tracking-wide bg-white/8 backdrop-blur-sm"
               >
                 {lang === "ru" ? "Другие услуги" : lang === "tj" ? "Хидматҳои дигар" : "Other Services"}
                 <motion.span
