@@ -111,14 +111,7 @@ export function Hero() {
   const handleCta = (href: string) =>
     href.startsWith("#") ? scrollTo(href) : (window.location.href = href);
 
-  const styledHeadline =
-    lang === "ru" ? (
-      <>Кино и <span className="text-primary">анимация</span> из Таджикистана</>
-    ) : lang === "tj" ? (
-      <>Кино ва <span className="text-primary">анимация</span> аз Тоҷикистон</>
-    ) : (
-      <>Film & <span className="text-primary">Animation</span> from Tajikistan</>
-    );
+  const styledHeadline = <>Tasvirnigor</>;
 
   const stats = [
     { num: "10+", label: lang === "ru" ? "Лет"      : lang === "tj" ? "Сол"    : "Years"    },
