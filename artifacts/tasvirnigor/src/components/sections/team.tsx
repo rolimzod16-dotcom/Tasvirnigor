@@ -160,25 +160,27 @@ export function Team() {
                                group-hover:scale-[1.07]"
                     loading="lazy"
                   />
-                  {/* Cinematic gradient from right side so text stays readable */}
+                  {/* Right-edge blend into card bg for text readability */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#141414]" />
-                  {/* Bottom fade */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  {/* Very soft warm glow at bottom — no dark dimming */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#FAB037]/8 via-transparent to-transparent" />
                 </div>
 
                 {/* RIGHT: info */}
-                <div className="flex flex-col justify-center gap-3 px-6 py-7 min-h-[260px]">
+                <div className="flex flex-col justify-between gap-3 px-6 py-7 min-h-[280px]">
 
                   {/* Name + position */}
-                  <div>
-                    <h3 className="font-display font-bold text-white text-xl leading-tight mb-2">
+                  <div className="space-y-2">
+                    <h3 className="font-display font-bold text-white text-xl leading-snug line-clamp-2">
                       {member.name}
                     </h3>
-                    <span className="inline-block text-[10px] font-semibold tracking-[0.2em] uppercase
-                                     text-primary border border-primary/30 rounded-full px-3 py-1
-                                     bg-primary/[0.07]">
-                      {position}
-                    </span>
+                    {position && (
+                      <span className="inline-flex items-center max-w-full text-[10px] font-semibold
+                                       tracking-[0.18em] uppercase text-primary border border-primary/30
+                                       rounded-full px-3 py-1 bg-primary/[0.07] truncate">
+                        {position}
+                      </span>
+                    )}
                   </div>
 
                   {/* Bio */}
