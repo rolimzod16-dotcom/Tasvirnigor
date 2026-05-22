@@ -246,7 +246,7 @@ export function Services() {
   );
 
   return (
-    <section id="services" className="py-16 md:py-24 bg-[#f8f7f5]">
+    <section id="services" className="py-16 md:py-24 bg-[#2e6876]">
       <div className="max-w-7xl mx-auto px-5 lg:px-10 bg-[#2e6876]">
 
         {/* Section header */}
