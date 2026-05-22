@@ -147,8 +147,7 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
           {/* Title + description */}
           <div className="flex-1 flex flex-col gap-1.5 text-[16px]">
             <h3
-              className="font-display font-bold text-[#141414]
-                         text-base md:text-lg lg:text-[1.1rem] leading-tight"
+              className="font-display font-bold text-[#141414] md:text-lg lg:text-[1.1rem] text-[36px]"
             >
               {title}
             </h3>
