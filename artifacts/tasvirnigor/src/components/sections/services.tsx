@@ -119,9 +119,9 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
     <motion.article
       variants={cardVariant}
       className="group relative bg-white rounded-xl border border-[#e8e8e8] overflow-hidden
-                 hover:bg-[#5AAAC5] hover:border-[#FAB037]/45
-                 hover:shadow-[0_8px_36px_-4px_rgba(250,176,55,0.25)]
-                 transition-all duration-[400ms] ease-out"
+                 hover:bg-[#FAB037] hover:border-[#FAB037]
+                 hover:shadow-[0_12px_35px_rgba(250,176,55,0.22)]
+                 transition-all duration-[350ms] ease"
     >
       <div className="flex flex-col lg:flex-row lg:items-stretch">
 
@@ -131,8 +131,8 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
           <div className="flex items-start justify-between">
             <span
               className="font-display font-black text-[30px] lg:text-[38px] leading-none select-none
-                         text-[#f0ede8] group-hover:text-white/20
-                         transition-colors duration-500"
+                         text-[#f0ede8] group-hover:text-[#111]/20
+                         transition-colors duration-[350ms]"
             >
               {num}
             </span>
@@ -140,8 +140,8 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
               <span
                 className="text-[8px] font-bold uppercase tracking-[0.14em] mt-1 rounded-full px-2 py-0.5
                            text-primary bg-[#fdf5e4]
-                           group-hover:text-white group-hover:bg-white/20
-                           transition-colors duration-500"
+                           group-hover:text-[#111] group-hover:bg-[#111]/12
+                           transition-colors duration-[350ms]"
               >
                 {subtitle}
               </span>
@@ -152,15 +152,15 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
           <div className="flex-1 flex flex-col gap-1.5 text-[16px] bg-[#fab03700]">
             <h3
               className="font-display font-bold md:text-lg lg:text-[1.1rem] text-[36px] leading-tight
-                         text-[#141414] group-hover:text-white
-                         transition-colors duration-500"
+                         text-[#141414] group-hover:text-[#111111]
+                         transition-colors duration-[350ms]"
             >
               {title}
             </h3>
             {description && (
               <p className="font-light max-w-sm line-clamp-2 lg:line-clamp-3 text-[20px]
-                            text-[#777] group-hover:text-white/80
-                            transition-colors duration-500">
+                            text-[#777] group-hover:text-[#111111]/75
+                            transition-colors duration-[350ms]">
                 {description}
               </p>
             )}
@@ -175,9 +175,9 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
               className="inline-flex items-center gap-1.5 self-start
                          text-[11px] font-semibold rounded-full px-3 py-1
                          text-[#141414] border border-[#e0e0e0]
-                         group-hover:text-white group-hover:border-white/35
-                         hover:bg-white/20 hover:border-white/55
-                         transition-all duration-300 group/btn"
+                         group-hover:text-[#111111] group-hover:border-[#111]/35
+                         hover:bg-[#111]/10 hover:border-[#111]/50
+                         transition-all duration-[350ms] group/btn"
               onClick={(e) => e.stopPropagation()}
             >
               <span>{getLinkLabel(service, lang)}</span>
@@ -200,12 +200,12 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
             mediaType={service.mediaType}
             alt={title}
             className="w-full h-full object-cover opacity-90
-                       transition-transform duration-[400ms] ease-out
-                       group-hover:scale-[1.04]"
+                       transition-transform duration-[350ms] ease
+                       group-hover:scale-[1.03]"
           />
           <div className="absolute inset-0 pointer-events-none transition-all duration-[400ms]
                           bg-gradient-to-r from-white/8 via-transparent to-transparent
-                          group-hover:from-[#5AAAC5]/30
+                          group-hover:from-[#FAB037]/15
                           lg:from-white/6" />
         </div>
       </div>
