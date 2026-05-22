@@ -122,7 +122,7 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative min-h-[100dvh] flex items-center overflow-hidden bg-gradient-to-r from-[#1E4A5E] to-[#0E2A38]"
+      className="relative min-h-[100dvh] flex items-center overflow-hidden from-[#1E4A5E] to-[#0E2A38] bg-[#000000]"
       onMouseMove={handleSectionMove}
       onMouseLeave={handleSectionLeave}
     >
@@ -167,7 +167,6 @@ export function Hero() {
           <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#0E2A38] to-transparent pointer-events-none" />
         </motion.div>
       )}
-
       {/* Ambient amber radial glow (shows through the clip) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-[6]">
         <div
@@ -178,7 +177,6 @@ export function Hero() {
           }}
         />
       </div>
-
       {/* Static BG when no media */}
       {!hasMedia && (
         <div className="absolute inset-0 z-0">
@@ -192,7 +190,6 @@ export function Hero() {
           <div className="absolute inset-0 bg-gradient-to-t from-[#0E2A38]/70 via-transparent to-transparent" />
         </div>
       )}
-
       {/* ── Main grid content ────────────────────────────────────── */}
       <div
         className="relative z-10 max-w-7xl mx-auto px-5 lg:px-10 w-full pt-28 pb-24
@@ -306,7 +303,6 @@ export function Hero() {
         </motion.div>
 
       </div>
-
       {/* ── Oval decoration — bottom-right, absolute — fades as video expands ── */}
       {hasMedia && (
         <motion.div
@@ -351,7 +347,6 @@ export function Hero() {
           </div>
         </motion.div>
       )}
-
       {/* Scroll indicator */}
       <motion.button
         className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2
