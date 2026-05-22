@@ -105,11 +105,6 @@ function CarouselCard({ project, lang, priority = false }: { project: Project; l
                   ${isLink ? "cursor-pointer" : "cursor-default"}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      // prevent drag from triggering link click
-      onPointerDown={(e) => e.currentTarget.style.pointerEvents = "none"}
-      onPointerUp={(e) => {
-        setTimeout(() => { e.currentTarget.style.pointerEvents = ""; }, 0);
-      }}
     >
       {/* Media */}
       <div className="aspect-[3/4] relative overflow-hidden">
@@ -203,6 +198,7 @@ function SkeletonCarousel() {
 function DraggableCarousel({ children }: { children: React.ReactNode }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
+  const hasDragged = useRef(false);
   const startX = useRef(0);
   const startScrollLeft = useRef(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -234,6 +230,7 @@ function DraggableCarousel({ children }: { children: React.ReactNode }) {
     const el = trackRef.current;
     if (!el) return;
     isDragging.current = true;
+    hasDragged.current = false;
     startX.current = e.clientX;
     startScrollLeft.current = el.scrollLeft;
     el.style.cursor = "grabbing";
@@ -244,7 +241,10 @@ function DraggableCarousel({ children }: { children: React.ReactNode }) {
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!isDragging.current || !trackRef.current) return;
     const dx = e.clientX - startX.current;
-    trackRef.current.scrollLeft = startScrollLeft.current - dx;
+    if (Math.abs(dx) > 5) {
+      hasDragged.current = true;
+      trackRef.current.scrollLeft = startScrollLeft.current - dx;
+    }
   };
 
   const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -254,6 +254,15 @@ function DraggableCarousel({ children }: { children: React.ReactNode }) {
     el.style.cursor = "";
     el.style.userSelect = "";
     el.releasePointerCapture(e.pointerId);
+  };
+
+  // Block child link clicks only when the user actually dragged
+  const onClickCapture = (e: React.MouseEvent) => {
+    if (hasDragged.current) {
+      e.stopPropagation();
+      e.preventDefault();
+      hasDragged.current = false;
+    }
   };
 
   return (
@@ -270,6 +279,7 @@ function DraggableCarousel({ children }: { children: React.ReactNode }) {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerLeave={onPointerUp}
+        onClickCapture={onClickCapture}
       >
         {children}
       </div>
