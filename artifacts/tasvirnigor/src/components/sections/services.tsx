@@ -151,16 +151,12 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
           {/* Title + description */}
           <div className="flex-1 flex flex-col gap-1.5 text-[16px] bg-[#fab03700]">
             <h3
-              className="font-display font-bold md:text-lg lg:text-[1.1rem] text-[36px] leading-tight
-                         text-[#141414] group-hover:text-[#111111]
-                         transition-colors duration-[350ms]"
+              className="font-display font-bold md:text-lg lg:text-[1.1rem] text-[36px] leading-tight group-hover:text-[#111111] transition-colors duration-[350ms] text-[#000000]"
             >
               {title}
             </h3>
             {description && (
-              <p className="font-light max-w-sm line-clamp-2 lg:line-clamp-3 text-[20px]
-                            text-[#777] group-hover:text-[#111111]/75
-                            transition-colors duration-[350ms]">
+              <p className="font-light max-w-sm line-clamp-2 lg:line-clamp-3 text-[20px] group-hover:text-[#111111]/75 transition-colors duration-[350ms] text-[#000000]">
                 {description}
               </p>
             )}
