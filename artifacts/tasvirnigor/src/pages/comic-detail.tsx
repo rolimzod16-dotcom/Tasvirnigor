@@ -95,7 +95,7 @@ export function ComicDetail() {
   const firstChapter = sortedChapters[0];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#2E6876]">
       {/* Back nav */}
       <div className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-[#f0f0f0]">
         <div className="max-w-4xl mx-auto px-5 h-14 flex items-center gap-3">
@@ -108,7 +108,6 @@ export function ComicDetail() {
           </button>
         </div>
       </div>
-
       <div className="max-w-4xl mx-auto px-5 py-10 md:py-16">
         <div className="flex flex-col md:flex-row gap-8 md:gap-12 mb-12">
           {/* Cover */}
