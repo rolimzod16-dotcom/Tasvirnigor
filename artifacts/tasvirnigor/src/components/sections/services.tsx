@@ -1,6 +1,7 @@
 import { useRef, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ArrowRight } from "lucide-react";
+import { Link } from "wouter";
 import { useLanguage, type Lang } from "@/contexts/language-context";
 import { i18n, t } from "@/lib/i18n";
 import { useListServices } from "@workspace/api-client-react";
@@ -297,6 +298,37 @@ export function Services() {
                 lang={lang}
               />
             ))}
+          </motion.div>
+        )}
+
+        {/* Other Services CTA */}
+        {!isLoading && homepageServices.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.25 }}
+            className="flex justify-center mt-8"
+          >
+            <Link href="/services">
+              <motion.span
+                whileHover="hover"
+                initial="rest"
+                className="inline-flex items-center gap-2.5 px-7 py-2.5 rounded-full
+                           border border-primary/50 text-primary/90 font-medium text-[13px]
+                           bg-transparent hover:border-primary hover:text-primary
+                           hover:shadow-[0_0_24px_-4px_rgba(196,145,10,0.35)]
+                           transition-all duration-300 cursor-pointer tracking-wide"
+              >
+                {lang === "ru" ? "Другие услуги" : lang === "tj" ? "Хидматҳои дигар" : "Other Services"}
+                <motion.span
+                  variants={{ rest: { x: 0 }, hover: { x: 3 } }}
+                  transition={{ duration: 0.25 }}
+                >
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </motion.span>
+              </motion.span>
+            </Link>
           </motion.div>
         )}
       </div>
