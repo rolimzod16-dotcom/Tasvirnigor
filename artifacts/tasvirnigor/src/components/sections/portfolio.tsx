@@ -433,12 +433,7 @@ export function Portfolio() {
             <motion.span
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center gap-3 px-8 py-4 rounded-full
-                         bg-white/12 backdrop-blur-sm border border-white/30
-                         text-white font-semibold text-sm
-                         hover:bg-white/20 hover:border-[#FAB037]/50
-                         hover:shadow-[0_0_28px_-4px_rgba(250,176,55,0.28)]
-                         transition-all duration-[350ms] ease-out cursor-pointer group"
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-full backdrop-blur-sm border border-white/30 text-white font-semibold text-sm hover:bg-white/20 hover:border-[#FAB037]/50 hover:shadow-[0_0_28px_-4px_rgba(250,176,55,0.28)] transition-all duration-[350ms] ease-out cursor-pointer group bg-[#000000]"
             >
               {t(i18n.portfolio.viewAll, lang)}
               <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />

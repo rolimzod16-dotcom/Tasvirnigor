@@ -126,7 +126,7 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
       <div className="flex flex-col lg:flex-row lg:items-stretch">
 
         {/* ── Content column ── */}
-        <div className="flex-1 flex flex-col justify-between gap-2 p-3.5 md:p-4 lg:p-4 lg:py-3.5">
+        <div className="flex-1 flex flex-col justify-between gap-2 p-3.5 md:p-4 lg:p-4 lg:py-3.5 bg-[#fab037]">
           {/* Number + optional subtitle badge */}
           <div className="flex items-start justify-between">
             <span
@@ -149,7 +149,7 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
           </div>
 
           {/* Title + description */}
-          <div className="flex-1 flex flex-col gap-1.5 text-[16px]">
+          <div className="flex-1 flex flex-col gap-1.5 text-[16px] bg-[#fab037]">
             <h3
               className="font-display font-bold md:text-lg lg:text-[1.1rem] text-[36px] leading-tight
                          text-[#141414] group-hover:text-white
@@ -323,7 +323,7 @@ export function Services() {
               <motion.span
                 whileHover="hover"
                 initial="rest"
-                className="inline-flex items-center gap-2.5 px-7 py-2.5 rounded-full border border-white/30 text-white/85 font-medium text-[13px] hover:border-[#FAB037]/55 hover:text-white hover:bg-white/15 hover:shadow-[0_0_28px_-4px_rgba(250,176,55,0.30)] transition-all duration-[350ms] ease-out cursor-pointer tracking-wide bg-white/8 backdrop-blur-sm"
+                className="inline-flex items-center gap-2.5 px-7 py-2.5 rounded-full border border-white/30 font-medium text-[13px] hover:border-[#FAB037]/55 hover:text-white hover:bg-white/15 hover:shadow-[0_0_28px_-4px_rgba(250,176,55,0.30)] transition-all duration-[350ms] ease-out cursor-pointer tracking-wide backdrop-blur-sm border-t-[#000000] border-r-[#000000] border-b-[#000000] border-l-[#000000] bg-[#000000] text-[#ffffff]"
               >
                 {lang === "ru" ? "Другие услуги" : lang === "tj" ? "Хидматҳои дигар" : "Other Services"}
                 <motion.span
