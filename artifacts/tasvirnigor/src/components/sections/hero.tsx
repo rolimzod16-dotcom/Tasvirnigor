@@ -146,7 +146,7 @@ export function Hero() {
               muted
               loop
               playsInline
-              className="absolute inset-0 w-full h-full object-contain bg-[#0000000f]"
+              className="absolute inset-0 w-full h-full object-contain bg-[#0a0a08] text-[#141414] border-r-[30px]"
               poster={fallbackImageUrl ?? undefined}
             />
           ) : (
