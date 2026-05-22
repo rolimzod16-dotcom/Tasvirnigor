@@ -122,7 +122,7 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative min-h-[100dvh] flex items-center overflow-hidden bg-[#080808]"
+      className="relative min-h-[100dvh] flex items-center overflow-hidden bg-gradient-to-r from-[#1E4A5E] to-[#0E2A38]"
       onMouseMove={handleSectionMove}
       onMouseLeave={handleSectionLeave}
     >
@@ -133,7 +133,7 @@ export function Hero() {
       ─────────────────────────────────────────────────────────── */}
       {hasMedia && (
         <motion.div
-          className="absolute inset-0 z-[8] bg-[#080808]"
+          className="absolute inset-0 z-[8] bg-[#1E4A5E]"
           style={{
             clipPath: effectsEnabled ? videoClip : undefined,
             willChange: "clip-path",
@@ -164,7 +164,7 @@ export function Hero() {
           />
 
           {/* Cinematic gradient at bottom edge for grounding */}
-          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#080808] to-transparent pointer-events-none" />
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#0E2A38] to-transparent pointer-events-none" />
         </motion.div>
       )}
 
@@ -188,8 +188,8 @@ export function Hero() {
             className="absolute inset-0 w-full h-full object-cover opacity-[0.18]"
             fetchPriority="high"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#080808]/95 via-[#080808]/65 to-[#080808]/25" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#080808]/70 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#1E4A5E]/95 via-[#1E4A5E]/65 to-[#1E4A5E]/25" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0E2A38]/70 via-transparent to-transparent" />
         </div>
       )}
 

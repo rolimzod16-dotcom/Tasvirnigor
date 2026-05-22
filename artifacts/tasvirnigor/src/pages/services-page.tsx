@@ -25,7 +25,7 @@ export default function ServicesPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#f8f7f5]">
+    <div className="min-h-screen bg-[#2e6775]">
       {/* Header band */}
       <div className="bg-[#141414] py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-5 lg:px-10">
