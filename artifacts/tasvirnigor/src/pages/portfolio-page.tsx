@@ -336,8 +336,7 @@ export default function PortfolioPage() {
           </motion.div>
         </div>
       </div>
-
-      <div className="max-w-7xl mx-auto px-5 lg:px-10 py-12 md:py-20">
+      <div className="max-w-7xl mx-auto px-5 lg:px-10 py-12 md:py-20 bg-[#2e6876]">
         {/* Category filters */}
         {usedCategories.length > 0 && (
           <motion.div
