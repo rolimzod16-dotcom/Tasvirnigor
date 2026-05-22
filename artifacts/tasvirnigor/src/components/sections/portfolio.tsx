@@ -371,7 +371,7 @@ export function Portfolio() {
   if (!activeProjects.length) return null;
 
   return (
-    <section id="portfolio" className="py-24 md:py-32 bg-white overflow-hidden border-t-[#2e6876] border-r-[#2e6876] border-b-[#2e6876] border-l-[#2e6876]">
+    <section id="portfolio" className="py-24 md:py-32 overflow-hidden bg-[#2e6876]">
       <div className="max-w-7xl mx-auto px-5 lg:px-10">
 
         {/* Header */}
