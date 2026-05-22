@@ -145,7 +145,7 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
           </div>
 
           {/* Title + description */}
-          <div className="flex-1 flex flex-col gap-1.5">
+          <div className="flex-1 flex flex-col gap-1.5 text-[16px]">
             <h3
               className="font-display font-bold text-[#141414]
                          text-base md:text-lg lg:text-[1.1rem] leading-tight"
@@ -153,7 +153,7 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
               {title}
             </h3>
             {description && (
-              <p className="text-[#777] font-light max-w-sm text-[14px] leading-snug line-clamp-2 lg:line-clamp-3">
+              <p className="text-[#777] font-light max-w-sm line-clamp-2 lg:line-clamp-3 text-[20px]">
                 {description}
               </p>
             )}
