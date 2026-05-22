@@ -308,7 +308,7 @@ export default function PortfolioPage() {
   const [featured, ...rest] = filtered;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#2e6876]">
       {/* Header */}
       <div className="bg-[#141414] py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-5 lg:px-10">
