@@ -202,7 +202,7 @@ export function Team() {
 
                   {/* Social icons */}
                   {socialEntries.length > 0 && (
-                    <div className="flex items-center gap-3 pt-1">
+                    <div className="flex items-center gap-[18px] pt-1">
                       {socialEntries.map((platform) => {
                         const Icon = SOCIAL_ICONS[platform];
                         const url = (member.socialLinks as Record<string, string>)[platform];
@@ -212,11 +212,11 @@ export function Team() {
                             href={url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-white/30 hover:text-primary transition-all duration-200
-                                       hover:scale-110 hover:-translate-y-0.5"
+                            className="text-white/35 hover:text-[#FAB037] transition-all duration-300
+                                       hover:scale-[1.08] hover:-translate-y-0.5"
                             aria-label={platform}
                           >
-                            <Icon className="w-4 h-4" />
+                            <Icon className="w-7 h-7" />
                           </a>
                         );
                       })}
