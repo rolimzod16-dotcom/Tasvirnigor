@@ -371,7 +371,7 @@ export function Portfolio() {
   if (!activeProjects.length) return null;
 
   return (
-    <section id="portfolio" className="py-24 md:py-32 bg-white overflow-hidden">
+    <section id="portfolio" className="py-24 md:py-32 bg-white overflow-hidden border-t-[#2e6876] border-r-[#2e6876] border-b-[#2e6876] border-l-[#2e6876]">
       <div className="max-w-7xl mx-auto px-5 lg:px-10">
 
         {/* Header */}
@@ -388,7 +388,7 @@ export function Portfolio() {
               {t(i18n.portfolio.heading, lang)}
             </h2>
           </div>
-          <div className="flex flex-col items-start md:items-end gap-2">
+          <div className="flex flex-col items-start md:items-end gap-2 bg-[#2e6876]">
             <p className="text-[#aaa] text-xs font-light">
               {t(i18n.portfolio.dragHint, lang)}
             </p>
