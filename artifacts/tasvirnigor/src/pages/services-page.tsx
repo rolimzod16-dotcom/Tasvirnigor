@@ -25,9 +25,9 @@ export default function ServicesPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#2e6775]">
+    <div className="min-h-screen bg-gradient-to-r from-[#4F8FA8] via-[#3F7388] to-[#2F5F73]">
       {/* Header band */}
-      <div className="bg-[#141414] py-20 md:py-28">
+      <div className="bg-gradient-to-r from-[#1E4A5E] to-[#0E2A38] py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-5 lg:px-10">
           <Link href="/">
             <motion.span
@@ -54,7 +54,7 @@ export default function ServicesPage() {
         </div>
       </div>
       {/* Cards */}
-      <div className="max-w-7xl mx-auto px-5 lg:px-10 py-16 md:py-24 bg-[#2e6775]">
+      <div className="max-w-7xl mx-auto px-5 lg:px-10 py-16 md:py-24">
         {isLoading && (
           <div className="space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (

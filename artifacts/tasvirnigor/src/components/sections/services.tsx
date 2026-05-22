@@ -119,8 +119,8 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
     <motion.article
       variants={cardVariant}
       className="group relative bg-white rounded-xl border border-[#e8e8e8] overflow-hidden
-                 hover:bg-[#5AAAC5] hover:border-[#4F8FA8]
-                 hover:shadow-[0_12px_40px_-8px_rgba(79,143,168,0.55)]
+                 hover:bg-[#5AAAC5] hover:border-[#FAB037]/45
+                 hover:shadow-[0_8px_36px_-4px_rgba(250,176,55,0.25)]
                  transition-all duration-[400ms] ease-out"
     >
       <div className="flex flex-col lg:flex-row lg:items-stretch">
@@ -323,7 +323,7 @@ export function Services() {
               <motion.span
                 whileHover="hover"
                 initial="rest"
-                className="inline-flex items-center gap-2.5 px-7 py-2.5 rounded-full border border-white/30 text-white/85 font-medium text-[13px] hover:border-white/60 hover:text-white hover:bg-white/15 hover:shadow-[0_0_28px_-4px_rgba(79,143,168,0.45)] transition-all duration-300 cursor-pointer tracking-wide bg-white/8 backdrop-blur-sm"
+                className="inline-flex items-center gap-2.5 px-7 py-2.5 rounded-full border border-white/30 text-white/85 font-medium text-[13px] hover:border-[#FAB037]/55 hover:text-white hover:bg-white/15 hover:shadow-[0_0_28px_-4px_rgba(250,176,55,0.30)] transition-all duration-[350ms] ease-out cursor-pointer tracking-wide bg-white/8 backdrop-blur-sm"
               >
                 {lang === "ru" ? "Другие услуги" : lang === "tj" ? "Хидматҳои дигар" : "Other Services"}
                 <motion.span

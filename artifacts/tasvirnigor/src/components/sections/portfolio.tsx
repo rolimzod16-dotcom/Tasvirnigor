@@ -314,14 +314,14 @@ function DraggableCarousel({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
 
-      {/* Left/right fade edges */}
+      {/* Left/right fade edges — match teal gradient section bg */}
       {canScrollLeft && (
-        <div className="pointer-events-none absolute left-0 top-0 bottom-3 w-12
-                        bg-gradient-to-r from-white/60 to-transparent" />
+        <div className="pointer-events-none absolute left-0 top-0 bottom-3 w-16
+                        bg-gradient-to-r from-[#4F8FA8] to-transparent" />
       )}
       {canScrollRight && (
-        <div className="pointer-events-none absolute right-0 top-0 bottom-3 w-12
-                        bg-gradient-to-l from-white/60 to-transparent" />
+        <div className="pointer-events-none absolute right-0 top-0 bottom-3 w-16
+                        bg-gradient-to-l from-[#2F5F73] to-transparent" />
       )}
     </div>
   );
@@ -334,18 +334,13 @@ export function Portfolio() {
   const { data: allProjects, isLoading: loadingProjects } = useListProjects();
   const { data: allCategories = [] } = useListCategories();
 
-  const activeProjects = useMemo(
-    () =>
-      [...(allProjects ?? [])]
-        .filter((p) => p.isActive !== false)
-        .sort((a, b) => {
-          // Featured first, then by sortOrder
-          if (a.isFeatured && !b.isFeatured) return -1;
-          if (!a.isFeatured && b.isFeatured) return 1;
-          return a.sortOrder - b.sortOrder || a.id - b.id;
-        }),
-    [allProjects]
-  );
+  const activeProjects = useMemo(() => {
+    const all = [...(allProjects ?? [])]
+      .filter((p) => p.isActive !== false)
+      .sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id);
+    const featured = all.filter((p) => p.isFeatured);
+    return featured.length > 0 ? featured : all.slice(0, 8);
+  }, [allProjects]);
 
   // Only use categories that appear in active projects
   const usedCategories = useMemo(() => {
@@ -371,7 +366,7 @@ export function Portfolio() {
   if (!activeProjects.length) return null;
 
   return (
-    <section id="portfolio" className="py-24 md:py-32 overflow-hidden bg-[#2e6876]">
+    <section id="portfolio" className="py-24 md:py-32 overflow-hidden bg-gradient-to-r from-[#4F8FA8] via-[#3F7388] to-[#2F5F73]">
       <div className="max-w-7xl mx-auto px-5 lg:px-10">
 
         {/* Header */}
@@ -384,12 +379,12 @@ export function Portfolio() {
         >
           <div>
             <p className="section-label">{t(i18n.portfolio.label, lang)}</p>
-            <h2 className="section-heading text-[#141414]">
+            <h2 className="section-heading text-white">
               {t(i18n.portfolio.heading, lang)}
             </h2>
           </div>
-          <div className="flex flex-col items-start md:items-end gap-2 bg-[#2e6876]">
-            <p className="text-[#aaa] text-xs font-light">
+          <div className="flex flex-col items-start md:items-end gap-2">
+            <p className="text-white/50 text-xs font-light">
               {t(i18n.portfolio.dragHint, lang)}
             </p>
             {usedCategories.length > 0 && (
@@ -397,7 +392,7 @@ export function Portfolio() {
                 {usedCategories.slice(0, 5).map((cat) => (
                   <span key={cat.id}
                     className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full
-                               bg-[#f5f5f5] text-[#888] border border-[#eee]">
+                               bg-white/12 text-white/70 border border-white/20 backdrop-blur-sm">
                     {getCategoryName(cat, lang)}
                   </span>
                 ))}
@@ -439,9 +434,11 @@ export function Portfolio() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="inline-flex items-center gap-3 px-8 py-4 rounded-full
-                         bg-[#141414] text-white font-semibold text-sm
-                         hover:bg-primary
-                         transition-all duration-300 cursor-pointer group shadow-lg shadow-black/10"
+                         bg-white/12 backdrop-blur-sm border border-white/30
+                         text-white font-semibold text-sm
+                         hover:bg-white/20 hover:border-[#FAB037]/50
+                         hover:shadow-[0_0_28px_-4px_rgba(250,176,55,0.28)]
+                         transition-all duration-[350ms] ease-out cursor-pointer group"
             >
               {t(i18n.portfolio.viewAll, lang)}
               <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />

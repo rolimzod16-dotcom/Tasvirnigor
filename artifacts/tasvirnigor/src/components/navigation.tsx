@@ -80,8 +80,8 @@ export function Navigation() {
                 className={cn(
                   "inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold border transition-all duration-200 cursor-pointer",
                   isScrolled
-                    ? "border-primary text-primary hover:bg-primary hover:text-white"
-                    : "border-white/50 text-white/80 hover:border-white hover:text-white"
+                    ? "border-primary text-primary hover:bg-primary hover:text-white hover:shadow-[0_0_18px_rgba(250,176,55,0.30)]"
+                    : "border-white/50 text-white/80 hover:border-[#FAB037]/60 hover:text-white hover:shadow-[0_0_18px_rgba(250,176,55,0.22)]"
                 )}
               >
                 {t(i18n.nav.adminLogin, lang)}

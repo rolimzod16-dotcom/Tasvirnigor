@@ -307,9 +307,9 @@ export default function PortfolioPage() {
   const [featured, ...rest] = filtered;
 
   return (
-    <div className="min-h-screen bg-[#2e6876]">
+    <div className="min-h-screen bg-gradient-to-r from-[#4F8FA8] via-[#3F7388] to-[#2F5F73]">
       {/* Header */}
-      <div className="bg-[#141414] py-20 md:py-28">
+      <div className="bg-gradient-to-r from-[#1E4A5E] to-[#0E2A38] py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-5 lg:px-10">
           <Link href="/">
             <motion.span
@@ -335,7 +335,7 @@ export default function PortfolioPage() {
           </motion.div>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto px-5 lg:px-10 py-12 md:py-20 bg-[#2e6876]">
+      <div className="max-w-7xl mx-auto px-5 lg:px-10 py-12 md:py-20">
         {/* Category filters */}
         {usedCategories.length > 0 && (
           <motion.div

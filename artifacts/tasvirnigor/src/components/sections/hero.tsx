@@ -167,13 +167,22 @@ export function Hero() {
           <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#0E2A38] to-transparent pointer-events-none" />
         </motion.div>
       )}
-      {/* Ambient amber radial glow (shows through the clip) */}
+      {/* Ambient golden radial glows (atmospheric cinema lighting) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-[6]">
+        {/* Primary warm accent — upper right */}
         <div
-          className="absolute top-1/2 left-[84%] -translate-x-1/2 -translate-y-1/2 w-[40vw] h-[70vh] rounded-full"
+          className="absolute top-1/2 left-[84%] -translate-x-1/2 -translate-y-1/2 w-[42vw] h-[72vh] rounded-full"
           style={{
-            background: "radial-gradient(circle, hsl(38 82% 42%) 0%, transparent 65%)",
-            opacity: 0.07,
+            background: "radial-gradient(circle, #FAB037 0%, transparent 65%)",
+            opacity: 0.12,
+          }}
+        />
+        {/* Secondary fill glow — lower left for depth */}
+        <div
+          className="absolute bottom-[12%] left-[6%] w-[28vw] h-[35vh] rounded-full"
+          style={{
+            background: "radial-gradient(circle, #FAB037 0%, transparent 70%)",
+            opacity: 0.06,
           }}
         />
       </div>
@@ -241,7 +250,9 @@ export function Hero() {
             <button
               onClick={() => handleCta(ctaPrimaryHref)}
               className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-primary text-white
-                         font-semibold text-sm hover:bg-primary/90 transition-all duration-200 hover:gap-3.5"
+                         font-semibold text-sm hover:bg-primary/90 hover:gap-3.5
+                         hover:shadow-[0_0_28px_rgba(250,176,55,0.38)]
+                         transition-all duration-[350ms] ease-out"
             >
               {ctaPrimaryLabel ?? t(i18n.hero.cta, lang)}
               <ArrowRight className="w-4 h-4" />
@@ -249,8 +260,10 @@ export function Hero() {
             <button
               onClick={() => handleCta(ctaSecondaryHref)}
               className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-white/25
-                         text-white/80 font-medium text-sm hover:border-white/50 hover:text-white
-                         transition-all duration-200"
+                         text-white/80 font-medium text-sm
+                         hover:border-[#FAB037]/50 hover:text-white
+                         hover:shadow-[0_0_20px_rgba(250,176,55,0.18)]
+                         transition-all duration-[350ms] ease-out"
             >
               {ctaSecondaryLabel ?? t(i18n.nav.about, lang)}
             </button>
