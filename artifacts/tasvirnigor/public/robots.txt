@@ -6,4 +6,4 @@ Disallow: /admin
 Disallow: /admin/
 
 # Sitemap
-Sitemap: https://89239f2a-d2ea-46b2-905a-b0b5e4b6793e-00-3seymtus5xiyu.sisko.replit.dev/sitemap.xml
+Sitemap: https://tasvirnigor.com/sitemap.xml
