@@ -254,12 +254,11 @@ export function ComicReader() {
           </motion.div>
         )}
       </AnimatePresence>
-
       {/* ── Scrollable reading area ── */}
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto"
+        className="flex-1 overflow-y-auto bg-[#2E6876]"
         style={{ scrollbarWidth: "none" }}
       >
         {/* Page strip */}
@@ -277,7 +276,6 @@ export function ComicReader() {
           <div className="h-20" />
         </div>
       </div>
-
       {/* ── Bottom navigation bar ── */}
       <AnimatePresence>
         {barsVisible && (
@@ -319,7 +317,6 @@ export function ComicReader() {
           </motion.div>
         )}
       </AnimatePresence>
-
       {/* ── Scroll to top ── */}
       <AnimatePresence>
         {showTop && barsVisible && (
