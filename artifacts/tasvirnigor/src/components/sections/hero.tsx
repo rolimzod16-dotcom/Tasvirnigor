@@ -122,7 +122,7 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative min-h-[100dvh] flex items-center overflow-hidden bg-gradient-to-r from-[#1E4A5E] to-[#0E2A38]"
+      className="relative min-h-[100dvh] flex items-center overflow-hidden from-[#1E4A5E] to-[#0E2A38] bg-[#000000]"
       onMouseMove={handleSectionMove}
       onMouseLeave={handleSectionLeave}
     >
