@@ -126,7 +126,7 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
       <div className="flex flex-col lg:flex-row lg:items-stretch">
 
         {/* ── Content column ── */}
-        <div className="flex-1 flex flex-col justify-between gap-2 p-3.5 md:p-4 lg:p-4 lg:py-3.5 bg-[#fab037]">
+        <div className="flex-1 flex flex-col justify-between gap-2 p-3.5 md:p-4 lg:p-4 lg:py-3.5 bg-[#fab03700]">
           {/* Number + optional subtitle badge */}
           <div className="flex items-start justify-between">
             <span
@@ -149,7 +149,7 @@ export function ServiceCard({ service, index, lang }: { service: Service; index:
           </div>
 
           {/* Title + description */}
-          <div className="flex-1 flex flex-col gap-1.5 text-[16px] bg-[#fab037]">
+          <div className="flex-1 flex flex-col gap-1.5 text-[16px] bg-[#fab03700]">
             <h3
               className="font-display font-bold md:text-lg lg:text-[1.1rem] text-[36px] leading-tight
                          text-[#141414] group-hover:text-white
