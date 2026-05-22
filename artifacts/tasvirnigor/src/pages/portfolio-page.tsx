@@ -240,7 +240,7 @@ function ProjectCard({ project, lang }: { project: Project; lang: Lang }) {
           )}
         </div>
         {isLink && (
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex justify-start items-center">
             <div className="w-11 h-11 rounded-full bg-primary flex items-center justify-center
                             opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100
                             transition-all duration-300 shadow-xl shadow-primary/40">
@@ -253,12 +253,11 @@ function ProjectCard({ project, lang }: { project: Project; lang: Lang }) {
         {(project.categories ?? []).length > 0 && (
           <CategoryChips categories={project.categories ?? []} lang={lang} />
         )}
-        <h4 className="font-display font-bold text-[#141414] text-sm leading-snug
-                       group-hover:text-primary transition-colors duration-200 line-clamp-2">
+        <h4 className="font-display font-bold text-[#141414] group-hover:text-primary transition-colors duration-200 line-clamp-2 text-[36px]">
           {title}
         </h4>
         {desc && (
-          <p className="text-[#888] text-xs line-clamp-2 leading-relaxed font-light">
+          <p className="text-[#888] line-clamp-2 font-light text-[26px]">
             {desc}
           </p>
         )}
