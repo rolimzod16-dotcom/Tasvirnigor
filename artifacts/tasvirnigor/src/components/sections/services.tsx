@@ -314,11 +314,7 @@ export function Services() {
               <motion.span
                 whileHover="hover"
                 initial="rest"
-                className="inline-flex items-center gap-2.5 px-7 py-2.5 rounded-full
-                           border border-primary/50 text-primary/90 font-medium text-[13px]
-                           bg-transparent hover:border-primary hover:text-primary
-                           hover:shadow-[0_0_24px_-4px_rgba(196,145,10,0.35)]
-                           transition-all duration-300 cursor-pointer tracking-wide"
+                className="inline-flex items-center gap-2.5 px-7 py-2.5 rounded-full border border-primary/50 text-primary/90 font-medium text-[13px] hover:border-primary hover:text-primary hover:shadow-[0_0_24px_-4px_rgba(196,145,10,0.35)] transition-all duration-300 cursor-pointer tracking-wide bg-[#000000]"
               >
                 {lang === "ru" ? "Другие услуги" : lang === "tj" ? "Хидматҳои дигар" : "Other Services"}
                 <motion.span
