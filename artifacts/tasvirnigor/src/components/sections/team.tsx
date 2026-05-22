@@ -160,10 +160,6 @@ export function Team() {
                                group-hover:scale-[1.07]"
                     loading="lazy"
                   />
-                  {/* Right-edge blend into card bg for text readability */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#141414]" />
-                  {/* Very soft warm glow at bottom — no dark dimming */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#FAB037]/8 via-transparent to-transparent" />
                 </div>
 
                 {/* RIGHT: info */}
