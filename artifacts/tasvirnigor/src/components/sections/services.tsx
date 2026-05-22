@@ -247,7 +247,7 @@ export function Services() {
 
   return (
     <section id="services" className="py-16 md:py-24 bg-[#f8f7f5]">
-      <div className="max-w-7xl mx-auto px-5 lg:px-10 bg-[#0047fcfa]">
+      <div className="max-w-7xl mx-auto px-5 lg:px-10 bg-[2E6876]">
 
         {/* Section header */}
         <motion.div
