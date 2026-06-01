@@ -37,7 +37,7 @@ export function About() {
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.75 }}
           >
-            <p className="section-label">{t(i18n.about.label, lang)}</p>
+            <p className="section-label text-[#c38313] bg-[#ffffff]">{t(i18n.about.label, lang)}</p>
             <h2 className="section-heading text-[#141414] mb-6">
               {headline}
             </h2>
