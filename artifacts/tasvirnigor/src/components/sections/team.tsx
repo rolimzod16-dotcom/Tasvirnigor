@@ -66,12 +66,12 @@ const PLATFORMS = ["instagram", "telegram", "youtube", "linkedin", "facebook", "
 // ── Animation variants ────────────────────────────────────────────────────────
 const containerVariants = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.12 } },
+  show: { transition: { staggerChildren: 0.1 } },
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 40 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const } },
+  hidden: { opacity: 0, y: 36 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
@@ -79,13 +79,14 @@ function TeamSkeleton() {
   return (
     <section id="team" className="py-24 md:py-32 bg-[#0d0d0d]">
       <div className="max-w-7xl mx-auto px-5 lg:px-10">
-        <div className="mb-14">
+        <div className="mb-16">
           <div className="w-28 h-3 rounded-full bg-white/10 mb-5 animate-pulse" />
-          <div className="w-56 h-8 rounded-lg bg-white/10 animate-pulse" />
+          <div className="w-56 h-9 rounded-lg bg-white/10 animate-pulse" />
+          <div className="mt-6 w-12 h-0.5 bg-white/10 animate-pulse" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-7">
           {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="flex rounded-2xl overflow-hidden bg-[#181818] animate-pulse h-64" />
+            <div key={i} className="flex rounded-3xl overflow-hidden bg-[#181818] animate-pulse h-[290px]" />
           ))}
         </div>
       </div>
@@ -111,15 +112,19 @@ export function Team() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="mb-14"
+          className="mb-16"
         >
-          <p className="section-label">
+          <p className="section-label mb-5">
             {t(i18n.team.label, lang)}
           </p>
-          <h2 className="font-display font-extrabold text-white leading-tight tracking-tight"
-            style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)" }}>
+          <h2
+            className="font-display font-extrabold text-white leading-tight tracking-tight"
+            style={{ fontSize: "clamp(2.2rem, 4.5vw, 3.6rem)" }}
+          >
             {t(i18n.team.heading, lang)}
           </h2>
+          {/* Gold accent rule */}
+          <div className="mt-6 w-14 h-[2px] bg-gradient-to-r from-[#FAB037] to-[#FAB037]/0 rounded-full" />
         </motion.div>
 
         {/* Card grid */}
@@ -128,7 +133,7 @@ export function Team() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-60px" }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-7"
         >
           {teamMembers.map((member) => {
             const position = localize(member as unknown as Record<string, unknown>, "position", lang);
@@ -145,35 +150,44 @@ export function Team() {
                 key={member.id}
                 variants={cardVariants}
                 data-testid={`card-team-${member.id}`}
-                className="group relative flex rounded-2xl overflow-hidden bg-[#141414]
-                           border border-white/[0.06] hover:border-primary/30
-                           transition-all duration-500
-                           hover:shadow-[0_0_48px_-8px_rgba(196,145,10,0.18)]"
+                className="group relative flex rounded-3xl overflow-hidden bg-[#141414]
+                           border border-white/[0.07] hover:border-[#FAB037]/35
+                           transition-all duration-300
+                           hover:shadow-[0_8px_48px_-8px_rgba(250,176,55,0.20),0_2px_16px_-4px_rgba(0,0,0,0.5)]"
               >
-                {/* LEFT: portrait photo */}
-                <div className="relative flex-shrink-0 w-[42%] overflow-hidden">
+                {/* Gold left accent — reveals on hover */}
+                <div
+                  className="absolute left-0 top-[15%] bottom-[15%] w-[2px] rounded-full
+                             bg-gradient-to-b from-[#FAB037]/0 via-[#FAB037] to-[#FAB037]/0
+                             opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                />
+
+                {/* LEFT: portrait photo — fills card height */}
+                <div className="relative flex-shrink-0 w-[44%] self-stretch overflow-hidden">
                   <img
                     src={member.photoUrl}
                     alt={member.name}
                     className="absolute inset-0 w-full h-full object-cover object-top
                                transition-transform duration-700 ease-out
-                               group-hover:scale-[1.07]"
+                               group-hover:scale-[1.05]"
                     loading="lazy"
                   />
                 </div>
 
                 {/* RIGHT: info */}
-                <div className="flex flex-col justify-between gap-3 px-6 py-7 min-h-[280px]">
+                <div className="flex flex-col justify-between gap-3 px-7 py-8 min-h-[290px]">
 
                   {/* Name + position */}
-                  <div className="space-y-2">
-                    <h3 className="font-display font-bold text-white text-xl leading-snug line-clamp-2">
+                  <div className="space-y-3">
+                    <h3 className="font-display font-extrabold text-white text-[1.2rem] leading-snug line-clamp-2">
                       {member.name}
                     </h3>
                     {position && (
-                      <span className="inline-flex items-center max-w-full text-[10px] font-semibold
-                                       tracking-[0.18em] uppercase text-primary border border-primary/30
-                                       rounded-full px-3 py-1 bg-primary/[0.07] truncate">
+                      <span
+                        className="inline-flex items-center max-w-full text-[11px] font-semibold
+                                   tracking-[0.18em] uppercase text-[#FAB037] border border-[#FAB037]/30
+                                   rounded-full px-3.5 py-1.5 bg-[#FAB037]/[0.07] truncate"
+                      >
                         {position}
                       </span>
                     )}
@@ -181,17 +195,17 @@ export function Team() {
 
                   {/* Bio */}
                   {bio && (
-                    <p className="text-white/50 text-sm leading-relaxed line-clamp-3">
+                    <p className="text-white/60 text-sm leading-relaxed line-clamp-3">
                       {bio}
                     </p>
                   )}
 
                   {/* Experience bullets */}
                   {experienceLines.length > 0 && (
-                    <ul className="space-y-1">
+                    <ul className="space-y-1.5">
                       {experienceLines.slice(0, 3).map((line, i) => (
-                        <li key={i} className="flex items-start gap-2 text-white/40 text-xs">
-                          <span className="mt-[5px] flex-shrink-0 w-1 h-1 rounded-full bg-primary" />
+                        <li key={i} className="flex items-start gap-2 text-white/50 text-xs">
+                          <span className="mt-[5px] flex-shrink-0 w-1 h-1 rounded-full bg-[#FAB037]" />
                           {line}
                         </li>
                       ))}
@@ -210,11 +224,11 @@ export function Team() {
                             href={url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-white/35 hover:text-[#FAB037] transition-all duration-300
-                                       hover:scale-[1.08] hover:-translate-y-0.5"
+                            className="text-white/30 hover:text-[#FAB037] transition-all duration-300
+                                       hover:scale-[1.1] hover:-translate-y-0.5"
                             aria-label={platform}
                           >
-                            <Icon className="w-7 h-7" />
+                            <Icon className="w-[26px] h-[26px]" />
                           </a>
                         );
                       })}
