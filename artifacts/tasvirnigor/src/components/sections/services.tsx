@@ -254,7 +254,7 @@ export function Services() {
           className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-7"
         >
           <div>
-            <p className="section-label">{t(i18n.services.label, lang)}</p>
+            <p className="section-label text-[19px]">{t(i18n.services.label, lang)}</p>
             <h2 className="section-heading text-white">
               {t(i18n.services.heading, lang)}
             </h2>

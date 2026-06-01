@@ -114,7 +114,7 @@ export function Team() {
           transition={{ duration: 0.7 }}
           className="mb-16"
         >
-          <p className="section-label mb-5">
+          <p className="section-label mb-5 text-[19px]">
             {t(i18n.team.label, lang)}
           </p>
           <h2

@@ -217,7 +217,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="section-label mb-6"
+            className="section-label mb-6 text-[19px]"
           >
             {t(i18n.hero.tagline, lang)}
           </motion.p>

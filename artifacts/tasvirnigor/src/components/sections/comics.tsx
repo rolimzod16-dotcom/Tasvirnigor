@@ -217,7 +217,7 @@ export function Comics() {
           className="flex flex-col md:flex-row md:items-end justify-between gap-5 mb-8"
         >
           <div>
-            <p className="section-label">{t(i18n.comics.label, lang)}</p>
+            <p className="section-label text-[19px]">{t(i18n.comics.label, lang)}</p>
             <h2 className="section-heading text-[#141414]">{t(i18n.comics.heading, lang)}</h2>
           </div>
           <p className="text-[#888] text-sm md:text-right max-w-xs leading-relaxed font-light">

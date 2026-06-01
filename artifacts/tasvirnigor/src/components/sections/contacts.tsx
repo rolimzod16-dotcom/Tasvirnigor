@@ -55,7 +55,7 @@ export function Contacts() {
             transition={{ duration: 0.75 }}
             className="lg:col-span-5"
           >
-            <p className="section-label">{label}</p>
+            <p className="section-label text-[19px]">{label}</p>
             <h2 className="section-heading text-[#141414] mb-6">
               {heading}
             </h2>

@@ -388,7 +388,7 @@ export function Portfolio() {
           className="flex flex-col md:flex-row md:items-end justify-between gap-5 mb-8"
         >
           <div>
-            <p className="section-label">{t(i18n.portfolio.label, lang)}</p>
+            <p className="section-label text-[19px]">{t(i18n.portfolio.label, lang)}</p>
             <h2 className="section-heading text-white">
               {t(i18n.portfolio.heading, lang)}
             </h2>
