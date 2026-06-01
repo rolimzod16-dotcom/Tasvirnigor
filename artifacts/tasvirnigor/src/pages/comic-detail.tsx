@@ -95,9 +95,9 @@ export function ComicDetail() {
   const firstChapter = sortedChapters[0];
 
   return (
-    <div className="min-h-screen bg-[#2E6876]">
+    <div className="min-h-screen bg-[#2E6876] pt-16">
       {/* Back nav */}
-      <div className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-[#f0f0f0]">
+      <div className="sticky top-16 z-40 bg-white/90 backdrop-blur border-b border-[#f0f0f0]">
         <div className="max-w-4xl mx-auto px-5 h-14 flex items-center gap-3">
           <button
             onClick={() => navigate("/#comics")}

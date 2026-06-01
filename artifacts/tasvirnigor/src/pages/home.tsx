@@ -1,5 +1,4 @@
 import { Link } from "wouter";
-import { Navigation } from "@/components/navigation";
 import { Hero } from "@/components/sections/hero";
 import { About } from "@/components/sections/about";
 import { Services } from "@/components/sections/services";
@@ -16,7 +15,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white text-foreground">
-      <Navigation />
       <main>
         <Hero />
         <About />
