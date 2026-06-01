@@ -124,7 +124,12 @@
 
 @layer utilities {
   .section-label {
-    @apply text-[#FAB037] font-bold tracking-[0.22em] uppercase text-[13px] mb-4;
+    @apply inline-block font-bold tracking-[0.22em] uppercase text-[13px] mb-4;
+    color: #ffffff;
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #FAB037 0%, #D89A1D 100%);
+    box-shadow: 0 2px 12px rgba(250, 176, 55, 0.22), 0 0 0 1px rgba(250, 176, 55, 0.12);
   }
   .section-heading {
     @apply text-3xl md:text-4xl lg:text-5xl font-display font-bold tracking-tight text-foreground;
