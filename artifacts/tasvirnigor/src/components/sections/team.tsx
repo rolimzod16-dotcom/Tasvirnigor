@@ -113,7 +113,7 @@ export function Team() {
           transition={{ duration: 0.7 }}
           className="mb-14"
         >
-          <p className="text-primary font-semibold tracking-[0.22em] uppercase text-xs mb-4">
+          <p className="section-label">
             {t(i18n.team.label, lang)}
           </p>
           <h2 className="font-display font-extrabold text-white leading-tight tracking-tight"

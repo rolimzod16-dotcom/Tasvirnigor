@@ -82,7 +82,7 @@ export function Partners() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p className="text-primary font-semibold text-xs tracking-[0.2em] uppercase mb-3">
+          <p className="section-label">
             {t(i18n.partners.label, lang)}
           </p>
           <h2 className="font-display font-extrabold text-3xl md:text-4xl text-[#141414] tracking-tight">
