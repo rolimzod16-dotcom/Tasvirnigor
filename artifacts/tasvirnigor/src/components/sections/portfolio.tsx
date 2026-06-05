@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useCallback, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Play, ExternalLink, Film, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
@@ -81,24 +81,39 @@ function AnimatedPreview({ preview, className }: { preview: AnimPreview; classNa
 
 // ── Carousel card ─────────────────────────────────────────────────────────────
 
-function CarouselCard({ project, lang, priority = false }: { project: Project; lang: Lang; priority?: boolean }) {
+function CarouselCard({
+  project,
+  lang,
+  priority = false,
+}: {
+  project: Project;
+  lang: Lang;
+  priority?: boolean;
+}) {
   const [hovered, setHovered] = useState(false);
   const preview = getAnimPreview(project);
   const thumb = getThumbnail(project);
   const title = localize(project as unknown as Record<string, unknown>, "title", lang) as string;
-  const desc = localize(project as unknown as Record<string, unknown>, "description", lang) as string | null;
+  const desc = localize(
+    project as unknown as Record<string, unknown>,
+    "description",
+    lang,
+  ) as string | null;
   const isLink = !!project.youtubeUrl;
   const Wrapper = isLink ? motion.a : motion.div;
   const linkProps = isLink
-    ? { href: ensureProtocol(project.youtubeUrl!) ?? "#", target: "_blank" as const, rel: "noopener noreferrer" }
+    ? {
+        href: ensureProtocol(project.youtubeUrl!) ?? "#",
+        target: "_blank" as const,
+        rel: "noopener noreferrer",
+      }
     : {};
 
   return (
     <Wrapper
       {...linkProps}
       className={`group block relative rounded-2xl overflow-hidden bg-[#0c0c0c]
-                  flex-shrink-0
-                  w-[82vw] sm:w-[340px] md:w-[380px] lg:w-[420px]
+                  w-[78vw] sm:w-[320px] md:w-[360px] lg:w-[400px]
                   border border-white/5 hover:border-primary/40
                   hover:shadow-[0_24px_64px_-16px_rgba(196,145,10,0.25)]
                   transition-all duration-400
@@ -106,7 +121,6 @@ function CarouselCard({ project, lang, priority = false }: { project: Project; l
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Media */}
       <div className="aspect-[3/4] relative overflow-hidden">
         {thumb && (
           <img
@@ -124,38 +138,40 @@ function CarouselCard({ project, lang, priority = false }: { project: Project; l
           />
         )}
 
-        {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
 
-        {/* Badges */}
         <div className="absolute top-3 left-3 flex items-center gap-1.5">
           {hasAnimatedMedia(project) && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full
                              bg-black/60 backdrop-blur-sm border border-white/10
-                             text-[9px] font-bold text-white uppercase tracking-widest">
+                             text-[9px] font-bold text-white uppercase tracking-widest"
+            >
               <Film className="w-2.5 h-2.5 text-primary" />
               {preview?.isVideo ? "Video" : "GIF"}
             </span>
           )}
         </div>
 
-        {/* Play button */}
         {isLink && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center
+            <div
+              className="w-14 h-14 rounded-full bg-primary flex items-center justify-center
                             opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100
-                            transition-all duration-300 shadow-2xl shadow-primary/50">
+                            transition-all duration-300 shadow-2xl shadow-primary/50"
+            >
               <Play className="w-5 h-5 ml-0.5 text-white" fill="white" />
             </div>
           </div>
         )}
 
-        {/* Bottom content */}
         <div className="absolute bottom-0 left-0 right-0 p-5">
           <div className="space-y-2">
             <CategoryChips categories={project.categories ?? []} lang={lang} />
-            <h4 className="font-display font-bold text-white text-lg leading-tight
-                           group-hover:text-primary transition-colors duration-200 line-clamp-2">
+            <h4
+              className="font-display font-bold text-white text-lg leading-tight
+                           group-hover:text-primary transition-colors duration-200 line-clamp-2"
+            >
               {title}
             </h4>
             {desc && (
@@ -167,9 +183,11 @@ function CarouselCard({ project, lang, priority = false }: { project: Project; l
         </div>
 
         {isLink && (
-          <ExternalLink className="absolute top-3 right-3 w-4 h-4 text-white/40
+          <ExternalLink
+            className="absolute top-3 right-3 w-4 h-4 text-white/40
                                    opacity-0 group-hover:opacity-100 group-hover:text-primary
-                                   transition-all duration-200" />
+                                   transition-all duration-200"
+          />
         )}
       </div>
     </Wrapper>
@@ -180,12 +198,12 @@ function CarouselCard({ project, lang, priority = false }: { project: Project; l
 
 function SkeletonCarousel() {
   return (
-    <div className="flex gap-5 overflow-hidden">
+    <div className="flex gap-5 overflow-hidden px-5 lg:px-10">
       {[1, 2, 3].map((i) => (
         <div
           key={i}
-          className="flex-shrink-0 w-[82vw] sm:w-[340px] md:w-[380px] lg:w-[420px]
-                     rounded-2xl bg-[#f0f0f0] animate-pulse"
+          className="flex-shrink-0 w-[78vw] sm:w-[320px] md:w-[360px] lg:w-[400px]
+                     rounded-2xl bg-white/10 animate-pulse"
           style={{ aspectRatio: "3/4" }}
         />
       ))}
@@ -193,9 +211,24 @@ function SkeletonCarousel() {
   );
 }
 
-// ── Infinite-loop draggable carousel ──────────────────────────────────────────
-// Renders three copies of the item list. We always keep the user scrolled into
-// the middle copy and silently jump ±1 copy-width when they drift to either edge.
+// ── Infinite-loop draggable carousel ─────────────────────────────────────────
+//
+// Strategy: render three copies of the project list back-to-back.
+// We always keep the viewport scrolled into copy #1 (the middle one).
+// When scrollLeft drifts into copy #0 or copy #2 we instantly jump ±one-copy-
+// width so the visual content is identical — the seam is invisible.
+//
+// Key decisions vs. previous version:
+//  • Double-rAF init so scrollWidth is stable before we park
+//  • `ready` flag suppresses spurious jumps during initialisation
+//  • Immediate (not debounced) jump — the scroll handler fires synchronously,
+//    the new scrollLeft is in copy #1, so the next event is a no-op
+//  • Arrow clicks use instant scroll (no smooth), which removes the race where
+//    a smooth animation crosses a boundary mid-animation
+//  • No gradient edge masks — they created the unwanted dark-overlay effect
+//  • Track carries its own horizontal padding so the section container doesn't
+//    need the `-mx` trick; the carousel renders edge-to-edge at section width
+// ─────────────────────────────────────────────────────────────────────────────
 
 function InfiniteCarousel({ projects, lang }: { projects: Project[]; lang: Lang }) {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -203,57 +236,63 @@ function InfiniteCarousel({ projects, lang }: { projects: Project[]; lang: Lang 
   const hasDragged = useRef(false);
   const startX = useRef(0);
   const startScrollLeft = useRef(0);
-  const jumpScheduled = useRef(false);
+  // Guard: don't jump while the initial park is still in progress
+  const ready = useRef(false);
 
-  // Triple the list so both left and right have a full copy to scroll into
+  // Three copies for the seamless loop
   const copies = useMemo(
     () => [0, 1, 2].flatMap((ci) => projects.map((p) => ({ ...p, _key: `${ci}-${p.id}` }))),
     [projects],
   );
 
-  // On mount / when projects change: park the scroll at the start of copy #2
+  // Park at the start of copy #1 (index = scrollWidth / 3).
+  // Double-rAF: first frame triggers layout, second frame gives a stable scrollWidth.
   useEffect(() => {
+    ready.current = false;
     const el = trackRef.current;
     if (!el) return;
-    const park = () => {
-      el.scrollLeft = el.scrollWidth / 3;
+    let r2 = 0;
+    const r1 = requestAnimationFrame(() => {
+      r2 = requestAnimationFrame(() => {
+        el.scrollLeft = el.scrollWidth / 3;
+        // Mark ready one more frame later so the park scroll event is ignored
+        requestAnimationFrame(() => {
+          ready.current = true;
+        });
+      });
+    });
+    return () => {
+      cancelAnimationFrame(r1);
+      cancelAnimationFrame(r2);
     };
-    // rAF ensures layout is painted before we read scrollWidth
-    const raf = requestAnimationFrame(park);
-    return () => cancelAnimationFrame(raf);
   }, [projects.length]);
 
-  // After each scroll event ends (50 ms debounce), recentre if needed.
-  // We only act when the user is clearly into copy #1 or copy #3 to avoid
-  // fighting with smooth-scroll arrow clicks that stay within copy #2.
-  const scheduleJump = useCallback(() => {
-    if (jumpScheduled.current) return;
-    jumpScheduled.current = true;
-    setTimeout(() => {
-      jumpScheduled.current = false;
-      const el = trackRef.current;
-      if (!el) return;
-      const third = el.scrollWidth / 3;
-      if (el.scrollLeft < third * 0.75) {
-        el.scrollLeft += third;
-      } else if (el.scrollLeft > third * 2.25 - el.clientWidth) {
-        el.scrollLeft -= third;
-      }
-    }, 50);
-  }, []);
-
+  // Seamless loop — fires on every scroll event.
+  // Setting scrollLeft here fires another scroll event, but the new position
+  // is within copy #1 so neither branch triggers again (no infinite loop).
   useEffect(() => {
     const el = trackRef.current;
     if (!el) return;
-    el.addEventListener("scroll", scheduleJump, { passive: true });
-    return () => el.removeEventListener("scroll", scheduleJump);
-  }, [scheduleJump]);
+    const onScroll = () => {
+      if (!ready.current) return;
+      const third = el.scrollWidth / 3;
+      if (el.scrollLeft < third) {
+        el.scrollLeft += third;
+      } else if (el.scrollLeft >= 2 * third) {
+        el.scrollLeft -= third;
+      }
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
 
+  // Instant scroll by one card + gap (no smooth — avoids boundary-crossing mid-animation)
   const scrollByCard = (dir: "left" | "right") => {
     const el = trackRef.current;
     if (!el) return;
-    const cardWidth = el.querySelector(":scope > div")?.getBoundingClientRect().width ?? 400;
-    el.scrollBy({ left: dir === "right" ? cardWidth + 20 : -(cardWidth + 20), behavior: "smooth" });
+    const card = el.querySelector<HTMLElement>(":scope > div");
+    const cardW = card ? card.getBoundingClientRect().width : 380;
+    el.scrollLeft += (dir === "right" ? 1 : -1) * (cardW + 20);
   };
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -271,7 +310,7 @@ function InfiniteCarousel({ projects, lang }: { projects: Project[]; lang: Lang 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!isDragging.current || !trackRef.current) return;
     const dx = e.clientX - startX.current;
-    if (Math.abs(dx) > 5) {
+    if (Math.abs(dx) > 4) {
       hasDragged.current = true;
       trackRef.current.scrollLeft = startScrollLeft.current - dx;
     }
@@ -294,14 +333,18 @@ function InfiniteCarousel({ projects, lang }: { projects: Project[]; lang: Lang 
     }
   };
 
+  const n = projects.length;
+
   return (
-    <div className="relative group/carousel">
-      {/* Scroll track */}
+    <div className="relative">
+      {/* Track — full section width, padding matches section container gutters */}
       <div
         ref={trackRef}
-        className="flex gap-5 overflow-x-auto pb-3
+        className="flex gap-5 overflow-x-auto pb-2
                    [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
-                   cursor-grab"
+                   cursor-grab active:cursor-grabbing
+                   px-5 md:px-10"
+        style={{ overscrollBehaviorX: "contain" }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -313,17 +356,19 @@ function InfiniteCarousel({ projects, lang }: { projects: Project[]; lang: Lang 
             <CarouselCard
               project={project as Project}
               lang={lang}
-              priority={idx < 3}
+              // Prioritise eager-load for the first few cards of copy #1 (initially visible)
+              priority={idx >= n && idx < n + 4}
             />
           </div>
         ))}
       </div>
 
-      {/* Prev arrow — always visible since the carousel is infinite */}
+      {/* Arrows — always visible; infinite carousel has no real start/end */}
       <button
         onClick={() => scrollByCard("left")}
-        className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5
-                   w-12 h-12 rounded-full bg-white border border-[#e8e8e8] shadow-lg
+        aria-label="Previous"
+        className="hidden md:flex absolute left-10 top-1/2 -translate-y-1/2 -translate-x-6
+                   w-11 h-11 rounded-full bg-white/90 border border-white/60 shadow-lg
                    items-center justify-center z-10
                    hover:bg-primary hover:border-primary hover:text-white
                    text-[#141414] transition-all duration-200"
@@ -331,23 +376,17 @@ function InfiniteCarousel({ projects, lang }: { projects: Project[]; lang: Lang 
         <ChevronLeft className="w-5 h-5" />
       </button>
 
-      {/* Next arrow */}
       <button
         onClick={() => scrollByCard("right")}
-        className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-5
-                   w-12 h-12 rounded-full bg-white border border-[#e8e8e8] shadow-lg
+        aria-label="Next"
+        className="hidden md:flex absolute right-10 top-1/2 -translate-y-1/2 translate-x-6
+                   w-11 h-11 rounded-full bg-white/90 border border-white/60 shadow-lg
                    items-center justify-center z-10
                    hover:bg-primary hover:border-primary hover:text-white
                    text-[#141414] transition-all duration-200"
       >
         <ChevronRight className="w-5 h-5" />
       </button>
-
-      {/* Fade edges */}
-      <div className="pointer-events-none absolute left-0 top-0 bottom-3 w-16
-                      bg-gradient-to-r from-[#4F8FA8] to-transparent" />
-      <div className="pointer-events-none absolute right-0 top-0 bottom-3 w-16
-                      bg-gradient-to-l from-[#2F5F73] to-transparent" />
     </div>
   );
 }
@@ -367,7 +406,6 @@ export function Portfolio() {
     return featured.length > 0 ? featured : all.slice(0, 8);
   }, [allProjects]);
 
-  // Only use categories that appear in active projects
   const usedCategories = useMemo(() => {
     const used = new Set<number>();
     activeProjects.forEach((p) => (p.categories ?? []).forEach((c) => used.add(c.id)));
@@ -378,12 +416,15 @@ export function Portfolio() {
 
   if (loadingProjects) {
     return (
-      <section id="portfolio" className="py-24 md:py-32 bg-white overflow-hidden">
+      <section
+        id="portfolio"
+        className="py-24 md:py-32 overflow-hidden bg-gradient-to-r from-[#4F8FA8] via-[#3F7388] to-[#2F5F73]"
+      >
         <div className="max-w-7xl mx-auto px-5 lg:px-10">
-          <div className="h-8 w-48 bg-[#f0f0f0] rounded animate-pulse mb-3" />
-          <div className="h-14 w-72 bg-[#f0f0f0] rounded animate-pulse mb-10" />
-          <SkeletonCarousel />
+          <div className="h-8 w-48 bg-white/10 rounded animate-pulse mb-3" />
+          <div className="h-14 w-72 bg-white/10 rounded animate-pulse mb-10" />
         </div>
+        <SkeletonCarousel />
       </section>
     );
   }
@@ -391,33 +432,35 @@ export function Portfolio() {
   if (!activeProjects.length) return null;
 
   return (
-    <section id="portfolio" className="py-24 md:py-32 overflow-hidden bg-gradient-to-r from-[#4F8FA8] via-[#3F7388] to-[#2F5F73]">
+    <section
+      id="portfolio"
+      className="py-24 md:py-32 overflow-hidden bg-gradient-to-r from-[#4F8FA8] via-[#3F7388] to-[#2F5F73]"
+    >
+      {/* ── Header (stays inside the container) ─────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-5 lg:px-10">
-
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="flex flex-col md:flex-row md:items-end justify-between gap-5 mb-8"
+          className="flex flex-col md:flex-row md:items-end justify-between gap-5 mb-10"
         >
           <div>
-            <p className="section-label text-[19px] text-[#ffffff] bg-[#c38313]">{t(i18n.portfolio.label, lang)}</p>
-            <h2 className="section-heading text-white">
-              {t(i18n.portfolio.heading, lang)}
-            </h2>
+            <p className="section-label text-[19px] text-[#ffffff] bg-[#c38313]">
+              {t(i18n.portfolio.label, lang)}
+            </p>
+            <h2 className="section-heading text-white">{t(i18n.portfolio.heading, lang)}</h2>
           </div>
           <div className="flex flex-col items-start md:items-end gap-2">
-            <p className="text-white/50 text-xs font-light">
-              {t(i18n.portfolio.dragHint, lang)}
-            </p>
+            <p className="text-white/50 text-xs font-light">{t(i18n.portfolio.dragHint, lang)}</p>
             {usedCategories.length > 0 && (
               <div className="flex flex-wrap gap-1.5 md:justify-end">
                 {usedCategories.slice(0, 5).map((cat) => (
-                  <span key={cat.id}
+                  <span
+                    key={cat.id}
                     className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full
-                               bg-white/12 text-white/70 border border-white/20 backdrop-blur-sm">
+                               bg-white/12 text-white/70 border border-white/20 backdrop-blur-sm"
+                  >
                     {getCategoryName(cat, lang)}
                   </span>
                 ))}
@@ -425,19 +468,20 @@ export function Portfolio() {
             )}
           </div>
         </motion.div>
+      </div>
 
-        {/* Infinite carousel */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="-mx-5 px-5 lg:-mx-10 lg:px-10"
-        >
-          <InfiniteCarousel projects={activeProjects} lang={lang} />
-        </motion.div>
+      {/* ── Carousel — full section width, no container constraint ──────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{ duration: 0.7, delay: 0.1 }}
+      >
+        <InfiniteCarousel projects={activeProjects} lang={lang} />
+      </motion.div>
 
-        {/* View Full Portfolio CTA */}
+      {/* ── CTA (back inside the container) ─────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto px-5 lg:px-10">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
