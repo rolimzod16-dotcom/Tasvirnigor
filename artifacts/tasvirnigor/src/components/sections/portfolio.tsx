@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Play, ExternalLink, Film, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 import { useLanguage, type Lang } from "@/contexts/language-context";
@@ -193,36 +193,66 @@ function SkeletonCarousel() {
   );
 }
 
-// ── Horizontal draggable carousel ─────────────────────────────────────────────
+// ── Infinite-loop draggable carousel ──────────────────────────────────────────
+// Renders three copies of the item list. We always keep the user scrolled into
+// the middle copy and silently jump ±1 copy-width when they drift to either edge.
 
-function DraggableCarousel({ children }: { children: React.ReactNode }) {
+function InfiniteCarousel({ projects, lang }: { projects: Project[]; lang: Lang }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const hasDragged = useRef(false);
   const startX = useRef(0);
   const startScrollLeft = useRef(0);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const jumpScheduled = useRef(false);
 
-  const updateArrows = useCallback(() => {
+  // Triple the list so both left and right have a full copy to scroll into
+  const copies = useMemo(
+    () => [0, 1, 2].flatMap((ci) => projects.map((p) => ({ ...p, _key: `${ci}-${p.id}` }))),
+    [projects],
+  );
+
+  // On mount / when projects change: park the scroll at the start of copy #2
+  useEffect(() => {
     const el = trackRef.current;
     if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 4);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+    const park = () => {
+      el.scrollLeft = el.scrollWidth / 3;
+    };
+    // rAF ensures layout is painted before we read scrollWidth
+    const raf = requestAnimationFrame(park);
+    return () => cancelAnimationFrame(raf);
+  }, [projects.length]);
+
+  // After each scroll event ends (50 ms debounce), recentre if needed.
+  // We only act when the user is clearly into copy #1 or copy #3 to avoid
+  // fighting with smooth-scroll arrow clicks that stay within copy #2.
+  const scheduleJump = useCallback(() => {
+    if (jumpScheduled.current) return;
+    jumpScheduled.current = true;
+    setTimeout(() => {
+      jumpScheduled.current = false;
+      const el = trackRef.current;
+      if (!el) return;
+      const third = el.scrollWidth / 3;
+      if (el.scrollLeft < third * 0.75) {
+        el.scrollLeft += third;
+      } else if (el.scrollLeft > third * 2.25 - el.clientWidth) {
+        el.scrollLeft -= third;
+      }
+    }, 50);
   }, []);
 
   useEffect(() => {
     const el = trackRef.current;
     if (!el) return;
-    updateArrows();
-    el.addEventListener("scroll", updateArrows, { passive: true });
-    return () => el.removeEventListener("scroll", updateArrows);
-  }, [updateArrows, children]);
+    el.addEventListener("scroll", scheduleJump, { passive: true });
+    return () => el.removeEventListener("scroll", scheduleJump);
+  }, [scheduleJump]);
 
-  const scroll = (dir: "left" | "right") => {
+  const scrollByCard = (dir: "left" | "right") => {
     const el = trackRef.current;
     if (!el) return;
-    const cardWidth = el.querySelector(":scope > *")?.getBoundingClientRect().width ?? 380;
+    const cardWidth = el.querySelector(":scope > div")?.getBoundingClientRect().width ?? 400;
     el.scrollBy({ left: dir === "right" ? cardWidth + 20 : -(cardWidth + 20), behavior: "smooth" });
   };
 
@@ -256,7 +286,6 @@ function DraggableCarousel({ children }: { children: React.ReactNode }) {
     el.releasePointerCapture(e.pointerId);
   };
 
-  // Block child link clicks only when the user actually dragged
   const onClickCapture = (e: React.MouseEvent) => {
     if (hasDragged.current) {
       e.stopPropagation();
@@ -271,68 +300,54 @@ function DraggableCarousel({ children }: { children: React.ReactNode }) {
       <div
         ref={trackRef}
         className="flex gap-5 overflow-x-auto pb-3
-                   scroll-smooth
                    [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
                    cursor-grab"
-        style={{ scrollSnapType: "x mandatory" }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerLeave={onPointerUp}
         onClickCapture={onClickCapture}
       >
-        {children}
+        {copies.map(({ _key, ...project }, idx) => (
+          <div key={_key} className="flex-shrink-0">
+            <CarouselCard
+              project={project as Project}
+              lang={lang}
+              priority={idx < 3}
+            />
+          </div>
+        ))}
       </div>
 
-      {/* Prev arrow */}
-      <AnimatePresence>
-        {canScrollLeft && (
-          <motion.button
-            initial={{ opacity: 0, x: -8 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -8 }}
-            transition={{ duration: 0.2 }}
-            onClick={() => scroll("left")}
-            className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5
-                       w-12 h-12 rounded-full bg-white border border-[#e8e8e8] shadow-lg
-                       items-center justify-center z-10
-                       hover:bg-primary hover:border-primary hover:text-white
-                       text-[#141414] transition-all duration-200"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </motion.button>
-        )}
-      </AnimatePresence>
+      {/* Prev arrow — always visible since the carousel is infinite */}
+      <button
+        onClick={() => scrollByCard("left")}
+        className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5
+                   w-12 h-12 rounded-full bg-white border border-[#e8e8e8] shadow-lg
+                   items-center justify-center z-10
+                   hover:bg-primary hover:border-primary hover:text-white
+                   text-[#141414] transition-all duration-200"
+      >
+        <ChevronLeft className="w-5 h-5" />
+      </button>
 
       {/* Next arrow */}
-      <AnimatePresence>
-        {canScrollRight && (
-          <motion.button
-            initial={{ opacity: 0, x: 8 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 8 }}
-            transition={{ duration: 0.2 }}
-            onClick={() => scroll("right")}
-            className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-5
-                       w-12 h-12 rounded-full bg-white border border-[#e8e8e8] shadow-lg
-                       items-center justify-center z-10
-                       hover:bg-primary hover:border-primary hover:text-white
-                       text-[#141414] transition-all duration-200"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </motion.button>
-        )}
-      </AnimatePresence>
+      <button
+        onClick={() => scrollByCard("right")}
+        className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-5
+                   w-12 h-12 rounded-full bg-white border border-[#e8e8e8] shadow-lg
+                   items-center justify-center z-10
+                   hover:bg-primary hover:border-primary hover:text-white
+                   text-[#141414] transition-all duration-200"
+      >
+        <ChevronRight className="w-5 h-5" />
+      </button>
 
-      {/* Left/right fade edges — match teal gradient section bg */}
-      {canScrollLeft && (
-        <div className="pointer-events-none absolute left-0 top-0 bottom-3 w-16
-                        bg-gradient-to-r from-[#4F8FA8] to-transparent" />
-      )}
-      {canScrollRight && (
-        <div className="pointer-events-none absolute right-0 top-0 bottom-3 w-16
-                        bg-gradient-to-l from-[#2F5F73] to-transparent" />
-      )}
+      {/* Fade edges */}
+      <div className="pointer-events-none absolute left-0 top-0 bottom-3 w-16
+                      bg-gradient-to-r from-[#4F8FA8] to-transparent" />
+      <div className="pointer-events-none absolute right-0 top-0 bottom-3 w-16
+                      bg-gradient-to-l from-[#2F5F73] to-transparent" />
     </div>
   );
 }
@@ -411,7 +426,7 @@ export function Portfolio() {
           </div>
         </motion.div>
 
-        {/* Carousel */}
+        {/* Infinite carousel */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -419,16 +434,7 @@ export function Portfolio() {
           transition={{ duration: 0.7, delay: 0.1 }}
           className="-mx-5 px-5 lg:-mx-10 lg:px-10"
         >
-          <DraggableCarousel>
-            {activeProjects.map((project, idx) => (
-              <div
-                key={project.id}
-                style={{ scrollSnapAlign: "start" }}
-              >
-                <CarouselCard project={project} lang={lang} priority={idx < 3} />
-              </div>
-            ))}
-          </DraggableCarousel>
+          <InfiniteCarousel projects={activeProjects} lang={lang} />
         </motion.div>
 
         {/* View Full Portfolio CTA */}
