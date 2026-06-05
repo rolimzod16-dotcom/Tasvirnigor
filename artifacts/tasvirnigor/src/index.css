@@ -125,6 +125,7 @@
 @layer utilities {
   .section-label {
     @apply inline-block font-bold tracking-[0.22em] uppercase text-[13px] mb-4;
+    width: fit-content;
     color: #ffffff;
     padding: 0.35rem 1rem;
     border-radius: 999px;
