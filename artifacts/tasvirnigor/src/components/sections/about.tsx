@@ -27,7 +27,7 @@ export function About() {
   const mission = localize(about as unknown as Record<string, unknown>, "mission", lang);
 
   return (
-    <section id="about" className="py-24 md:py-32 bg-[#2e687600]">
+    <section id="about" className="py-24 md:py-32 bg-[#2e687600] overflow-hidden">
       <div className="max-w-7xl mx-auto px-5 lg:px-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start mb-20">
           <motion.div

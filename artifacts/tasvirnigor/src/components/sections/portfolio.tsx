@@ -367,7 +367,7 @@ function InfiniteCarousel({ projects, lang }: { projects: Project[]; lang: Lang 
       <button
         onClick={() => scrollByCard("left")}
         aria-label="Previous"
-        className="hidden md:flex absolute left-10 top-1/2 -translate-y-1/2 -translate-x-6
+        className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2
                    w-11 h-11 rounded-full bg-white/90 border border-white/60 shadow-lg
                    items-center justify-center z-10
                    hover:bg-primary hover:border-primary hover:text-white
@@ -379,7 +379,7 @@ function InfiniteCarousel({ projects, lang }: { projects: Project[]; lang: Lang 
       <button
         onClick={() => scrollByCard("right")}
         aria-label="Next"
-        className="hidden md:flex absolute right-10 top-1/2 -translate-y-1/2 translate-x-6
+        className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2
                    w-11 h-11 rounded-full bg-white/90 border border-white/60 shadow-lg
                    items-center justify-center z-10
                    hover:bg-primary hover:border-primary hover:text-white
