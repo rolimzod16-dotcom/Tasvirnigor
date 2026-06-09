@@ -278,11 +278,7 @@ export function Services() {
         {/* Empty state */}
         {!isLoading && homepageServices.length === 0 && (
           <div className="text-center py-16 text-[#bbb] text-sm">
-            {lang === "ru"
-              ? "Услуги появятся в ближайшее время."
-              : lang === "tj"
-              ? "Хидматҳо ба зудӣ илова мешаванд."
-              : "Services coming soon."}
+            {t(i18n.services.comingSoon, lang)}
           </div>
         )}
 
@@ -321,7 +317,7 @@ export function Services() {
                 initial="rest"
                 className="inline-flex items-center gap-2.5 px-7 py-2.5 rounded-full border border-white/30 font-medium text-[13px] hover:border-[#FAB037]/55 hover:text-white hover:bg-white/15 hover:shadow-[0_0_28px_-4px_rgba(250,176,55,0.30)] transition-all duration-[350ms] ease-out cursor-pointer tracking-wide backdrop-blur-sm border-t-[#000000] border-r-[#000000] border-b-[#000000] border-l-[#000000] bg-[#000000] text-[#ffffff]"
               >
-                {lang === "ru" ? "Другие услуги" : lang === "tj" ? "Хидматҳои дигар" : "Other Services"}
+                {t(i18n.services.viewAll, lang)}
                 <motion.span
                   variants={{ rest: { x: 0 }, hover: { x: 3 } }}
                   transition={{ duration: 0.25 }}

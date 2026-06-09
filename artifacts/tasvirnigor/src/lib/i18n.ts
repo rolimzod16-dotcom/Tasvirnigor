@@ -18,6 +18,7 @@ export const i18n = {
     team: { en: "Team", ru: "Команда", tj: "Гурӯҳ" } as T,
     contacts: { en: "Contacts", ru: "Контакты", tj: "Тамос" } as T,
     adminLogin: { en: "Admin Login", ru: "Вход в панель", tj: "Вуруди маъмур" } as T,
+    backToHome: { en: "Back to Home", ru: "На главную", tj: "Ба саҳифаи асосӣ" } as T,
   },
   hero: {
     tagline: { en: "Tajikistan · Est. 2015", ru: "Таджикистан · Осн. 2015", tj: "Тоҷикистон · Таъс. 2015" } as T,
@@ -43,6 +44,8 @@ export const i18n = {
   services: {
     label: { en: "Expertise", ru: "Компетенции", tj: "Тахассус" } as T,
     heading: { en: "Our Services", ru: "Наши услуги", tj: "Хизматҳои мо" } as T,
+    viewAll: { en: "View All Services", ru: "Все услуги", tj: "Ҳамаи хидматҳо" } as T,
+    comingSoon: { en: "Services coming soon.", ru: "Услуги появятся в ближайшее время.", tj: "Хидматҳо ба зудӣ илова мешаванд." } as T,
     items: [
       {
         title: { en: "Film Production", ru: "Кинопроизводство", tj: "Истеҳсоли кино" } as T,
@@ -104,6 +107,8 @@ export const i18n = {
     } as T,
     featured: { en: "Featured", ru: "Главный", tj: "Барҷаста" } as T,
     viewAll: { en: "View Full Portfolio", ru: "Полное портфолио", tj: "Портфолиои пурра" } as T,
+    filterAll: { en: "All", ru: "Все", tj: "Ҳама" } as T,
+    noProjects: { en: "No projects found.", ru: "Проекты не найдены.", tj: "Лоиҳаҳо ёфт нашуданд." } as T,
     dragHint: {
       en: "Drag or swipe to explore",
       ru: "Перетащите или проведите пальцем",

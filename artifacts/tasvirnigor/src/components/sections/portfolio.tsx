@@ -81,14 +81,16 @@ function AnimatedPreview({ preview, className }: { preview: AnimPreview; classNa
 
 // ── Carousel card ─────────────────────────────────────────────────────────────
 
-function CarouselCard({
+export function CarouselCard({
   project,
   lang,
   priority = false,
+  widthClass = "w-[78vw] sm:w-[320px] md:w-[360px] lg:w-[400px]",
 }: {
   project: Project;
   lang: Lang;
   priority?: boolean;
+  widthClass?: string;
 }) {
   const [hovered, setHovered] = useState(false);
   const preview = getAnimPreview(project);
@@ -113,7 +115,7 @@ function CarouselCard({
     <Wrapper
       {...linkProps}
       className={`group block relative rounded-2xl overflow-hidden bg-[#0c0c0c]
-                  w-[78vw] sm:w-[320px] md:w-[360px] lg:w-[400px]
+                  ${widthClass}
                   border border-white/5 hover:border-primary/40
                   hover:shadow-[0_24px_64px_-16px_rgba(196,145,10,0.25)]
                   transition-all duration-400

@@ -253,11 +253,11 @@ function ProjectCard({ project, lang }: { project: Project; lang: Lang }) {
         {(project.categories ?? []).length > 0 && (
           <CategoryChips categories={project.categories ?? []} lang={lang} />
         )}
-        <h4 className="font-display font-bold text-[#141414] group-hover:text-primary transition-colors duration-200 line-clamp-2 text-[36px]">
+        <h4 className="font-display font-bold text-[#141414] group-hover:text-primary transition-colors duration-200 line-clamp-2 text-base md:text-lg">
           {title}
         </h4>
         {desc && (
-          <p className="text-[#888] line-clamp-2 font-light text-[26px]">
+          <p className="text-[#888] line-clamp-2 font-light text-sm">
             {desc}
           </p>
         )}
@@ -318,7 +318,7 @@ export default function PortfolioPage() {
                          text-sm font-medium cursor-pointer transition-colors duration-200 mb-8 group"
             >
               <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
-              {t(i18n.servicesPage.backToHome, lang)}
+              {t(i18n.nav.backToHome, lang)}
             </motion.span>
           </Link>
           <motion.div
@@ -346,7 +346,7 @@ export default function PortfolioPage() {
           >
             <div className="flex items-center gap-2 flex-wrap">
               <FilterPill
-                label={t(i18n.form.filterAll, lang)}
+                label={t(i18n.portfolio.filterAll, lang)}
                 count={null}
                 active={activeFilter === null}
                 onClick={() => setActiveFilter(null)}

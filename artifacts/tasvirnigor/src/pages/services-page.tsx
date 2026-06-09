@@ -36,7 +36,7 @@ export default function ServicesPage() {
                          text-sm font-medium cursor-pointer transition-colors duration-200 mb-8 group"
             >
               <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
-              {t(i18n.servicesPage.backToHome, lang)}
+              {t(i18n.nav.backToHome, lang)}
             </motion.span>
           </Link>
           <motion.div
@@ -45,10 +45,10 @@ export default function ServicesPage() {
             transition={{ duration: 0.7 }}
           >
             <p className="text-primary text-xs font-bold uppercase tracking-[0.16em] mb-3">
-              {t(i18n.servicesPage.label, lang)}
+              {t(i18n.services.label, lang)}
             </p>
             <h1 className="font-display font-black text-white text-4xl md:text-6xl lg:text-7xl leading-[0.95]">
-              {t(i18n.servicesPage.heading, lang)}
+              {t(i18n.services.heading, lang)}
             </h1>
           </motion.div>
         </div>
