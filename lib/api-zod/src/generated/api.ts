@@ -226,6 +226,8 @@ export const DeleteCategoryParams = zod.object({
 export const ListTeamMembersResponseItem = zod.object({
   "id": zod.number(),
   "name": zod.string(),
+  "nameRu": zod.string().nullish(),
+  "nameTj": zod.string().nullish(),
   "position": zod.string(),
   "positionRu": zod.string().nullish(),
   "positionTj": zod.string().nullish(),
@@ -251,6 +253,8 @@ export const ListTeamMembersResponse = zod.array(ListTeamMembersResponseItem)
 
 export const CreateTeamMemberBody = zod.object({
   "name": zod.string().min(1),
+  "nameRu": zod.string().nullish(),
+  "nameTj": zod.string().nullish(),
   "position": zod.string().min(1),
   "positionRu": zod.string().nullish(),
   "positionTj": zod.string().nullish(),
@@ -278,6 +282,8 @@ export const UpdateTeamMemberParams = zod.object({
 
 export const UpdateTeamMemberBody = zod.object({
   "name": zod.string().min(1).optional(),
+  "nameRu": zod.string().nullish(),
+  "nameTj": zod.string().nullish(),
   "position": zod.string().min(1).optional(),
   "positionRu": zod.string().nullish(),
   "positionTj": zod.string().nullish(),
@@ -294,6 +300,8 @@ export const UpdateTeamMemberBody = zod.object({
 export const UpdateTeamMemberResponse = zod.object({
   "id": zod.number(),
   "name": zod.string(),
+  "nameRu": zod.string().nullish(),
+  "nameTj": zod.string().nullish(),
   "position": zod.string(),
   "positionRu": zod.string().nullish(),
   "positionTj": zod.string().nullish(),

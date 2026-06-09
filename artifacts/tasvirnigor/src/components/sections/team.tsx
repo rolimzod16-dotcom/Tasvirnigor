@@ -136,6 +136,7 @@ export function Team() {
           className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-7"
         >
           {teamMembers.map((member) => {
+            const displayName = localize(member as unknown as Record<string, unknown>, "name", lang);
             const position = localize(member as unknown as Record<string, unknown>, "position", lang);
             const bio = localize(member as unknown as Record<string, unknown>, "bio", lang);
             const experienceLines = member.experience
@@ -163,14 +164,25 @@ export function Team() {
                 />
 
                 {/* LEFT: portrait photo — fills card height */}
-                <div className="relative flex-shrink-0 w-[44%] self-stretch overflow-hidden">
+                <div className="relative flex-shrink-0 w-[44%] self-stretch overflow-hidden bg-[#1c1c1c]">
                   <img
                     src={member.photoUrl}
-                    alt={member.name}
+                    alt={displayName}
                     className="absolute inset-0 w-full h-full object-cover object-top
                                transition-transform duration-700 ease-out
                                group-hover:scale-[1.05]"
                     loading="lazy"
+                    onError={(e) => {
+                      const el = e.currentTarget;
+                      el.style.display = "none";
+                      const parent = el.parentElement;
+                      if (parent && !parent.querySelector(".photo-fallback")) {
+                        const fb = document.createElement("div");
+                        fb.className = "photo-fallback absolute inset-0 flex items-center justify-center bg-[#1c1c1c]";
+                        fb.innerHTML = `<span style="font-size:2.5rem;font-weight:800;color:rgba(255,255,255,0.12);font-family:sans-serif;user-select:none">${displayName.charAt(0).toUpperCase()}</span>`;
+                        parent.appendChild(fb);
+                      }
+                    }}
                   />
                 </div>
 
@@ -180,7 +192,7 @@ export function Team() {
                   {/* Name + position */}
                   <div className="space-y-3">
                     <h3 className="font-display font-extrabold text-white text-[1.2rem] leading-snug line-clamp-2">
-                      {member.name}
+                      {displayName}
                     </h3>
                     {position && (
                       <span

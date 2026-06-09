@@ -30,7 +30,7 @@ const PLATFORMS = ["instagram", "telegram", "youtube", "linkedin", "facebook", "
 type Platform = (typeof PLATFORMS)[number];
 
 type TeamMemberFormValues = {
-  name: string;
+  name: string; nameRu: string | null; nameTj: string | null;
   position: string; positionRu: string | null; positionTj: string | null;
   bio: string | null; bioRu: string | null; bioTj: string | null;
   experience: string | null;
@@ -57,7 +57,8 @@ const PLATFORM_PLACEHOLDER: Record<Platform, string> = {
 };
 
 const EMPTY: TeamMemberFormValues = {
-  name: "", position: "", positionRu: "", positionTj: "",
+  name: "", nameRu: "", nameTj: "",
+  position: "", positionRu: "", positionTj: "",
   bio: "", bioRu: "", bioTj: "", experience: "",
   photoUrl: "", isActive: true, sortOrder: 0,
   instagram: "", telegram: "", youtube: "", linkedin: "", facebook: "", tiktok: "",
@@ -67,6 +68,8 @@ function memberToForm(member: TeamMember): TeamMemberFormValues {
   const sl = (member.socialLinks ?? {}) as Record<string, string>;
   return {
     name: member.name,
+    nameRu: member.nameRu ?? "",
+    nameTj: member.nameTj ?? "",
     position: member.position,
     positionRu: member.positionRu ?? "",
     positionTj: member.positionTj ?? "",
@@ -102,6 +105,8 @@ export function AdminTeam() {
     () =>
       z.object({
         name: z.string().min(1, t(i18n.validation.nameRequired, lang)),
+        nameRu: z.string().optional().nullable(),
+        nameTj: z.string().optional().nullable(),
         position: z.string().min(1, t(i18n.validation.positionRequired, lang)),
         positionRu: z.string().optional().nullable(),
         positionTj: z.string().optional().nullable(),
@@ -145,6 +150,8 @@ export function AdminTeam() {
 
     const data = {
       name: values.name,
+      nameRu: values.nameRu || null,
+      nameTj: values.nameTj || null,
       position: values.position,
       positionRu: values.positionRu || null,
       positionTj: values.positionTj || null,
@@ -237,16 +244,7 @@ export function AdminTeam() {
                   </FormItem>
                 )} />
 
-                {/* Name */}
-                <FormField control={form.control} name="name" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t(i18n.form.fullName, lang)}</FormLabel>
-                    <FormControl><Input {...field} placeholder={t(i18n.form.nameLangNote, lang)} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-
-                {/* Multilingual position + bio */}
+                {/* Multilingual name + position + bio */}
                 <div className="border border-border/50 rounded-lg overflow-hidden">
                   <Tabs defaultValue="en">
                     <TabsList className="w-full rounded-none border-b border-border/50 bg-card/60 h-auto p-1 gap-1">
@@ -259,6 +257,13 @@ export function AdminTeam() {
                     </TabsList>
                     <div className="p-4 space-y-4">
                       <TabsContent value="en" className="mt-0 space-y-4">
+                        <FormField control={form.control} name="name" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t(i18n.form.fullName, lang)} <span className="text-primary text-xs">(EN)</span></FormLabel>
+                            <FormControl><Input {...field} /></FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )} />
                         <FormField control={form.control} name="position" render={({ field }) => (
                           <FormItem>
                             <FormLabel>{t(i18n.form.position, lang)} <span className="text-primary text-xs">(EN)</span></FormLabel>
@@ -275,6 +280,13 @@ export function AdminTeam() {
                         )} />
                       </TabsContent>
                       <TabsContent value="ru" className="mt-0 space-y-4">
+                        <FormField control={form.control} name="nameRu" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t(i18n.form.fullName, lang)} <span className="text-primary text-xs">(RU)</span></FormLabel>
+                            <FormControl><Input {...field} value={field.value ?? ""} /></FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )} />
                         <FormField control={form.control} name="positionRu" render={({ field }) => (
                           <FormItem>
                             <FormLabel>{t(i18n.form.position, lang)} <span className="text-primary text-xs">(RU)</span></FormLabel>
@@ -291,6 +303,13 @@ export function AdminTeam() {
                         )} />
                       </TabsContent>
                       <TabsContent value="tj" className="mt-0 space-y-4">
+                        <FormField control={form.control} name="nameTj" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t(i18n.form.fullName, lang)} <span className="text-primary text-xs">(TJ)</span></FormLabel>
+                            <FormControl><Input {...field} value={field.value ?? ""} /></FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )} />
                         <FormField control={form.control} name="positionTj" render={({ field }) => (
                           <FormItem>
                             <FormLabel>{t(i18n.form.position, lang)} <span className="text-primary text-xs">(TJ)</span></FormLabel>

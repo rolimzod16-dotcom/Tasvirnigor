@@ -106,6 +106,10 @@ export type TeamMemberSocialLinks = {[key: string]: string};
 export interface TeamMember {
   id: number;
   name: string;
+  /** @nullable */
+  nameRu?: string | null;
+  /** @nullable */
+  nameTj?: string | null;
   position: string;
   /** @nullable */
   positionRu?: string | null;
@@ -131,6 +135,10 @@ export type TeamMemberInputSocialLinks = {[key: string]: string};
 export interface TeamMemberInput {
   /** @minLength 1 */
   name: string;
+  /** @nullable */
+  nameRu?: string | null;
+  /** @nullable */
+  nameTj?: string | null;
   /** @minLength 1 */
   position: string;
   /** @nullable */
@@ -156,6 +164,10 @@ export type TeamMemberUpdateSocialLinks = {[key: string]: string};
 export interface TeamMemberUpdate {
   /** @minLength 1 */
   name?: string;
+  /** @nullable */
+  nameRu?: string | null;
+  /** @nullable */
+  nameTj?: string | null;
   /** @minLength 1 */
   position?: string;
   /** @nullable */

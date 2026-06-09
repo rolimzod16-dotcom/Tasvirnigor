@@ -982,6 +982,10 @@ components:
           type: integer
         name:
           type: string
+        nameRu:
+          type: ["string", "null"]
+        nameTj:
+          type: ["string", "null"]
         position:
           type: string
         positionRu:
@@ -1016,6 +1020,10 @@ components:
         name:
           type: string
           minLength: 1
+        nameRu:
+          type: ["string", "null"]
+        nameTj:
+          type: ["string", "null"]
         position:
           type: string
           minLength: 1
@@ -1048,6 +1056,10 @@ components:
         name:
           type: string
           minLength: 1
+        nameRu:
+          type: ["string", "null"]
+        nameTj:
+          type: ["string", "null"]
         position:
           type: string
           minLength: 1
