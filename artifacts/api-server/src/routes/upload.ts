@@ -1,11 +1,12 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import multer from "multer";
 import { supabase } from "../lib/supabase";
+import { uploadBufferToCloudinary, signUploadParams } from "../lib/cloudinary";
 import { requireAdmin } from "../middlewares/auth";
 
 const router: IRouter = Router();
 
-// ── Allowed file types (images) ───────────────────────────────────────────────
+// ── File type sets ────────────────────────────────────────────────────────────
 
 const IMAGE_MIME_TYPES = new Set([
   "image/jpeg", "image/jpg", "image/png", "image/webp",
@@ -17,19 +18,29 @@ const IMAGE_EXTENSIONS = new Set([
   "jpg", "jpeg", "png", "webp", "gif", "svg", "avif", "bmp",
 ]);
 
-// ── Allowed file types (service media: images + video + Lottie JSON) ──────────
+const VIDEO_MIME_TYPES = new Set([
+  "video/mp4", "video/webm", "video/quicktime",
+  "video/x-msvideo", "video/x-matroska",
+]);
+
+const VIDEO_EXTENSIONS = new Set(["mp4", "webm", "mov", "avi", "mkv"]);
 
 const SERVICE_MEDIA_MIME_TYPES = new Set([
   ...IMAGE_MIME_TYPES,
-  "video/mp4", "video/webm", "video/quicktime", "video/x-msvideo",
-  "video/x-matroska",
+  ...VIDEO_MIME_TYPES,
   "application/json", "text/plain",
 ]);
 
 const SERVICE_MEDIA_EXTENSIONS = new Set([
   ...IMAGE_EXTENSIONS,
-  "mp4", "webm", "mov", "avi", "mkv", "json",
+  ...VIDEO_EXTENSIONS,
+  "json",
 ]);
+
+const VIDEO_EXT_TO_MIME: Record<string, string> = {
+  mp4: "video/mp4", webm: "video/webm", mov: "video/quicktime",
+  avi: "video/x-msvideo", mkv: "video/x-matroska",
+};
 
 const IMAGE_EXT_TO_MIME: Record<string, string> = {
   jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png",
@@ -38,9 +49,7 @@ const IMAGE_EXT_TO_MIME: Record<string, string> = {
 };
 
 const SERVICE_MEDIA_EXT_TO_MIME: Record<string, string> = {
-  ...IMAGE_EXT_TO_MIME,
-  mp4: "video/mp4", webm: "video/webm", mov: "video/quicktime",
-  avi: "video/x-msvideo", mkv: "video/x-matroska",
+  ...IMAGE_EXT_TO_MIME, ...VIDEO_EXT_TO_MIME,
   json: "application/json",
 };
 
@@ -48,47 +57,58 @@ const SERVICE_MEDIA_EXT_TO_MIME: Record<string, string> = {
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 26 * 1024 * 1024 }, // 26 MB raw; user-facing limit is 25 MB
+  limits: { fileSize: 26 * 1024 * 1024 },
 });
 
 const uploadLarge = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 215 * 1024 * 1024 }, // 210 MB raw; user-facing limit is 200 MB
+  limits: { fileSize: 215 * 1024 * 1024 },
 });
 
-// ── Bucket auto-creation ──────────────────────────────────────────────────────
+// ── Supabase bucket helpers (for video / non-image uploads only) ──────────────
 
 const readyBuckets = new Set<string>();
 
 async function ensureBucket(bucket: string): Promise<void> {
   if (readyBuckets.has(bucket)) return;
-
   const { data: buckets, error: listErr } = await supabase.storage.listBuckets();
-  if (listErr) return; // Can't list — proceed; upload will surface the real error
-
+  if (listErr) return;
   const exists = (buckets ?? []).some((b) => b.name === bucket);
   if (!exists) {
-    // Only set public:true — fileSizeLimit and allowedMimeTypes are plan-restricted
-    // Supabase settings and are rejected on most tiers. All validation is done in
-    // application code (multer limits + validateFile), so we don't need them here.
-    const { error: createErr } = await supabase.storage.createBucket(bucket, {
-      public: true,
-    });
-
+    const { error: createErr } = await supabase.storage.createBucket(bucket, { public: true });
     if (createErr) {
       const msg = createErr.message.toLowerCase();
-      // Treat "already exists" / "duplicate" as success — bucket was created between
-      // our listBuckets check and the createBucket call (race condition on cold start)
       if (!msg.includes("already exists") && !msg.includes("duplicate")) {
         throw new Error(`Cannot create storage bucket "${bucket}": ${createErr.message}`);
       }
     }
   }
-
   readyBuckets.add(bucket);
 }
 
-// ── Validation helpers ────────────────────────────────────────────────────────
+async function uploadToSupabase(
+  bucket: string,
+  file: Express.Multer.File,
+  extToMime: Record<string, string>,
+  allowedMimes: Set<string>,
+  fallbackMime: string
+): Promise<string> {
+  const ext = (file.originalname.split(".").pop() ?? "bin").toLowerCase();
+  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const mime = file.mimetype.toLowerCase().split(";")[0].trim();
+  const contentType = allowedMimes.has(mime) ? mime : (extToMime[ext] ?? fallbackMime);
+
+  const { error } = await supabase.storage
+    .from(bucket)
+    .upload(filename, file.buffer, { contentType, upsert: false });
+
+  if (error) throw new Error(`Storage upload failed: ${error.message}`);
+
+  const { data } = supabase.storage.from(bucket).getPublicUrl(filename);
+  return data.publicUrl;
+}
+
+// ── Validation helper ─────────────────────────────────────────────────────────
 
 function validateFile(
   file: Express.Multer.File,
@@ -104,52 +124,28 @@ function validateFile(
   return null;
 }
 
-function resolveContentType(
-  file: Express.Multer.File,
-  extToMime: Record<string, string>,
-  allowedMimes: Set<string>,
-  fallback: string
-): string {
+function isImageFile(file: Express.Multer.File): boolean {
   const mime = file.mimetype.toLowerCase().split(";")[0].trim();
-  if (allowedMimes.has(mime)) return mime;
   const ext = (file.originalname.split(".").pop() ?? "").toLowerCase();
-  return extToMime[ext] ?? fallback;
+  return IMAGE_MIME_TYPES.has(mime) || IMAGE_EXTENSIONS.has(ext);
 }
 
-// ── Core upload ───────────────────────────────────────────────────────────────
+// ── Core image upload → Cloudinary ────────────────────────────────────────────
 
-async function uploadToSupabase(
-  bucket: string,
-  file: Express.Multer.File,
-  extToMime: Record<string, string>,
-  allowedMimes: Set<string>,
-  fallbackMime: string
-): Promise<string> {
-  const ext = (file.originalname.split(".").pop() ?? "jpg").toLowerCase();
-  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const contentType = resolveContentType(file, extToMime, allowedMimes, fallbackMime);
-
-  const { error } = await supabase.storage
-    .from(bucket)
-    .upload(filename, file.buffer, { contentType, upsert: false });
-
-  if (error) throw new Error(`Storage upload failed: ${error.message}`);
-
-  const { data } = supabase.storage.from(bucket).getPublicUrl(filename);
-  return data.publicUrl;
+async function uploadImageToCloudinary(file: Express.Multer.File, folder: string): Promise<string> {
+  const result = await uploadBufferToCloudinary(file.buffer, folder, file.originalname);
+  return result.secure_url;
 }
 
-// ── Image route handler ───────────────────────────────────────────────────────
+// ── Shared image-upload handler ───────────────────────────────────────────────
 
-async function handleImageUpload(req: Request, res: Response, bucket: string): Promise<void> {
+async function handleImageUpload(req: Request, res: Response, folder: string): Promise<void> {
   if (!req.file) {
     res.status(400).json({ error: "No file provided. Please select a file." });
     return;
   }
   const validationError = validateFile(
-    req.file,
-    IMAGE_MIME_TYPES,
-    IMAGE_EXTENSIONS,
+    req.file, IMAGE_MIME_TYPES, IMAGE_EXTENSIONS,
     "JPG, PNG, WebP, GIF, SVG, AVIF, BMP"
   );
   if (validationError) {
@@ -157,101 +153,19 @@ async function handleImageUpload(req: Request, res: Response, bucket: string): P
     return;
   }
   try {
-    await ensureBucket(bucket);
-    const url = await uploadToSupabase(bucket, req.file, IMAGE_EXT_TO_MIME, IMAGE_MIME_TYPES, "image/jpeg");
+    const url = await uploadImageToCloudinary(req.file, folder);
     res.json({ url });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Upload failed. Please try again.";
-    req.log.error({ err, bucket }, "File upload error");
+    req.log.error({ err, folder }, "Cloudinary image upload error");
     res.status(500).json({ error: message });
   }
 }
 
-// ── Service media route handler ───────────────────────────────────────────────
-
-async function handleServiceMediaUpload(req: Request, res: Response): Promise<void> {
-  const bucket = "service-media";
-  if (!req.file) {
-    res.status(400).json({ error: "No file provided. Please select a file." });
-    return;
-  }
-  const validationError = validateFile(
-    req.file,
-    SERVICE_MEDIA_MIME_TYPES,
-    SERVICE_MEDIA_EXTENSIONS,
-    "JPG, PNG, WebP, GIF, SVG, AVIF, MP4, WebM, MOV, JSON (Lottie)"
-  );
-  if (validationError) {
-    res.status(400).json({ error: validationError });
-    return;
-  }
-
-  // Detect media type for the response
-  const mime = req.file.mimetype.toLowerCase().split(";")[0].trim();
-  const ext = (req.file.originalname.split(".").pop() ?? "").toLowerCase();
-  let mediaType: "image" | "gif" | "video" | "lottie" = "image";
-  if (mime.startsWith("video/") || ["mp4", "webm", "mov", "avi", "mkv"].includes(ext)) {
-    mediaType = "video";
-  } else if (mime === "image/gif" || ext === "gif") {
-    mediaType = "gif";
-  } else if (mime === "application/json" || ext === "json") {
-    mediaType = "lottie";
-  }
-
-  try {
-    await ensureBucket(bucket);
-    const url = await uploadToSupabase(
-      bucket,
-      req.file,
-      SERVICE_MEDIA_EXT_TO_MIME,
-      SERVICE_MEDIA_MIME_TYPES,
-      "application/octet-stream"
-    );
-    res.json({ url, mediaType });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Upload failed. Please try again.";
-    req.log.error({ err, bucket }, "Service media upload error");
-    res.status(500).json({ error: message });
-  }
-}
-
-// ── Routes ────────────────────────────────────────────────────────────────────
+// ── Routes — images (all → Cloudinary) ───────────────────────────────────────
 
 router.post("/upload/project-banner", requireAdmin, upload.single("file"), async (req, res): Promise<void> => {
   await handleImageUpload(req, res, "project-banners");
-});
-
-router.post("/upload/project-media", requireAdmin, uploadLarge.single("file"), async (req, res): Promise<void> => {
-  const bucket = "project-media";
-  if (!req.file) {
-    res.status(400).json({ error: "No file provided. Please select a file." });
-    return;
-  }
-  const validationError = validateFile(
-    req.file,
-    SERVICE_MEDIA_MIME_TYPES,
-    SERVICE_MEDIA_EXTENSIONS,
-    "JPG, PNG, WebP, GIF, SVG, AVIF, MP4, WebM, MOV"
-  );
-  if (validationError) {
-    res.status(400).json({ error: validationError });
-    return;
-  }
-  const mime = req.file.mimetype.toLowerCase().split(";")[0].trim();
-  const ext = (req.file.originalname.split(".").pop() ?? "").toLowerCase();
-  let mediaType: "image" | "gif" | "video" = "image";
-  if (mime.startsWith("video/") || ["mp4", "webm", "mov", "avi", "mkv"].includes(ext)) mediaType = "video";
-  else if (mime === "image/gif" || ext === "gif") mediaType = "gif";
-  const resolvedMime = resolveContentType(req.file, SERVICE_MEDIA_EXT_TO_MIME, SERVICE_MEDIA_MIME_TYPES, "application/octet-stream");
-  try {
-    await ensureBucket(bucket);
-    const url = await uploadToSupabase(bucket, req.file, SERVICE_MEDIA_EXT_TO_MIME, SERVICE_MEDIA_MIME_TYPES, "application/octet-stream");
-    res.json({ url, mediaType, mimeType: resolvedMime });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Upload failed. Please try again.";
-    req.log.error({ err, bucket }, "Project media upload error");
-    res.status(500).json({ error: message });
-  }
 });
 
 router.post("/upload/team-photo", requireAdmin, upload.single("file"), async (req, res): Promise<void> => {
@@ -270,18 +184,100 @@ router.post("/upload/partner-logo", requireAdmin, upload.single("file"), async (
   await handleImageUpload(req, res, "partner-logos");
 });
 
-router.post("/upload/service-media", requireAdmin, uploadLarge.single("file"), async (req, res): Promise<void> => {
-  await handleServiceMediaUpload(req, res);
+router.post("/upload/hero-image", requireAdmin, upload.single("file"), async (req, res): Promise<void> => {
+  await handleImageUpload(req, res, "hero-images");
 });
+
+// ── Routes — mixed media (images → Cloudinary, video/lottie → Supabase) ───────
+
+router.post("/upload/service-media", requireAdmin, uploadLarge.single("file"), async (req, res): Promise<void> => {
+  const bucket = "service-media";
+  if (!req.file) {
+    res.status(400).json({ error: "No file provided. Please select a file." });
+    return;
+  }
+  const validationError = validateFile(
+    req.file, SERVICE_MEDIA_MIME_TYPES, SERVICE_MEDIA_EXTENSIONS,
+    "JPG, PNG, WebP, GIF, SVG, AVIF, MP4, WebM, MOV, JSON (Lottie)"
+  );
+  if (validationError) {
+    res.status(400).json({ error: validationError });
+    return;
+  }
+
+  const mime = req.file.mimetype.toLowerCase().split(";")[0].trim();
+  const ext = (req.file.originalname.split(".").pop() ?? "").toLowerCase();
+  let mediaType: "image" | "gif" | "video" | "lottie" = "image";
+  if (mime.startsWith("video/") || VIDEO_EXTENSIONS.has(ext)) mediaType = "video";
+  else if (mime === "image/gif" || ext === "gif") mediaType = "gif";
+  else if (mime === "application/json" || ext === "json") mediaType = "lottie";
+
+  try {
+    let url: string;
+    if (isImageFile(req.file)) {
+      url = await uploadImageToCloudinary(req.file, bucket);
+    } else {
+      await ensureBucket(bucket);
+      url = await uploadToSupabase(bucket, req.file, SERVICE_MEDIA_EXT_TO_MIME, SERVICE_MEDIA_MIME_TYPES, "application/octet-stream");
+    }
+    res.json({ url, mediaType });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Upload failed. Please try again.";
+    req.log.error({ err, bucket }, "Service media upload error");
+    res.status(500).json({ error: message });
+  }
+});
+
+router.post("/upload/project-media", requireAdmin, uploadLarge.single("file"), async (req, res): Promise<void> => {
+  const bucket = "project-media";
+  if (!req.file) {
+    res.status(400).json({ error: "No file provided. Please select a file." });
+    return;
+  }
+  const validationError = validateFile(
+    req.file, SERVICE_MEDIA_MIME_TYPES, SERVICE_MEDIA_EXTENSIONS,
+    "JPG, PNG, WebP, GIF, SVG, AVIF, MP4, WebM, MOV"
+  );
+  if (validationError) {
+    res.status(400).json({ error: validationError });
+    return;
+  }
+
+  const mime = req.file.mimetype.toLowerCase().split(";")[0].trim();
+  const ext = (req.file.originalname.split(".").pop() ?? "").toLowerCase();
+  let mediaType: "image" | "gif" | "video" = "image";
+  if (mime.startsWith("video/") || VIDEO_EXTENSIONS.has(ext)) mediaType = "video";
+  else if (mime === "image/gif" || ext === "gif") mediaType = "gif";
+
+  try {
+    let url: string;
+    let mimeType: string;
+    if (isImageFile(req.file)) {
+      url = await uploadImageToCloudinary(req.file, bucket);
+      mimeType = IMAGE_EXT_TO_MIME[ext] ?? mime;
+    } else {
+      await ensureBucket(bucket);
+      url = await uploadToSupabase(bucket, req.file, SERVICE_MEDIA_EXT_TO_MIME, SERVICE_MEDIA_MIME_TYPES, "application/octet-stream");
+      mimeType = VIDEO_EXT_TO_MIME[ext] ?? mime;
+    }
+    res.json({ url, mediaType, mimeType });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Upload failed. Please try again.";
+    req.log.error({ err, bucket }, "Project media upload error");
+    res.status(500).json({ error: message });
+  }
+});
+
+// ── Route — hero video (stays on Supabase — large video, not image) ───────────
 
 router.post("/upload/hero-video", requireAdmin, uploadLarge.single("file"), async (req, res): Promise<void> => {
   const bucket = "hero-videos";
-  const VIDEO_MIME_TYPES = new Set([
+  const VIDEO_HERO_MIME = new Set([
     "video/mp4", "video/webm", "video/quicktime", "video/x-msvideo", "video/x-matroska",
     "image/gif",
   ]);
-  const VIDEO_EXTENSIONS = new Set(["mp4", "webm", "mov", "avi", "mkv", "gif"]);
-  const VIDEO_EXT_TO_MIME: Record<string, string> = {
+  const VIDEO_HERO_EXT = new Set(["mp4", "webm", "mov", "avi", "mkv", "gif"]);
+  const VIDEO_HERO_EXT_TO_MIME: Record<string, string> = {
     mp4: "video/mp4", webm: "video/webm", mov: "video/quicktime",
     avi: "video/x-msvideo", mkv: "video/x-matroska", gif: "image/gif",
   };
@@ -289,14 +285,14 @@ router.post("/upload/hero-video", requireAdmin, uploadLarge.single("file"), asyn
     res.status(400).json({ error: "No file provided." });
     return;
   }
-  const validationError = validateFile(req.file, VIDEO_MIME_TYPES, VIDEO_EXTENSIONS, "MP4, WebM, MOV, GIF");
+  const validationError = validateFile(req.file, VIDEO_HERO_MIME, VIDEO_HERO_EXT, "MP4, WebM, MOV, GIF");
   if (validationError) {
     res.status(400).json({ error: validationError });
     return;
   }
   try {
     await ensureBucket(bucket);
-    const url = await uploadToSupabase(bucket, req.file, VIDEO_EXT_TO_MIME, VIDEO_MIME_TYPES, "video/mp4");
+    const url = await uploadToSupabase(bucket, req.file, VIDEO_HERO_EXT_TO_MIME, VIDEO_HERO_MIME, "video/mp4");
     res.json({ url });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Upload failed.";
@@ -305,29 +301,46 @@ router.post("/upload/hero-video", requireAdmin, uploadLarge.single("file"), asyn
   }
 });
 
-router.post("/upload/hero-image", requireAdmin, upload.single("file"), async (req, res): Promise<void> => {
-  await handleImageUpload(req, res, "hero-images");
-});
-
-// ── Signed upload URL (direct browser → Supabase, bypasses proxy timeout) ────
+// ── Cloudinary signed-upload URL (direct browser → Cloudinary) ───────────────
 //
-// The client calls this to get a short-lived signed PUT URL for a specific bucket.
-// The actual file bytes never travel through our server — the browser PUTs directly
-// to Supabase Storage. This is the correct pattern for large video files.
+// Returns the params the browser needs to POST a file directly to Cloudinary's
+// upload endpoint, bypassing our server for the actual bytes.
+// The server still validates the admin session before issuing the signature.
 
-const ALLOWED_UPLOAD_BUCKETS = new Set([
-  "hero-videos", "hero-images",
-  "project-media", "project-banners",
-  "service-media",
-  "team-photos",
+const CLOUDINARY_IMAGE_FOLDERS = new Set([
+  "hero-images", "project-media", "project-banners",
+  "service-media", "team-photos",
   "comic-covers", "comic-pages",
   "partner-logos",
+]);
+
+router.post("/upload/cloudinary-sign", requireAdmin, async (req, res): Promise<void> => {
+  const { folder } = req.body as { folder?: string };
+
+  if (!folder || !CLOUDINARY_IMAGE_FOLDERS.has(folder)) {
+    res.status(400).json({ error: "Invalid or missing folder" });
+    return;
+  }
+
+  try {
+    const params = signUploadParams(folder);
+    res.json(params);
+  } catch (err) {
+    req.log.error({ err }, "Cloudinary sign error");
+    res.status(500).json({ error: "Failed to create upload signature" });
+  }
+});
+
+// ── Supabase signed-upload URL (direct browser → Supabase, for videos) ────────
+
+const SUPABASE_VIDEO_BUCKETS = new Set([
+  "hero-videos", "project-media", "service-media",
 ]);
 
 router.post("/upload/signed-url", requireAdmin, async (req, res): Promise<void> => {
   const { bucket, ext } = req.body as { bucket?: string; ext?: string };
 
-  if (!bucket || !ALLOWED_UPLOAD_BUCKETS.has(bucket)) {
+  if (!bucket || !SUPABASE_VIDEO_BUCKETS.has(bucket)) {
     res.status(400).json({ error: "Invalid or missing bucket" });
     return;
   }
