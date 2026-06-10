@@ -1,1 +1,1 @@
-- [Supabase egress quota](supabase-egress.md) — production Supabase Storage hits egress quota; photos hosted there will stop loading until billing is resolved.
+- [Object Storage upload system](object-storage-uploads.md) — all image/video uploads use Replit Object Storage (GCS); no external providers.
