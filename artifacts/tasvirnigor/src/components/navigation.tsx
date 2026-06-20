@@ -110,18 +110,6 @@ export function Navigation() {
           {/* Desktop right */}
           <div className="hidden md:flex items-center gap-3 shrink-0">
             <LanguageSwitcher />
-            <Link href="/admin">
-              <span
-                className={cn(
-                  "inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold border transition-all duration-200 cursor-pointer",
-                  effectiveScrolled
-                    ? "border-primary text-primary hover:bg-primary hover:text-white hover:shadow-[0_0_18px_rgba(250,176,55,0.30)]"
-                    : "border-white/50 text-white/80 hover:border-[#FAB037]/60 hover:text-white hover:shadow-[0_0_18px_rgba(250,176,55,0.22)]"
-                )}
-              >
-                {t(i18n.nav.adminLogin, lang)}
-              </span>
-            </Link>
           </div>
 
           {/* Mobile hamburger */}
@@ -159,11 +147,6 @@ export function Navigation() {
             })}
             <div className="flex items-center justify-between pt-4 mt-1">
               <LanguageSwitcher />
-              <Link href="/admin" onClick={() => setIsMobileOpen(false)}>
-                <span className="inline-flex items-center px-4 py-2 rounded-full text-xs font-semibold border border-primary text-primary hover:bg-primary hover:text-white transition-all cursor-pointer">
-                  {t(i18n.nav.adminLogin, lang)}
-                </span>
-              </Link>
             </div>
           </div>
         )}
